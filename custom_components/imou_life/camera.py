@@ -74,7 +74,7 @@ async def async_setup_entry(
     async_add_devices(sensors)
 
 
-class ImouCamera(ImouEntity, Camera):
+class ImouCamera(Camera, ImouEntity):
     """imou camera class."""
 
     _attr_supported_features = CameraEntityFeature.STREAM
