@@ -6,6 +6,7 @@ import asyncio
 import logging
 
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import CONF_SCAN_INTERVAL
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
@@ -13,6 +14,7 @@ from homeassistant.helpers.typing import ConfigType
 from imouapi.api import ImouAPIClient
 from imouapi.device import ImouDevice
 from imouapi.exceptions import ImouException
+import voluptuous as vol
 
 from .const import (
     CONF_API_URL,
@@ -33,6 +35,19 @@ from .const import (
 from .coordinator import ImouDataUpdateCoordinator
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
+
+# Configuration schema for YAML configuration (not supported, but required by Hassfest)
+CONFIG_SCHEMA = vol.Schema(
+    {
+        DOMAIN: vol.Schema(
+            {
+                vol.Optional(
+                    CONF_SCAN_INTERVAL, default=DEFAULT_SCAN_INTERVAL
+                ): vol.All(vol.Coerce(int), vol.Range(min=1)),
+            }
+        )
+    }
+)
 
 
 async def async_setup(hass: HomeAssistant, config: ConfigType):
