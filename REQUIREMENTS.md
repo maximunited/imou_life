@@ -18,7 +18,7 @@ This document outlines all the dependencies required for the Imou Life integrati
 - **pytest-asyncio>=0.21.0** - Async testing support
 - **pytest-cov>=6.0.0** - Coverage testing
 - **coverage>=7.0.0** - Code coverage tool
-- **turbojpeg>=1.2.1** - JPEG processing library for camera component testing
+- **turbojpeg==0.0.2** - JPEG processing library for camera component testing
 
 ## Linting and Code Quality
 
@@ -60,7 +60,7 @@ All dependencies are pinned to specific versions to ensure reproducible builds:
 - **black**: 25.1.0
 - **flake8**: 7.3.0
 - **isort**: 6.0.1
-- **turbojpeg**: 1.2.1
+- **turbojpeg**: 0.0.2
 
 ## Troubleshooting
 

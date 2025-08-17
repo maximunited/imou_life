@@ -7,4 +7,4 @@ pytest-asyncio>=0.21.0
 pytest-cov>=6.0.0
 coverage>=7.0.0
 # Camera component dependencies for testing
-turbojpeg>=1.2.1
+turbojpeg==0.0.2
