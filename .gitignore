@@ -9,6 +9,9 @@ venv
 activate_venv.ps1
 activate_venv.bat
 run_tests.py
+validate_setup.py
+validate_setup.ps1
+validate_setup.bat
 
 # macOS
 .DS_Store

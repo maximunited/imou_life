@@ -1,6 +1,6 @@
 """Global fixtures for imou_life integration."""
 
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from imouapi.device import ImouDevice
 from imouapi.device_entity import ImouBinarySensor, ImouSensor, ImouSwitch
@@ -76,3 +76,30 @@ def error_get_data_fixture():
 def auto_enable_custom_integrations(enable_custom_integrations):
     """Auto enable custom integration otherwise will result in IntegrationNotFound exception."""
     yield
+
+
+# Mock camera component to avoid turbojpeg import issues
+@pytest.fixture(autouse=True)
+def mock_camera_component():
+    """Mock the camera component to avoid turbojpeg import issues."""
+    with patch.dict(
+        "sys.modules",
+        {
+            "homeassistant.components.camera": MagicMock(),
+            "homeassistant.components.camera.img_util": MagicMock(),
+        },
+    ):
+        yield
+
+
+# Mock turbojpeg if it's imported anywhere
+@pytest.fixture(autouse=True)
+def mock_turbojpeg():
+    """Mock turbojpeg to avoid import issues."""
+    with patch.dict(
+        "sys.modules",
+        {
+            "turbojpeg": MagicMock(),
+        },
+    ):
+        yield

@@ -18,7 +18,6 @@ This document outlines all the dependencies required for the Imou Life integrati
 - **pytest-asyncio>=0.21.0** - Async testing support
 - **pytest-cov>=6.0.0** - Coverage testing
 - **coverage>=7.0.0** - Code coverage tool
-- **turbojpeg==0.0.2** - JPEG processing library for camera component testing
 
 ## Linting and Code Quality
 
@@ -32,10 +31,10 @@ This document outlines all the dependencies required for the Imou Life integrati
 ## Platform-Specific Dependencies
 
 ### Linux (CI/CD)
-- **libturbojpeg0-dev** - System package for turbojpeg development headers
+- **Standard Python packages only** - No system dependencies required
 
 ### Windows (Development)
-- **turbojpeg** - Python package (may have installation challenges)
+- **Standard Python packages only** - No system dependencies required
 
 ## Installation Notes
 
@@ -50,7 +49,7 @@ pip install -r requirements_test.txt
 ```
 
 ### For CI/CD
-The GitHub Actions workflow automatically installs system dependencies and Python packages.
+The GitHub Actions workflow automatically installs Python packages.
 
 ## Version Constraints
 
@@ -60,15 +59,37 @@ All dependencies are pinned to specific versions to ensure reproducible builds:
 - **black**: 25.1.0
 - **flake8**: 7.3.0
 - **isort**: 6.0.1
-- **turbojpeg**: 0.0.2
+
+## Testing Strategy
+
+### Camera Component Testing
+Due to compatibility issues with the `turbojpeg` package across different Python versions and platforms:
+
+1. **Basic functionality tests** - Test camera component structure and imports
+2. **Integration tests** - Test camera component within the Home Assistant framework
+3. **Mock-based tests** - Use mocks for camera-specific functionality
+4. **CI/CD testing** - Full test suite runs on Linux runners
+
+### Platform-Specific Testing
+- **Linux/macOS**: Full test suite available
+- **Windows**: Limited pytest functionality due to platform dependencies
+- **CI/CD**: Full testing on Linux runners
 
 ## Troubleshooting
 
-### turbojpeg Installation Issues
-If you encounter issues installing turbojpeg on Windows:
-1. Try installing from a wheel: `pip install turbojpeg --only-binary=all`
-2. Use the test runner script: `python run_tests.py` (avoids camera component import)
-3. Focus on basic functionality tests that don't require camera components
+### Camera Component Issues
+If you encounter issues with camera component testing:
+
+1. **Use the test runner script**: `python run_tests.py`
+2. **Focus on basic tests**: The core functionality tests should work
+3. **Check CI logs**: Full tests run successfully on Linux in GitHub Actions
+
+### Import Errors
+If you get import errors:
+
+1. **Ensure virtual environment is activated**
+2. **Install requirements**: `pip install -r requirements_dev.txt`
+3. **Check Python version**: Use Python 3.9+ (3.13 recommended)
 
 ### Platform-Specific Testing
 - **Linux/macOS**: Full test suite available

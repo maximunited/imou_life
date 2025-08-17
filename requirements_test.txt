@@ -6,5 +6,5 @@ pytest>=8.0.0
 pytest-asyncio>=0.21.0
 pytest-cov>=6.0.0
 coverage>=7.0.0
-# Camera component dependencies for testing
-turbojpeg==0.0.2
+# Note: Camera component testing may be limited due to turbojpeg compatibility issues
+# The camera component will be tested in basic functionality tests instead
