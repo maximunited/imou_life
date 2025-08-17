@@ -1,5 +1,5 @@
 """Camera platform for Imou."""
-
+import imouapi
 from collections.abc import Callable
 import logging
 
@@ -105,6 +105,15 @@ class ImouCamera(ImouEntity, Camera):
             self.device.get_name(),
         )
         return await self.sensor_instance.async_get_stream_url()
+
+    async def stream_source(self):
+    try:
+        stream_url = await self.sensor_instance.async_get_stream_url()
+        _LOGGER.debug("Successfully got stream URL: %s", stream_url)
+        return stream_url
+    except imouapi.exceptions.APIError as e:
+        _LOGGER.warning("API stream failed, falling back to local RTSP: %s", str(e))
+        return "rtsp://admin:yourpassword@192.168.1.100:554/cam/realmonitor?channel=1&subtype=0"
 
     async def async_service_ptz_location(self, horizontal, vertical, zoom):
         """Perform PTZ location action."""
