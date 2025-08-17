@@ -53,87 +53,92 @@ pip install black flake8 isort codespell pre-commit
 pre-commit install
 ```
 
-## Development Workflow
+## Testing
 
-### Running Linters
+### Platform-Specific Testing
 
+**Note**: The full pytest suite may not work on Windows due to platform-specific dependencies (specifically the `resource` module). This is normal and expected.
+
+### Running Tests
+
+#### Option 1: Test Runner Script (Recommended for Windows)
 ```bash
-# Run all pre-commit hooks
+python run_tests.py
+```
+
+This script will:
+- Run basic import and structure tests
+- Attempt to run pytest with minimal configuration
+- Provide clear feedback about what's working
+
+#### Option 2: Direct Pytest (Linux/macOS)
+```bash
+pytest tests/ -v
+```
+
+#### Option 3: Pre-commit Hooks
+```bash
 pre-commit run --all-files
-
-# Run individual tools
-black custom_components/imou_life/
-flake8 custom_components/imou_life/
-isort custom_components/imou_life/
-codespell custom_components/imou_life/
 ```
 
-### Testing
+## Code Quality
 
-```bash
-# Run tests
-pytest
+### Pre-commit Hooks
 
-# Run tests with coverage
-pytest --cov=custom_components/imou_life
-```
-
-### Code Quality
-
-All code must pass the pre-commit hooks before committing:
+The project uses pre-commit hooks to ensure code quality:
 
 - **black**: Code formatting
-- **flake8**: Linting and style checking
+- **flake8**: Linting
 - **isort**: Import sorting
-- **codespell**: Spelling check
+- **codespell**: Spelling checks
 
-## Project Structure
+### Manual Code Quality Checks
 
+```bash
+# Format code
+black custom_components/imou_life/
+
+# Check linting
+flake8 custom_components/imou_life/
+
+# Sort imports
+isort custom_components/imou_life/
 ```
-imou_life/
-├── custom_components/imou_life/    # Main integration code
-├── tests/                          # Test files
-├── requirements_dev.txt            # Development dependencies
-├── requirements_test.txt           # Test dependencies
-├── .pre-commit-config.yaml        # Pre-commit configuration
-└── setup.cfg                      # Project configuration
-```
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Ensure all pre-commit hooks pass
-5. Submit a pull request
 
 ## Troubleshooting
 
+### Windows-Specific Issues
+
+If you encounter issues with pytest on Windows:
+
+1. **Use the test runner script**: `python run_tests.py`
+2. **Focus on basic tests**: The core functionality tests should work
+3. **CI/CD**: Tests run successfully on Linux in GitHub Actions
+
 ### Import Errors
 
-If you get import errors for `homeassistant`, ensure the virtual environment is activated and dependencies are installed:
+If you get import errors:
 
-```bash
-pip install -r requirements_dev.txt
-```
+1. **Ensure virtual environment is activated**
+2. **Install requirements**: `pip install -r requirements_dev.txt`
+3. **Check Python version**: Use Python 3.9+ (3.13 recommended)
 
-### Pre-commit Issues
+## Contributing
 
-If pre-commit fails, try:
+1. **Fork the repository**
+2. **Create a feature branch**
+3. **Make your changes**
+4. **Run tests**: `python run_tests.py`
+5. **Run pre-commit**: `pre-commit run --all-files`
+6. **Submit a pull request**
 
-```bash
-pre-commit clean
-pre-commit install
-pre-commit run --all-files
-```
+## CI/CD
 
-### Virtual Environment Issues
+The project uses GitHub Actions for continuous integration:
 
-If the virtual environment becomes corrupted:
+- **Pre-commit**: Code quality checks
+- **Tests**: Automated testing (Linux)
+- **HACS**: Integration validation
+- **Hassfest**: Home Assistant manifest validation
 
-```bash
-# Remove and recreate
-rm -rf venv
-python -m venv venv
-# Then follow setup steps 3-4
-```
+All checks must pass before merging.
