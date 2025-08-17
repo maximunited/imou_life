@@ -1,9 +1,6 @@
-"""
-Custom integration to integrate Imou Life with Home Assistant.
+"""The imou_life integration."""
 
-For more details about this integration, please refer to
-https://github.com/user2684/imou_life
-"""
+# https://github.com/maximunited/imou_life
 
 import asyncio
 import logging

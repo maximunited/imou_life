@@ -5,6 +5,10 @@ pythonenv*
 venv
 .venv
 
+# Convenience scripts
+activate_venv.ps1
+activate_venv.bat
+
 # macOS
 .DS_Store
 .AppleDouble

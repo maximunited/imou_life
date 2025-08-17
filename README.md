@@ -1,10 +1,30 @@
-# Home Assistant custom component for controlling Imou devices
+# Home Assistant custom component for controlling Imou Life devices
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg)](https://github.com/hacs/integration)
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
-[![Donate](https://img.shields.io/badge/donate-BuyMeCoffee-yellow.svg)](https://www.buymeacoffee.com/user2684)
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
+[![Donate](https://img.shields.io/badge/donate-BuyMeCoffee-yellow.svg)](https://www.buymeacoffee.com/maxim_united)
 
-**PLEASE NOTE this is an UNOFFICIAL integration, NOT supported or validated by Imou or linked in any way to Imou**.
+**PLEASE NOTE this is an UNOFFICIAL integration, NOT supported or validated by Imou or linked in any way to Imou**
+
+> **Note**: This is a fork of [user2684/imou_life](https://github.com/user2684/imou_life) with additional improvements and fixes. If you're looking for the original integration, please visit the upstream repository.
+
+## About This Fork
+
+This repository is a fork of the original [user2684/imou_life](https://github.com/user2684/imou_life) integration. The fork includes:
+
+- **Code quality improvements**: Fixed pre-commit hook issues, improved formatting
+- **Repository maintenance**: Updated documentation and configuration files
+- **Bug fixes**: Resolved duplicate method definitions and import issues
+
+### Relationship with Upstream
+
+- **Original Repository**: [user2684/imou_life](https://github.com/user2684/imou_life)
+- **Original Author**: [@user2684](https://github.com/user2684)
+- **Fork Maintainer**: [@maximunited](https://github.com/maximunited)
+
+This fork is intended to contribute improvements back to the upstream repository. If you're experiencing issues or have feature requests, please consider:
+
+1. **For general issues**: Use the [upstream repository](https://github.com/user2684/imou_life/issues)
+2. **For fork-specific improvements**: Use this repository's [issues page](https://github.com/maximunited/imou_life/issues)
 
 _This integration is the result of the analysis of the public documentation released by Imou for its open platform and created before the vendor published its own [official Home Assistant integration](https://github.com/Imou-OpenPlatform/Imou-Home-Assistant). Since this integration is based on information no more updated since 2021 it may not fully work with most recent devices and there is no way to support newer models since the documentation of the the APIs has not been made public by the vendor._
 
@@ -33,7 +53,7 @@ Once an Imou device is added to Home Assistant, switches can be controlled throu
 
 ## Supported Models
 
-You can find [here](https://github.com/user2684/imou_life/wiki/Supported-models) a list with all the Imou models which have been tested and if they are working or not with the integration. Please feel free to report any missing model or additional information.
+You can find [here](https://github.com/maximunited/imou_life/wiki/Supported-models) a list with all the Imou models which have been tested and if they are working or not with the integration. Please feel free to report any missing model or add any working model to the list.
 
 ## Installation
 
@@ -209,7 +229,7 @@ When using this option, please note the following:
 
 - The API for enabling/disabling push notification is currently limited to 10 times per day by Imou so do not perform too many consecutive changes. Keep also in mind that if you change the URL, sometimes it may take up to 5 minutes for a change to apply on Imou side
 - In Home Assistant you cannot have more than one webhook trigger with the same ID so customize the example above if you need to add any custom logic
-- Unfortunately HTTP requests sent by the Imou API server to Home Assistant are somehow malformed, causing HA to reject the request (404 error, without any evidence in the logs). A reverse proxy like NGINX in front of Home Assistant without any special configuration takes care of cleaning out the request, hence this is a requirement. Instructions on how to configured it and examples are available [here](https://github.com/user2684/imou_life/wiki/Reverse-proxy-configuration-for-push-notifications).
+- Unfortunately HTTP requests sent by the Imou API server to Home Assistant are somehow malformed, causing HA to reject the request (404 error, without any evidence in the logs). A reverse proxy like NGINX in front of Home Assistant without any special configuration takes care of cleaning out the request, hence this is a requirement. Instructions on how to configured it and examples are available [here](https://github.com/maximunited/imou_life/wiki/Reverse-proxy-configuration-for-push-notifications).
 
 ### PTZ Controls
 
@@ -262,15 +282,15 @@ logger:
 
 ## Bugs or feature requests
 
-Bugs and feature requests can be reported through [Github Issues](https://github.com/user2684/imou_life/issues).
+Bugs and feature requests can be reported through [Github Issues](https://github.com/maximunited/imou_life/issues).
 When reporting bugs, ensure to include also diagnostics and debug logs. Please review those logs to redact any potential sensitive information before submitting the request.
 
 ## Contributing
 
 Any contribution is more than welcome. Github is used to host the code, track issues and feature requests, as well as submitting pull requests.
 Detailed information on how the code is structured, how to setup a development environment and how to test your code before submitting pull requests is
-detailed [here](https://github.com/user2684/imou_life/wiki/How-to-contribute).
+detailed [here](https://github.com/maximunited/imou_life/wiki/How-to-contribute).
 
 ## Roadmap
 
-A high level roadmap of this integration can be found [here](https://github.com/users/user2684/projects/1)
+A high level roadmap of this integration can be found [here](https://github.com/users/maximunited/projects/1)

@@ -1,3 +1,27 @@
+# Contributing to Imou Life Integration
+
+## Fork Relationship
+
+This repository is a fork of [user2684/imou_life](https://github.com/user2684/imou_life). When contributing, please consider the following:
+
+### For Upstream Contributions
+
+If you want to contribute improvements that should go to the original repository:
+
+1. **Create an issue** in the [upstream repository](https://github.com/user2684/imou_life/issues) first
+2. **Fork the upstream repository** directly from [user2684/imou_life](https://github.com/user2684/imou_life)
+3. **Submit a pull request** to the upstream repository
+
+### For Fork-Specific Improvements
+
+If you want to contribute to this fork:
+
+1. **Create an issue** in this repository describing the improvement
+2. **Fork this repository** and create a feature branch
+3. **Submit a pull request** to this repository
+
+## Development Setup
+
 # Contribution guidelines
 
 Contributing to this project should be as easy and transparent as possible, whether it's:
