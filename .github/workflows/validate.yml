@@ -27,6 +27,7 @@ jobs:
         pip install -r requirements_dev.txt
         pip install -r requirements_test.txt
         pip install imouapi==1.0.15
+        pip list | grep imouapi
 
     - name: Run pre-commit hooks
       run: |
@@ -35,11 +36,15 @@ jobs:
 
     - name: Install component in development mode
       run: |
+        ls -la custom_components/imou_life/
         pip install -e custom_components/imou_life/
         python -c "import custom_components.imou_life; print('✅ Component imported successfully')"
 
     - name: Verify dependencies
       run: |
+        python --version
+        pip list
+        python -c "import sys; print('Python path:', sys.path)"
         python -c "import imouapi; print('✅ imouapi module available')"
         python -c "from imouapi.device import ImouDevice; print('✅ ImouDevice class available')"
 
