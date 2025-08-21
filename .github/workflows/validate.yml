@@ -26,7 +26,8 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements_dev.txt
         pip install -r requirements_test.txt
-        pip install imouapi==1.0.15
+        pip install --upgrade setuptools wheel
+        pip install imouapi==1.0.15 --verbose || pip install imouapi --verbose
         pip list | grep imouapi
 
     - name: Run pre-commit hooks
@@ -45,6 +46,7 @@ jobs:
         python --version
         pip list
         python -c "import sys; print('Python path:', sys.path)"
+        python -c "import platform; print('Platform:', platform.platform())"
         python -c "import imouapi; print('✅ imouapi module available')"
         python -c "from imouapi.device import ImouDevice; print('✅ ImouDevice class available')"
 
