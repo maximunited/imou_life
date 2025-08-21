@@ -1,0 +1,14 @@
+services:
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    volumes:
+      - ./coverage:/app/coverage
+      - ./test-results:/app/test-results
+    environment:
+      - PYTHONPATH=/app
+    command: >
+      sh -c "
+        python run_simple_tests.py
+      "
