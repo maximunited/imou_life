@@ -2,7 +2,6 @@
 
 import pytest
 from homeassistant.exceptions import ConfigEntryNotReady
-from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.imou_life import (
     async_reload_entry,
@@ -13,6 +12,7 @@ from custom_components.imou_life.const import DOMAIN
 from custom_components.imou_life.coordinator import ImouDataUpdateCoordinator
 
 from .const import MOCK_CONFIG_ENTRY
+from .mocks import MockConfigEntry
 
 
 @pytest.mark.asyncio

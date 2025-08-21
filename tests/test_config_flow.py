@@ -4,7 +4,6 @@ from unittest.mock import patch
 
 import pytest
 from homeassistant import config_entries, data_entry_flow
-from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.imou_life.const import (
     CONF_API_URL,
@@ -25,6 +24,7 @@ from .const import (
     MOCK_LOGIN_WITH_DISCOVER,
     MOCK_LOGIN_WITHOUT_DISCOVER,
 )
+from .mocks import MockConfigEntry
 
 
 # This fixture bypasses the actual setup of the integration

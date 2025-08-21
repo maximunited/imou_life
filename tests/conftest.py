@@ -7,7 +7,7 @@ from imouapi.device import ImouDevice
 from imouapi.device_entity import ImouBinarySensor, ImouSensor, ImouSwitch
 from imouapi.exceptions import ImouException
 
-pytest_plugins = "pytest_homeassistant_custom_component"
+# pytest_plugins = "pytest_homeassistant_custom_component"  # Removed due to Windows compatibility issues
 
 
 # This fixture is used to prevent HomeAssistant from attempting to create and dismiss persistent
@@ -73,9 +73,17 @@ def error_get_data_fixture():
 
 
 @pytest.fixture(autouse=True)
-def auto_enable_custom_integrations(enable_custom_integrations):
+def auto_enable_custom_integrations():
     """Auto enable custom integration otherwise will result in IntegrationNotFound exception."""
     yield
+
+
+@pytest.fixture
+def hass():
+    """Create a mock Home Assistant instance."""
+    from .mocks import create_mock_hass
+
+    return create_mock_hass()
 
 
 # Mock camera component to avoid turbojpeg import issues
