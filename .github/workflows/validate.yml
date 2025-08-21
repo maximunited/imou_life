@@ -38,7 +38,7 @@ jobs:
     - name: Upload coverage to Coveralls
       uses: codecov/codecov-action@v3
       with:
-        token: ${{ secrets.CODECOV_TOKEN }}
+        token: ${{ secrets.GITHUB_TOKEN }}
         file: ./coverage.xml
         flags: unittests
         name: codecov-umbrella
