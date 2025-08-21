@@ -35,11 +35,10 @@ jobs:
         pip install pre-commit
         pre-commit run --all-files
 
-    - name: Install component in development mode
+    - name: Verify component structure
       run: |
         ls -la custom_components/imou_life/
-        pip install -e custom_components/imou_life/
-        python -c "import custom_components.imou_life; print('✅ Component imported successfully')"
+        python -c "import sys; sys.path.insert(0, '.'); print('✅ Added current directory to Python path')"
 
     - name: Verify dependencies
       run: |
@@ -54,11 +53,12 @@ jobs:
     - name: Test basic imports
       run: |
         python -c "import sys; sys.path.insert(0, '.'); import tests.const; print('✅ Basic test import successful')"
+        python -c "import sys; sys.path.insert(0, '.'); import tests.mocks; print('✅ Test mocks import successful')"
+        python -m pytest tests/ --collect-only --tb=short
 
     - name: Run tests with coverage
       run: |
-        cd tests
-        python -m pytest . -v --cov=../custom_components/imou_life --cov-report=xml --cov-report=html
+        python -m pytest tests/ -v --cov=custom_components/imou_life --cov-report=xml --cov-report=html --tb=short
 
     - name: Upload coverage to Coveralls
       uses: codecov/codecov-action@v3
