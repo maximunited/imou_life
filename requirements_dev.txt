@@ -1,24 +1,23 @@
 
 # Security and type checking
-bandit==1.7.5
-# Development dependencies for Imou Life integration
+bandit>=1.7.5
+
 # Code quality and formatting
-black==23.12.1
+black>=24.1.1
 
 # Spell checking
-codespell==2.2.6
-flake8==7.0.0
-isort==5.13.2
-mypy==1.8.0
+codespell>=2.2.6
+flake8>=7.0.0
+isort>=5.13.2
+mypy>=1.8.0
 
 # Pre-commit
-pre-commit==3.6.0
-pydocstyle==6.3.0
+pre-commit>=3.6.0
+pydocstyle>=6.3.0
 
-# Basic testing (without version conflicts)
-pytest
-pytest-cov
-pytest-mock
-pyupgrade==3.15.0
-types-PyYAML
-types-requests
+# Code modernization
+pyupgrade>=3.15.0
+
+# Type stubs
+types-PyYAML>=6.0.12.12
+types-requests>=2.31.0.20240311

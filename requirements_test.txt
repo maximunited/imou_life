@@ -1,12 +1,12 @@
 # Test dependencies for Imou Life integration
-# Note: pytest-homeassistant-custom-component may not work on Windows due to 'resource' module dependency
-# It works fine on Linux/macOS in CI environments
-# Note: Camera component testing may be limited due to turbojpeg compatibility issues
-# The camera component will be tested in basic functionality tests instead
+# Note: pytest-homeassistant-custom-component removed due to Windows compatibility issues
+# Camera component testing may be limited due to turbojpeg compatibility issues
 
-coverage>=7.5.0
+
+# Coverage
+coverage>=7.4.0
+# Core testing
 pytest>=8.0.0
-pytest-asyncio>=0.21.0
+pytest-asyncio>=0.24.0
 pytest-cov>=6.0.0
-pytest-homeassistant-custom-component>=0.13.271
-# coveralls>=6.0.0  # Removed due to Python 3.13 compatibility issues
+pytest-mock>=3.12.0
