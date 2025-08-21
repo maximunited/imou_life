@@ -1,0 +1,110 @@
+
+[run]
+source = custom_components/imou_life
+omit =
+    */tests/*
+    */test_*
+    */__pycache__/*
+    */venv/*
+    */.venv/*
+    */site-packages/*
+    */dist/*
+    */build/*
+    */\.*/*
+    */node_modules/*
+    */coverage/*
+    */htmlcov/*
+    */\.pytest_cache/*
+    */\.tox/*
+    */\.mypy_cache/*
+    */\.coverage*
+
+[report]
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    if self.debug:
+    if settings.DEBUG
+    raise AssertionError
+    raise NotImplementedError
+    if 0:
+    if __name__ == .__main__.:
+    class .*\bProtocol\):
+    @(abc\.)?abstractmethod
+    def .*_mock.*:
+    def .*_stub.*:
+    def .*_fake.*:
+    def .*_dummy.*:
+    def .*_test.*:
+    def .*_example.*:
+    def .*_sample.*:
+    def .*_demo.*:
+    def .*_mock_.*:
+    def .*_stub_.*:
+    def .*_fake_.*:
+    def .*_dummy_.*:
+    def .*_test_.*:
+    def .*_example_.*:
+    def .*_sample_.*:
+    def .*_demo_.*:
+    class .*Mock.*:
+    class .*Stub.*:
+    class .*Fake.*:
+    class .*Dummy.*:
+    class .*Test.*:
+    class .*Example.*:
+    class .*Sample.*:
+    class .*Demo.*:
+    class .*Mock_.*:
+    class .*Stub_.*:
+    class .*Fake_.*:
+    class .*Dummy_.*:
+    class .*Test_.*:
+    class .*Example_.*:
+    class .*Sample_.*:
+    class .*Demo_.*:
+    # Don't complain about missing debug-only code:
+    def __repr__
+    if settings.DEBUG
+    raise AssertionError
+    raise NotImplementedError
+    if 0:
+    if __name__ == .__main__.:
+    class .*\bProtocol\):
+    @(abc\.)?abstractmethod
+    def .*_mock.*:
+    def .*_stub.*:
+    def .*_fake.*:
+    def .*_dummy.*:
+    def .*_test.*:
+    def .*_example.*:
+    def .*_sample.*:
+    def .*_demo.*:
+    def .*_mock_.*:
+    def .*_stub_.*:
+    def .*_fake_.*:
+    def .*_dummy_.*:
+    def .*_test_.*:
+    def .*_example_.*:
+    def .*_sample_.*:
+    def .*_demo_.*:
+    class .*Mock.*:
+    class .*Stub.*:
+    class .*Fake.*:
+    class .*Dummy.*:
+    class .*Test.*:
+    class .*Example.*:
+    class .*Sample.*:
+    class .*Demo.*:
+    class .*Mock_.*:
+    class .*Stub_.*:
+    class .*Fake_.*:
+    class .*Dummy_.*:
+    class .*Test_.*:
+    class .*Example_.*:
+    class .*Sample_.*:
+    class .*Demo_.*:
+
+[html]
+directory = htmlcov
+title = Imou Life Integration Coverage Report

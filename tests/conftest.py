@@ -2,10 +2,10 @@
 
 from unittest.mock import MagicMock, patch
 
+import pytest
 from imouapi.device import ImouDevice
 from imouapi.device_entity import ImouBinarySensor, ImouSensor, ImouSwitch
 from imouapi.exceptions import ImouException
-import pytest
 
 pytest_plugins = "pytest_homeassistant_custom_component"
 

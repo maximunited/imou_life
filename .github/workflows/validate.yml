@@ -31,9 +31,18 @@ jobs:
         pip install pre-commit
         pre-commit run --all-files
 
-    - name: Run tests
+    - name: Run tests with coverage
       run: |
-        python -m pytest tests/ -v --cov=custom_components/imou_life
+        python -m pytest tests/ -v --cov=custom_components/imou_life --cov-report=xml --cov-report=html
+
+    - name: Upload coverage to Coveralls
+      uses: codecov/codecov-action@v3
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
 
     - name: Validate manifest
       run: |

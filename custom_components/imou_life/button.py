@@ -1,7 +1,7 @@
 """Binary sensor platform for Imou."""
 
-from collections.abc import Callable
 import logging
+from collections.abc import Callable
 
 from homeassistant.components.button import ENTITY_ID_FORMAT, ButtonEntity
 from homeassistant.config_entries import ConfigEntry

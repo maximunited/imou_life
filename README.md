@@ -77,6 +77,53 @@ If this is not happening, install it manually with:
 pip3 install imouapi
 ```
 
+## Development and Testing
+
+### Running Tests
+
+This project includes several testing options:
+
+#### Simple Test Runner (Recommended for Windows)
+```bash
+# Windows Command Prompt
+run_tests.bat
+
+# Windows PowerShell
+.\run_tests.ps1
+
+# Direct Python execution
+python run_simple_tests.py
+```
+
+#### Advanced Test Runner (Linux/macOS)
+```bash
+# Install test dependencies
+pip install -r requirements_test.txt
+
+# Run tests with coverage
+python run_tests_with_coverage.py
+
+# Run pytest directly (may not work on Windows)
+python -m pytest tests/ -v --cov=custom_components/imou_life
+```
+
+#### Test Coverage
+- Tests are configured to require at least 70% code coverage
+- Coverage reports are generated in HTML and XML formats
+- CI/CD pipeline automatically uploads coverage to Codecov
+
+### Development Setup
+```bash
+# Install development dependencies
+pip install -r requirements_dev.txt
+
+# Install pre-commit hooks
+pre-commit install
+
+# Run code quality checks
+pre-commit run --all-files
+```
+
 ## Requirements
 
 To interact with the Imou API, valid `App Id` and `App Secret` are **required**.

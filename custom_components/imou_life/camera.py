@@ -1,8 +1,10 @@
 """Camera platform for Imou."""
 
-from collections.abc import Callable
 import logging
+from collections.abc import Callable
 
+import imouapi
+import voluptuous as vol
 from homeassistant.components.camera import (
     ENTITY_ID_FORMAT,
     Camera,
@@ -11,9 +13,7 @@ from homeassistant.components.camera import (
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_platform
-import imouapi
 from imouapi.const import PTZ_OPERATIONS
-import voluptuous as vol
 
 from .const import (
     ATTR_PTZ_DURATION,

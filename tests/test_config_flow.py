@@ -2,8 +2,8 @@
 
 from unittest.mock import patch
 
-from homeassistant import config_entries, data_entry_flow
 import pytest
+from homeassistant import config_entries, data_entry_flow
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.imou_life.const import (
