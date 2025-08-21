@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Docker-specific test runner for Imou Life integration.
 This version focuses on testing what's available without Home Assistant.
