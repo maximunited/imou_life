@@ -25,11 +25,17 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements_dev.txt
+        pip install -r requirements_test.txt
+        pip install -e .
 
     - name: Run pre-commit hooks
       run: |
         pip install pre-commit
         pre-commit run --all-files
+
+    - name: Install component in development mode
+      run: |
+        pip install -e custom_components/imou_life/
 
     - name: Run tests with coverage
       run: |
