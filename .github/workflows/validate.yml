@@ -49,10 +49,16 @@ jobs:
         python -c "import platform; print('Platform:', platform.platform())"
         python -c "import imouapi; print('✅ imouapi module available')"
         python -c "from imouapi.device import ImouDevice; print('✅ ImouDevice class available')"
+        python -c "import custom_components.imou_life.const; print('✅ Component const module available')"
+
+    - name: Test basic imports
+      run: |
+        python -c "import sys; sys.path.insert(0, '.'); import tests.const; print('✅ Basic test import successful')"
 
     - name: Run tests with coverage
       run: |
-        python -m pytest tests/ -v --cov=custom_components/imou_life --cov-report=xml --cov-report=html
+        cd tests
+        python -m pytest . -v --cov=../custom_components/imou_life --cov-report=xml --cov-report=html
 
     - name: Upload coverage to Coveralls
       uses: codecov/codecov-action@v3
