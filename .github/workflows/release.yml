@@ -1,0 +1,84 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements_dev.txt
+
+      - name: Run validation
+        run: |
+          python -c "import json; json.load(open('custom_components/imou_life/manifest.json'))"
+          python -c "import json; import os; [json.load(open(f)) for f in os.listdir('custom_components/imou_life/translations') if f.endswith('.json')]"
+          black --check custom_components/ tests/
+          isort --check-only custom_components/ tests/
+          flake8 custom_components/ tests/ --max-line-length=88 --extend-ignore=E203,W503
+
+      - name: Run tests
+        run: |
+          python -m pytest tests/ -v
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            ## 🚀 What's New in ${{ github.ref_name }}
+
+            ### ✨ Features
+            - Add your new features here
+
+            ### 🐛 Bug Fixes
+            - Add your bug fixes here
+
+            ### 🔧 Improvements
+            - Add your improvements here
+
+            ### 📚 Documentation
+            - Add documentation updates here
+
+            ## 📋 Changelog
+            See [CHANGELOG.md](CHANGELOG.md) for detailed changes.
+
+            ## 🔗 Links
+            - [Documentation](https://github.com/maximunited/imou_life)
+            - [Issues](https://github.com/maximunited/imou_life/issues)
+            - [Discussions](https://github.com/maximunited/imou_life/discussions)
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Assets
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./custom_components/imou_life
+          asset_name: imou_life-${{ github.ref_name }}.zip
+          asset_content_type: application/zip
+
+      - name: Create HACS Release
+        uses: hacs/action@main
+        with:
+          category: integration

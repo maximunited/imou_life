@@ -25,8 +25,8 @@ class ImouDataUpdateCoordinator(DataUpdateCoordinator):
         """Initialize."""
         self.device = device
         self.scan_inteval = scan_interval
-        self.platforms = []
-        self.entities = []
+        self.platforms: list = []
+        self.entities: list = []
         super().__init__(
             hass,
             _LOGGER,

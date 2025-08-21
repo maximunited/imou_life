@@ -1,0 +1,52 @@
+{
+  "config": {
+    "step": {
+      "login": {
+        "title": "התחברות",
+        "data": {
+          "api_url": "כתובת URL בסיסית של ה-API",
+          "app_id": "מזהה אפליקציית Imou",
+          "app_secret": "סוד אפליקציית Imou",
+          "enable_discover": "גלה מכשירים רשומים"
+        }
+      },
+      "discover": {
+        "title": "מכשירים שהתגלו",
+        "data": {
+          "discovered_device": "בחר את המכשיר להוספה:",
+          "device_name": "שנה שם ל"
+        }
+      },
+      "manual": {
+        "title": "הוסף מכשיר",
+        "data": {
+          "device_id": "מזהה מכשיר",
+          "device_name": "שנה שם ל"
+        }
+      }
+    },
+    "error": {
+      "not_connected": "הפעולה נדרשה אך עדיין לא התחברת ל-API",
+      "connection_failed": "החיבור ל-API נכשל",
+      "invalid_configuration": "מזהה אפליקציה או סוד אפליקציה לא תקינים",
+      "not_authorized": "אין הרשאה לפעול על המכשיר או מזהה מכשיר לא תקין",
+      "api_error": "שגיאת API מרוחק",
+      "invalid_reponse": "תגובת API מעוותת או לא צפויה",
+      "device_offline": "המכשיר לא מקוון",
+      "generic_error": "אירעה שגיאה לא ידועה"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "scan_interval": "מרווח סריקה (שניות)",
+          "api_timeout": "פסק זמן API (שניות)",
+          "callback_url": "כתובת URL של callback",
+          "camera_wait_before_download": "המתן לפני הורדת תמונת מצלמה (שניות)",
+          "wait_after_wakeup": "המתן לאחר הפעלת מכשיר רדום (שניות)"
+        }
+      }
+    }
+  }
+}

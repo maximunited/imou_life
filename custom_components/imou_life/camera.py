@@ -26,7 +26,6 @@ from .const import (
     SERVIZE_PTZ_LOCATION,
     SERVIZE_PTZ_MOVE,
 )
-from .entity import ImouEntity
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 

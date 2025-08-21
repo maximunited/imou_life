@@ -1,10 +1,10 @@
 -r requirements_dev.txt
-# Note: pytest-homeassistant-custom-component may not work on Windows due to 'resource' module dependency
-# It works fine on Linux/macOS in CI environments
-pytest-homeassistant-custom-component==0.13.271
+coverage>=7.0.0
 pytest>=8.0.0
 pytest-asyncio>=0.21.0
 pytest-cov>=6.0.0
-coverage>=7.0.0
+# Note: pytest-homeassistant-custom-component may not work on Windows due to 'resource' module dependency
+# It works fine on Linux/macOS in CI environments
+pytest-homeassistant-custom-component==0.13.271
 # Note: Camera component testing may be limited due to turbojpeg compatibility issues
 # The camera component will be tested in basic functionality tests instead

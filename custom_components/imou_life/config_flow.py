@@ -20,7 +20,6 @@ from .const import (
     CONF_ENABLE_DISCOVER,
     DEFAULT_API_URL,
     DEFAULT_SCAN_INTERVAL,
-    DOMAIN,
     OPTION_API_TIMEOUT,
     OPTION_CALLBACK_URL,
     OPTION_CAMERA_WAIT_BEFORE_DOWNLOAD,
@@ -31,7 +30,7 @@ from .const import (
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 
-class ImouFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
+class ImouFlowHandler(config_entries.ConfigFlow):
     """Config flow for imou."""
 
     VERSION = 3
@@ -65,7 +64,7 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             self._api_client.set_base_url(user_input[CONF_API_URL])
             self._discover_service = ImouDiscoverService(self._api_client)
             valid = False
-            # check if the provided credentails are working
+            # check if the provided credentials are working
             try:
                 await self._api_client.async_connect()
                 valid = True
@@ -155,7 +154,7 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             # create an imou device instance
             device = ImouDevice(self._api_client, user_input[CONF_DEVICE_ID])
             valid = False
-            # check if the provided credentails are working
+            # check if the provided credentials are working
             try:
                 await device.async_initialize()
                 valid = True
@@ -206,6 +205,7 @@ class ImouOptionsFlowHandler(config_entries.OptionsFlow):
 
     @property
     def config_entry(self):
+        """Return the config entry."""
         return self.hass.config_entries.async_get_entry(self.handler)
 
     async def async_step_init(self, user_input=None):  # pylint: disable=unused-argument
