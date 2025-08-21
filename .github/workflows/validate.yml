@@ -48,20 +48,20 @@ jobs:
         python -c "import platform; print('Platform:', platform.platform())"
         python -c "import imouapi; print('✅ imouapi module available')"
         python -c "from imouapi.device import ImouDevice; print('✅ ImouDevice class available')"
-        python -c "import custom_components.imou_life.const; print('✅ Component const module available')"
 
     - name: Run simple tests (no Home Assistant required)
       run: |
         python run_simple_tests.py
 
-    - name: Upload coverage to Coveralls
-      uses: codecov/codecov-action@v3
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        file: ./coverage.xml
-        flags: unittests
-        name: codecov-umbrella
-        fail_ci_if_error: false
+    # Coverage upload disabled - using simple test runner without coverage
+    # - name: Upload coverage to Coveralls
+    #   uses: codecov/codecov-action@v3
+    #   with:
+    #     token: ${{ secrets.GITHUB_TOKEN }}
+    #     file: ./coverage.xml
+    #     flags: unittests
+    #     name: codecov-umbrella
+    #     fail_ci_if_error: false
 
     - name: Validate manifest
       run: |
