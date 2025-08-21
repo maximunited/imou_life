@@ -10,5 +10,5 @@ services:
       - PYTHONPATH=/app
     command: >
       sh -c "
-        python run_simple_tests.py
+        python run_docker_tests.py
       "

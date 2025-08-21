@@ -32,4 +32,4 @@ RUN pip install -e .
 ENV PYTHONPATH=/app
 
 # Default command to run tests
-CMD ["python", "run_simple_tests.py"]
+CMD ["python", "run_docker_tests.py"]
