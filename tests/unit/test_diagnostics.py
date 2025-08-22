@@ -67,7 +67,8 @@ class TestDiagnostics:
         with pytest.raises(KeyError):
             await async_get_config_entry_diagnostics(mock_hass, mock_config_entry)
 
-    def test_diagnostics_structure(
+    @pytest.mark.asyncio
+    async def test_diagnostics_structure(
         self, mock_hass, mock_config_entry, mock_coordinator
     ):
         """Test diagnostics data structure."""
@@ -79,7 +80,7 @@ class TestDiagnostics:
             "device_type": "camera",
         }
 
-        result = async_get_config_entry_diagnostics(mock_hass, mock_config_entry)
+        result = await async_get_config_entry_diagnostics(mock_hass, mock_config_entry)
 
         # Check required keys exist
         required_keys = ["entry", "device_info"]

@@ -40,9 +40,12 @@ class TestImouSelect:
     @pytest.fixture
     def select(self, mock_coordinator, mock_sensor_instance):
         """Create a select instance."""
-        return ImouSelect(
+        select = ImouSelect(
             mock_coordinator, MOCK_CONFIG_ENTRY, mock_sensor_instance, "select.{}"
         )
+        # Set the hass attribute for testing
+        select.hass = mock_coordinator.hass
+        return select
 
     def test_select_name(self, select):
         """Test select name property."""

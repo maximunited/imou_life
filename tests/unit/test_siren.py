@@ -41,9 +41,12 @@ class TestImouSiren:
     @pytest.fixture
     def siren(self, mock_coordinator, mock_sensor_instance):
         """Create a siren instance."""
-        return ImouSiren(
+        siren = ImouSiren(
             mock_coordinator, MOCK_CONFIG_ENTRY, mock_sensor_instance, "siren.{}"
         )
+        # Set the hass attribute for testing
+        siren.hass = mock_coordinator.hass
+        return siren
 
     def test_siren_name(self, siren):
         """Test siren name property."""
