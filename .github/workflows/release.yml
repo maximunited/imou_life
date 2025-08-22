@@ -20,7 +20,7 @@ jobs:
       run: |
         name=$(find custom_components/ -type d -maxdepth 1 | tail -n 1 | cut -d "/" -f2)
         echo "name: $name"
-        echo "::set-output name=name::$name"
+        echo "name=$name" >> $GITHUB_OUTPUT
 
     - name: Update manifest version
       id: version
@@ -35,6 +35,7 @@ jobs:
 
         # Display the updated manifest
         cat custom_components/imou_life/manifest.json
+        echo "version=$version" >> $GITHUB_OUTPUT
         echo "::set-output name=version::$version"
 
     - name: Create zip file for the integration
@@ -63,8 +64,11 @@ jobs:
           - Configuration via UI with device discovery
           - Real-time status updates and control
 
+          ### Changes
+          ${{ steps.changelog_reader.outputs.changes }}
+
           ### Installation
-          1. Download the `imou_life.zip` file from this release
+          1. Download the `${{ steps.information.outputs.name }}.zip` file from this release
           2. Extract to your Home Assistant `custom_components` directory
           3. Restart Home Assistant
           4. Add the integration via Settings > Devices & Services
@@ -74,6 +78,6 @@ jobs:
           - imouapi==1.0.15
 
         files: |
-          imou_life.zip
-        draft: false
+          ${{ steps.information.outputs.name }}.zip
+        draft: true
         prerelease: false

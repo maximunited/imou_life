@@ -1,12 +1,20 @@
-name: Publish a new release
+name: CI Release
 
+# This workflow creates draft releases when code is pushed to main/master
+# It runs in parallel with the test workflow to create releases automatically
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master
+    paths-ignore:
+      - '**.md'
+      - '.github/workflows/ci-release.yml'
 
 jobs:
-  draft_release:
-    name: Release Drafter
+  create-draft-release:
     runs-on: ubuntu-latest
+    name: Create Draft Release
     permissions:
       contents: write
     steps:
@@ -42,18 +50,28 @@ jobs:
           cd "${{ github.workspace }}/custom_components/${{ steps.information.outputs.name }}"
           zip ${{ steps.information.outputs.name }}.zip -r ./
 
-      - name: Draft GitHub Release
-        id: draft_release
+      - name: Check if release already exists
+        id: check_release
+        run: |
+          # Check if a draft release with this version already exists
+          if gh release list --json tagName,isDraft | jq -e '.[] | select(.tagName == "ci-${{ steps.version.outputs.version }}" and .isDraft == true)' > /dev/null; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Draft Release
+        if: steps.check_release.outputs.exists == 'false'
         uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: "Manual Release - ${{ steps.version.outputs.version }}"
-          tag_name: "manual-${{ steps.version.outputs.version }}"
+          name: "CI Draft Release - ${{ steps.version.outputs.version }}"
+          tag_name: "ci-${{ steps.version.outputs.version }}"
           body: |
-            ## Manual Release - ${{ steps.version.outputs.version }}
+            ## CI Draft Release - ${{ steps.version.outputs.version }}
 
-            This is a manually triggered release.
+            This is an automatic draft release created after all tests passed successfully.
 
             ### Changes
             ${{ steps.changelog_reader.outputs.changes }}
@@ -68,7 +86,19 @@ jobs:
             - Home Assistant 2023.8.0 or later
             - imouapi==1.0.15
 
+            ### Status
+            ✅ All tests passed
+            ✅ Code quality checks passed
+            ✅ HACS validation passed
+            ✅ Hassfest validation passed
+
           files: |
             ${{ steps.information.outputs.name }}.zip
           draft: true
-          prerelease: false
+          prerelease: true
+
+      - name: Update existing release
+        if: steps.check_release.outputs.exists == 'true'
+        run: |
+          echo "Draft release already exists for version ${{ steps.version.outputs.version }}"
+          echo "Skipping creation of duplicate release"

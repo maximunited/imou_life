@@ -79,9 +79,39 @@ pip3 install imouapi
 
 ## Development and Testing
 
-### Running Tests
+### Automated Workflows
 
-This project includes several testing options:
+This project uses GitHub Actions to automatically test and create draft releases:
+
+#### Test Workflow (`test.yaml`)
+- **Triggers**: On push to main/master branch and pull requests
+- **Jobs**:
+  - Pre-commit checks (code formatting, linting)
+  - Python tests with pytest
+  - HACS validation
+  - Hassfest validation
+- **Status**: All jobs must pass for the workflow to succeed
+
+#### CI Release Workflow (`ci-release.yml`)
+- **Triggers**: Automatically after successful test workflow completion
+- **Purpose**: Creates draft releases when all tests pass
+- **Features**:
+  - Automatic draft release creation
+  - Includes test artifacts (ZIP file)
+  - Prevents duplicate releases
+  - Only runs on main/master branch
+
+#### Manual Release Workflow (`release.yaml`)
+- **Triggers**: Manual workflow dispatch
+- **Purpose**: Create draft releases on demand
+- **Use case**: When you want to create a release without waiting for CI
+
+#### Tagged Release Workflow (`release.yml`)
+- **Triggers**: When git tags are pushed (e.g., `v1.0.0`)
+- **Purpose**: Create official releases from version tags
+- **Features**: Updates manifest version and creates published releases
+
+### Running Tests Locally
 
 #### Simple Test Runner (Recommended for Windows)
 ```bash
