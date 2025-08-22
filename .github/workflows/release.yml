@@ -26,12 +26,12 @@ jobs:
       id: version
       run: |
         # Extract version from git tag (remove 'v' prefix)
-        VERSION=${GITHUB_REF#refs/tags/}
-        VERSION=${VERSION#v}
-        echo "Updating manifest.json version to $VERSION"
+        version=${GITHUB_REF#refs/tags/}
+        version=${version#v}
+        echo "Updating manifest.json version to $version"
 
         # Update version in manifest.json
-        sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"$VERSION\"/" custom_components/imou_life/manifest.json
+        sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"$version\"/" custom_components/imou_life/manifest.json
 
         # Display the updated manifest
         cat custom_components/imou_life/manifest.json
