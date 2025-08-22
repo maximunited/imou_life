@@ -19,6 +19,7 @@ OPTION_CALLBACK_URL = "callback_url"
 OPTION_API_URL = "api_url"
 OPTION_CAMERA_WAIT_BEFORE_DOWNLOAD = "camera_wait_before_download"
 OPTION_WAIT_AFTER_WAKE_UP = "wait_after_wakeup"
+OPTION_SETUP_TIMEOUT = "setup_timeout"
 
 SERVIZE_PTZ_LOCATION = "ptz_location"
 SERVIZE_PTZ_MOVE = "ptz_move"

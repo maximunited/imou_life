@@ -28,6 +28,7 @@ from .const import (
     OPTION_API_URL,
     OPTION_CAMERA_WAIT_BEFORE_DOWNLOAD,
     OPTION_SCAN_INTERVAL,
+    OPTION_SETUP_TIMEOUT,
     OPTION_WAIT_AFTER_WAKE_UP,
     PLATFORMS,
 )
@@ -37,6 +38,9 @@ _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 # Configuration schema - this integration only supports config entries
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
+
+# Setup timeout in seconds
+SETUP_TIMEOUT = 30
 
 
 async def async_setup(hass: HomeAssistant, config: ConfigType):
@@ -87,12 +91,19 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         _LOGGER.debug("Setting wait after wakeup to %f", wait_after_wakeup)
         device.set_wait_after_wakeup(wait_after_wakeup)
 
-    # initialize the device so to discover all the sensors
+    # initialize the device so to discover all the sensors with timeout protection
+    setup_timeout = entry.options.get(OPTION_SETUP_TIMEOUT, SETUP_TIMEOUT)
     try:
-        await device.async_initialize()
+        _LOGGER.debug("Initializing device with timeout %d seconds...", setup_timeout)
+        await asyncio.wait_for(device.async_initialize(), timeout=setup_timeout)
+        _LOGGER.debug("Device initialization completed")
+    except asyncio.TimeoutError:
+        _LOGGER.error("Device initialization timed out after %d seconds", setup_timeout)
+        raise ConfigEntryNotReady("Device initialization timed out")
     except ImouException as exception:
         _LOGGER.error(exception.to_string())
         raise ImouException() from exception
+
     # at this time, all sensors must be disabled (will be enabled individually by async_added_to_hass())
     for sensor_instance in device.get_all_sensors():
         sensor_instance.set_enabled(False)
@@ -101,8 +112,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     coordinator = ImouDataUpdateCoordinator(
         hass, device, entry.options.get(OPTION_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
     )
-    # fetch the data
-    await coordinator.async_refresh()
+
+    # fetch the data with timeout protection
+    try:
+        _LOGGER.debug("Fetching initial data with timeout %d seconds...", setup_timeout)
+        await asyncio.wait_for(coordinator.async_refresh(), timeout=setup_timeout)
+        _LOGGER.debug("Initial data fetch completed")
+    except asyncio.TimeoutError:
+        _LOGGER.error("Initial data fetch timed out after %d seconds", setup_timeout)
+        raise ConfigEntryNotReady("Initial data fetch timed out")
+
     if not coordinator.last_update_success:
         raise ConfigEntryNotReady
 
@@ -112,8 +131,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     # for each enabled platform, forward the configuration entry for its setup
     for platform in PLATFORMS:
         coordinator.platforms.append(platform)
+
+    _LOGGER.debug("Setting up platforms: %s", PLATFORMS)
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     entry.add_update_listener(async_reload_entry)
+    _LOGGER.debug("Integration setup completed successfully")
     return True
 
 

@@ -18,17 +18,48 @@ async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_devices: Callable
 ):
     """Configure platform."""
-    coordinator = hass.data[DOMAIN][entry.entry_id]
-    device = coordinator.device
-    sensors = []
-    for sensor_instance in device.get_sensors_by_platform("switch"):
-        sensor = ImouSwitch(coordinator, entry, sensor_instance, ENTITY_ID_FORMAT)
-        sensors.append(sensor)
-        coordinator.entities.append(sensor)
-        _LOGGER.debug(
-            "[%s] Adding %s", device.get_name(), sensor_instance.get_description()
-        )
-    async_add_devices(sensors)
+    _LOGGER.debug("Setting up switch platform for entry %s", entry.entry_id)
+
+    try:
+        coordinator = hass.data[DOMAIN][entry.entry_id]
+        device = coordinator.device
+        sensors = []
+
+        _LOGGER.debug("Getting switch sensors for device %s", device.get_name())
+        switch_sensors = device.get_sensors_by_platform("switch")
+        _LOGGER.debug("Found %d switch sensors", len(switch_sensors))
+
+        for sensor_instance in switch_sensors:
+            try:
+                sensor = ImouSwitch(
+                    coordinator, entry, sensor_instance, ENTITY_ID_FORMAT
+                )
+                sensors.append(sensor)
+                coordinator.entities.append(sensor)
+                _LOGGER.debug(
+                    "[%s] Adding %s",
+                    device.get_name(),
+                    sensor_instance.get_description(),
+                )
+            except Exception as e:
+                _LOGGER.error(
+                    "Failed to create switch for sensor %s: %s",
+                    sensor_instance.get_description(),
+                    str(e),
+                )
+                continue
+
+        if sensors:
+            _LOGGER.debug("Adding %d switch entities", len(sensors))
+            async_add_devices(sensors)
+        else:
+            _LOGGER.warning("No switch entities to add")
+
+        _LOGGER.debug("Switch platform setup completed successfully")
+
+    except Exception as e:
+        _LOGGER.error("Failed to setup switch platform: %s", str(e))
+        raise
 
 
 class ImouSwitch(ImouEntity, SwitchEntity):
