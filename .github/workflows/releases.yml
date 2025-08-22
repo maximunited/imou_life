@@ -1,0 +1,163 @@
+name: Release Management
+
+on:
+  # Manual trigger for pre-releases
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Release type'
+        required: true
+        default: 'pre-release'
+        type: choice
+        options:
+          - pre-release
+          - release
+          - draft
+      version_override:
+        description: 'Override version (leave empty to use manifest)'
+        required: false
+        type: string
+  # Auto-create drafts on push to master (for CI)
+  push:
+    branches:
+      - master
+      - main
+    paths-ignore:
+      - '**.md'
+      - '**.txt'
+      - 'tests/**'
+      - '.github/**'
+
+jobs:
+  release:
+    name: Release Manager
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      ACTIONS_STEP_DEBUG: false
+      ACTIONS_RUNNER_DEBUG: false
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4.1.1
+
+      - name: Get integration name
+        id: information
+        shell: bash
+        run: |
+          name=$(find custom_components/ -type d -maxdepth 1 | tail -n 1 | cut -d "/" -f2)
+          echo "name: $name"
+          echo "name=$name" >> $GITHUB_OUTPUT
+
+      - name: Get integration version from manifest
+        id: version
+        shell: bash
+        run: |
+          if [ "${{ github.event.inputs.version_override }}" != "" ]; then
+            version="${{ github.event.inputs.version_override }}"
+          else
+            version=$(jq -r '.version' custom_components/${{ steps.information.outputs.name }}/manifest.json)
+          fi
+          echo "version: $version"
+          echo "version=$version" >> $GITHUB_OUTPUT
+
+      - name: Get Changelog Entry
+        id: changelog_reader
+        uses: mindsers/changelog-reader-action@v2
+        with:
+          validation_depth: 10
+          version: ${{ steps.version.outputs.version }}
+          path: ./CHANGELOG.md
+
+      - name: Create zip file for the integration
+        run: |
+          cd "${{ github.workspace }}/custom_components/${{ steps.information.outputs.name }}"
+          zip ${{ steps.information.outputs.name }}.zip -r ./
+          mv ${{ steps.information.outputs.name }}.zip "${{ github.workspace }}/"
+          ls -la "${{ github.workspace }}/"
+
+      - name: Determine release configuration
+        id: config
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            # Manual trigger
+            case "${{ github.event.inputs.release_type }}" in
+              "pre-release")
+                echo "draft=false" >> $GITHUB_OUTPUT
+                echo "prerelease=true" >> $GITHUB_OUTPUT
+                echo "tag_prefix=v" >> $GITHUB_OUTPUT
+                echo "name_prefix=Pre-release" >> $GITHUB_OUTPUT
+                ;;
+              "release")
+                echo "draft=false" >> $GITHUB_OUTPUT
+                echo "prerelease=false" >> $GITHUB_OUTPUT
+                echo "tag_prefix=v" >> $GITHUB_OUTPUT
+                echo "name_prefix=Release" >> $GITHUB_OUTPUT
+                ;;
+              "draft")
+                echo "draft=true" >> $GITHUB_OUTPUT
+                echo "prerelease=false" >> $GITHUB_OUTPUT
+                echo "tag_prefix=v" >> $GITHUB_OUTPUT
+                echo "name_prefix=Draft Release" >> $GITHUB_OUTPUT
+                ;;
+            esac
+          else
+            # Auto-trigger on push (CI mode)
+            echo "draft=true" >> $GITHUB_OUTPUT
+            echo "prerelease=true" >> $GITHUB_OUTPUT
+            echo "tag_prefix=ci-v" >> $GITHUB_OUTPUT
+            echo "name_prefix=CI Draft" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check if release already exists
+        id: check_release
+        if: steps.config.outputs.draft == 'true'
+        run: |
+          if gh release list --json tagName,isDraft | jq -e '.[] | select(.tagName == "${{ steps.config.outputs.tag_prefix }}${{ steps.version.outputs.version }}" and .isDraft == true)' > /dev/null; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create/Update GitHub Release
+        if: steps.config.outputs.exists != 'true'
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          name: "${{ steps.config.outputs.name_prefix }} - ${{ steps.version.outputs.version }}"
+          tag_name: "${{ steps.config.outputs.tag_prefix }}${{ steps.version.outputs.version }}"
+          body: |
+            ## ${{ steps.config.outputs.name_prefix }} - ${{ steps.version.outputs.version }}
+
+            ${{ steps.config.outputs.draft == 'true' && 'This is an automatic draft release created after all tests passed successfully.' || 'This is a manually created release.' }}
+
+            ### Changes
+            ${{ steps.changelog_reader.outputs.changes }}
+
+            ### Installation
+            1. Download the `${{ steps.information.outputs.name }}.zip` file from this release
+            2. Extract to your Home Assistant `custom_components` directory
+            3. Restart Home Assistant
+            4. Add the integration via Settings > Devices & Services
+
+            ### Requirements
+            - Home Assistant 2023.8.0 or later
+            - imouapi==1.0.15
+
+            ${{ steps.config.outputs.draft == 'true' && '### Status
+            ✅ All tests passed
+            ✅ Code quality checks passed
+            ✅ HACS validation passed
+            ✅ Hassfest validation passed' || '' }}
+
+          files: |
+            ${{ github.workspace }}/${{ steps.information.outputs.name }}.zip
+          draft: ${{ steps.config.outputs.draft }}
+          prerelease: ${{ steps.config.outputs.prerelease }}
+
+      - name: Skip duplicate release
+        if: steps.config.outputs.exists == 'true'
+        run: |
+          echo "Release already exists for version ${{ steps.version.outputs.version }}"
+          echo "Skipping creation of duplicate release"
