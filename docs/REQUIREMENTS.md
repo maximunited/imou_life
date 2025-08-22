@@ -40,12 +40,12 @@ This document outlines all the dependencies required for the Imou Life integrati
 
 ### For Development
 ```bash
-pip install -r requirements_dev.txt
+        pip install -r config/requirements_dev.txt
 ```
 
 ### For Testing
 ```bash
-pip install -r requirements_test.txt
+        pip install -r config/requirements_test.txt
 ```
 
 ### For CI/CD
@@ -80,7 +80,7 @@ Due to compatibility issues with the `turbojpeg` package across different Python
 ### Camera Component Issues
 If you encounter issues with camera component testing:
 
-1. **Use the test runner script**: `python run_tests.py`
+1. **Use the test runner script**: `python tools/validation/run_tests.py`
 2. **Focus on basic tests**: The core functionality tests should work
 3. **Check CI logs**: Full tests run successfully on Linux in GitHub Actions
 
@@ -88,7 +88,7 @@ If you encounter issues with camera component testing:
 If you get import errors:
 
 1. **Ensure virtual environment is activated**
-2. **Install requirements**: `pip install -r requirements_dev.txt`
+2. **Install requirements**: `pip install -r config/requirements_dev.txt`
 3. **Check Python version**: Use Python 3.9+ (3.13 recommended)
 
 ### Platform-Specific Testing

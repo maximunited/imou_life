@@ -26,10 +26,10 @@ tests/
    ```bash
    # Windows
    .\tools\scripts\activate_venv.bat
-   
+
    # PowerShell
    .\tools\scripts\activate_venv.ps1
-   
+
    # Linux/macOS
    source venv/bin/activate
    ```
@@ -161,7 +161,7 @@ Coverage settings are configured in `config/.coveragerc`:
 ```ini
 [run]
 source = custom_components/imou_life
-omit = 
+omit =
     */tests/*
     */__pycache__/*
     */venv/*
@@ -253,10 +253,10 @@ def test_function_name():
     """Brief description of what the test verifies."""
     # Arrange - Set up test data
     test_data = "test_value"
-    
+
     # Act - Execute the function being tested
     result = function_under_test(test_data)
-    
+
     # Assert - Verify the expected outcome
     assert result == "expected_value"
 ```
@@ -272,7 +272,7 @@ def test_with_mock():
     """Test using mocked dependencies."""
     mock_api = Mock()
     mock_api.get_data.return_value = {"key": "value"}
-    
+
     with patch('module.api_client', mock_api):
         result = function_under_test()
         assert result == {"key": "value"}

@@ -43,7 +43,7 @@ source venv/bin/activate
 ### 4. Install Dependencies
 
 ```bash
-pip install -r requirements_dev.txt
+        pip install -r config/requirements_dev.txt
 pip install black flake8 isort codespell pre-commit
 ```
 
@@ -71,7 +71,7 @@ validate_setup.bat
 
 **Linux/macOS:**
 ```bash
-python validate_setup.py
+        python tools/validation/validate_setup.py
 ```
 
 ### What Validation Checks
@@ -98,7 +98,7 @@ python validate_setup.py
 
 #### Option 1: Test Runner Script (Recommended for Windows)
 ```bash
-python run_tests.py
+        python tools/validation/run_tests.py
 ```
 
 This script will:
@@ -146,7 +146,7 @@ isort custom_components/imou_life/
 
 If you encounter issues with pytest on Windows:
 
-1. **Use the test runner script**: `python run_tests.py`
+1. **Use the test runner script**: `python tools/validation/run_tests.py`
 2. **Focus on basic tests**: The core functionality tests should work
 3. **CI/CD**: Tests run successfully on Linux in GitHub Actions
 
@@ -155,7 +155,7 @@ If you encounter issues with pytest on Windows:
 If you get import errors:
 
 1. **Ensure virtual environment is activated**
-2. **Install requirements**: `pip install -r requirements_dev.txt`
+2. **Install requirements**: `pip install -r config/requirements_dev.txt`
 3. **Check Python version**: Use Python 3.9+ (3.13 recommended)
 
 ### Validation Failures
@@ -172,8 +172,8 @@ If validation fails:
 1. **Fork the repository**
 2. **Create a feature branch**
 3. **Make your changes**
-4. **Run validation**: `python validate_setup.py`
-5. **Run tests**: `python run_tests.py`
+4. **Run validation**: `python tools/validation/validate_setup.py`
+5. **Run tests**: `python tools/validation/run_tests.py`
 6. **Run pre-commit**: `pre-commit run --all-files`
 7. **Submit a pull request**
 
@@ -192,9 +192,9 @@ All checks must pass before merging.
 
 ### Before Every Push
 
-1. **Run validation**: `python validate_setup.py`
+1. **Run validation**: `python tools/validation/validate_setup.py`
 2. **Fix any issues** found
-3. **Run tests**: `python run_tests.py`
+3. **Run tests**: `python tools/validation/run_tests.py`
 4. **Run pre-commit**: `pre-commit run --all-files`
 5. **Commit changes**
 6. **Push to remote**

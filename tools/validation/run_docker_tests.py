@@ -4,8 +4,8 @@ This version focuses on testing what's available without Home Assistant.
 """
 
 import json
-import sys
 from pathlib import Path
+import sys
 
 
 def test_manifest():

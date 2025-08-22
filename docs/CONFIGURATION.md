@@ -29,7 +29,7 @@ This guide covers the configuration files and settings for the Imou Life project
 # config/.coveragerc
 [run]
 source = custom_components/imou_life
-omit = 
+omit =
     */tests/*
     */__pycache__/*
     */venv/*
@@ -94,7 +94,7 @@ testpaths = tests
 python_files = test_*.py
 python_classes = Test*
 python_functions = test_*
-addopts = 
+addopts =
     --strict-markers
     --strict-config
     --verbose

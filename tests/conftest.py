@@ -2,16 +2,19 @@
 
 from unittest.mock import MagicMock, patch
 
-import pytest
 from imouapi.device import ImouDevice
 from imouapi.device_entity import ImouBinarySensor, ImouSensor, ImouSwitch
 from imouapi.exceptions import ImouException
+import pytest
 
-# pytest_plugins = "pytest_homeassistant_custom_component"  # Removed due to Windows compatibility issues
+# pytest_plugins = "pytest_homeassistant_custom_component"
+# Removed due to Windows compatibility issues
 
 
-# This fixture is used to prevent HomeAssistant from attempting to create and dismiss persistent
-# notifications. These calls would fail without this fixture since the persistent_notification
+# This fixture is used to prevent HomeAssistant from attempting to create
+# and dismiss persistent
+# notifications. These calls would fail without this fixture since the
+# persistent_notification
 # integration is never loaded during a test.
 @pytest.fixture(name="skip_notifications", autouse=True)
 def skip_notifications_fixture():
@@ -74,7 +77,8 @@ def error_get_data_fixture():
 
 @pytest.fixture(autouse=True)
 def auto_enable_custom_integrations():
-    """Auto enable custom integration otherwise will result in IntegrationNotFound exception."""
+    """Auto enable custom integration otherwise will result in
+    IntegrationNotFound exception."""
     yield
 
 

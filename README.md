@@ -53,10 +53,10 @@ imou_life/
    ```bash
    # Windows
    .\tools\scripts\activate_venv.bat
-   
+
    # PowerShell
    .\tools\scripts\activate_venv.ps1
-   
+
    # Linux/macOS
    source venv/bin/activate
    ```

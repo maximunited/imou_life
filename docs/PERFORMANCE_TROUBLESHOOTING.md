@@ -77,10 +77,10 @@ Use the provided test scripts to diagnose performance:
 
 ```bash
 # Test setup performance simulation
-python test_setup_performance.py
+python tools/validation/test_setup_performance.py
 
 # Validate your configuration
-python validate_imou_setup.py
+python tools/validation/validate_imou_setup.py
 ```
 
 ## Common Performance Bottlenecks
@@ -184,8 +184,8 @@ If you continue to experience issues:
 
 ## Related Files
 
-- `test_setup_performance.py` - Performance testing script
-- `validate_imou_setup.py` - Configuration validation script
+- `tools/validation/test_setup_performance.py` - Performance testing script
+- `tools/validation/validate_imou_setup.py` - Configuration validation script
 - `custom_components/imou_life/__init__.py` - Main integration file
 - `custom_components/imou_life/switch.py` - Switch platform implementation
 

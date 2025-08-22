@@ -1,7 +1,7 @@
 """Siren platform for Imou."""
 
-import logging
 from collections.abc import Callable
+import logging
 
 from homeassistant.components.siren import SirenEntity, SirenEntityFeature
 from homeassistant.config_entries import ConfigEntry
@@ -47,7 +47,8 @@ class ImouSiren(ImouEntity, SirenEntity):
     async def async_turn_on(self, **kwargs):  # pylint: disable=unused-argument
         """Turn on the siren."""
         await self.sensor_instance.async_turn_on()
-        # save the new state to the state machine (otherwise will be reset by HA and set to the correct value only upon the next update)
+        # save the new state to the state machine (otherwise will be reset by HA
+        # and set to the correct value only upon the next update)
         self.async_write_ha_state()
         _LOGGER.debug(
             "[%s] Turned %s ON",
@@ -58,7 +59,8 @@ class ImouSiren(ImouEntity, SirenEntity):
     async def async_turn_off(self, **kwargs):  # pylint: disable=unused-argument
         """Turn off the siren."""
         await self.sensor_instance.async_turn_off()
-        # save the new state to the state machine (otherwise will be reset by HA and set to the correct value only upon the next update)
+        # save the new state to the state machine (otherwise will be reset by HA
+        # and set to the correct value only upon the next update)
         self.async_write_ha_state()
         _LOGGER.debug(
             "[%s] Turned %s OFF",
@@ -69,7 +71,8 @@ class ImouSiren(ImouEntity, SirenEntity):
     async def async_toggle(self, **kwargs):  # pylint: disable=unused-argument
         """Toggle the siren."""
         await self.sensor_instance.async_toggle()
-        # save the new state to the state machine (otherwise will be reset by HA and set to the correct value only upon the next update)
+        # save the new state to the state machine (otherwise will be reset by HA
+        # and set to the correct value only upon the next update)
         self.async_write_ha_state()
         _LOGGER.debug(
             "[%s] Toggled",

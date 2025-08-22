@@ -93,7 +93,7 @@ Next steps:
 ### Alias not found
 Make sure you've set up the alias:
 ```bash
-git config alias.bump "!powershell -ExecutionPolicy Bypass -File git-bump.ps1"
+git config alias.bump "!powershell -ExecutionPolicy Bypass -File tools/scripts/git-bump.ps1"
 ```
 
 ### Permission denied
@@ -109,7 +109,7 @@ The script automatically handles existing tags by deleting and recreating them.
 
 If you prefer not to use the alias, you can run the script directly:
 ```bash
-powershell -ExecutionPolicy Bypass -File git-bump.ps1 1.0.24
+powershell -ExecutionPolicy Bypass -File tools/scripts/git-bump.ps1 1.0.24
 ```
 
 ## Next Steps

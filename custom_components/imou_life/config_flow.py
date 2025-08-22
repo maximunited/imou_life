@@ -2,13 +2,13 @@
 
 import logging
 
-import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 from imouapi.api import ImouAPIClient
 from imouapi.device import ImouDevice, ImouDiscoverService
 from imouapi.exceptions import ImouException
+import voluptuous as vol
 
 from .const import (
     CONF_API_URL,
@@ -76,7 +76,8 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
                 self._api_url = user_input[CONF_API_URL]
                 self._app_id = user_input[CONF_APP_ID]
                 self._app_secret = user_input[CONF_APP_SECRET]
-                # if discover is requested run the discover step, otherwise the manual step
+                # if discover is requested run the discover step,
+                # otherwise the manual step
                 if user_input[CONF_ENABLE_DISCOVER]:
                     return await self.async_step_discover()
                 else:

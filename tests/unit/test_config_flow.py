@@ -2,8 +2,17 @@
 
 from unittest.mock import patch
 
-import pytest
 from homeassistant import config_entries, data_entry_flow
+import pytest
+from tests.fixtures.const import (
+    CONF_DISCOVERED_DEVICE,
+    MOCK_CONFIG_ENTRY,
+    MOCK_CREATE_ENTRY_FROM_DISCOVER,
+    MOCK_CREATE_ENTRY_FROM_MANUAL,
+    MOCK_LOGIN_WITH_DISCOVER,
+    MOCK_LOGIN_WITHOUT_DISCOVER,
+)
+from tests.fixtures.mocks import MockConfigEntry
 
 from custom_components.imou_life.const import (
     CONF_API_URL,
@@ -15,16 +24,6 @@ from custom_components.imou_life.const import (
     OPTION_CALLBACK_URL,
     OPTION_SCAN_INTERVAL,
 )
-
-from tests.fixtures.const import (
-    CONF_DISCOVERED_DEVICE,
-    MOCK_CONFIG_ENTRY,
-    MOCK_CREATE_ENTRY_FROM_DISCOVER,
-    MOCK_CREATE_ENTRY_FROM_MANUAL,
-    MOCK_LOGIN_WITH_DISCOVER,
-    MOCK_LOGIN_WITHOUT_DISCOVER,
-)
-from tests.fixtures.mocks import MockConfigEntry
 
 
 # This fixture bypasses the actual setup of the integration

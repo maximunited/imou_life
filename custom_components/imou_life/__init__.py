@@ -104,7 +104,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         _LOGGER.error(exception.to_string())
         raise ImouException() from exception
 
-    # at this time, all sensors must be disabled (will be enabled individually by async_added_to_hass())
+    # at this time, all sensors must be disabled
+    # (will be enabled individually by async_added_to_hass())
     for sensor_instance in device.get_all_sensors():
         sensor_instance.set_enabled(False)
 

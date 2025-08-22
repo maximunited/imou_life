@@ -91,7 +91,7 @@ jobs:
         with:
           validation_depth: 10
           version: ${{ steps.version.outputs.version }}
-          path: ./CHANGELOG.md
+          path: ./docs/CHANGELOG.md
 
       - name: Create zip file for the integration
         run: |

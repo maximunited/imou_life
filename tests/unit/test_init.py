@@ -1,7 +1,9 @@
 """Test imou setup process."""
 
-import pytest
 from homeassistant.exceptions import ConfigEntryNotReady
+import pytest
+from tests.fixtures.const import MOCK_CONFIG_ENTRY
+from tests.fixtures.mocks import MockConfigEntry
 
 from custom_components.imou_life import (
     async_reload_entry,
@@ -10,9 +12,6 @@ from custom_components.imou_life import (
 )
 from custom_components.imou_life.const import DOMAIN
 from custom_components.imou_life.coordinator import ImouDataUpdateCoordinator
-
-from tests.fixtures.const import MOCK_CONFIG_ENTRY
-from tests.fixtures.mocks import MockConfigEntry
 
 
 @pytest.mark.asyncio
@@ -49,6 +48,7 @@ async def test_setup_entry_exception(hass, api_invalid_data):
         domain=DOMAIN, data=MOCK_CONFIG_ENTRY, entry_id="test"
     )
 
-    # In this case we are testing the condition where async_setup_entry raises ConfigEntryNotReady
+    # In this case we are testing the condition where async_setup_entry
+    # raises ConfigEntryNotReady
     with pytest.raises(ConfigEntryNotReady):
         assert await async_setup_entry(hass, config_entry)

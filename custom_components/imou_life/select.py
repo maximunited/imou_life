@@ -1,7 +1,7 @@
 """Switch platform for Imou."""
 
-import logging
 from collections.abc import Callable
+import logging
 
 from homeassistant.components.select import ENTITY_ID_FORMAT, SelectEntity
 from homeassistant.config_entries import ConfigEntry
@@ -48,7 +48,8 @@ class ImouSelect(ImouEntity, SelectEntity):
         """Se the option."""
         # control the switch
         await self.sensor_instance.async_select_option(option)
-        # save the new state to the state machine (otherwise will be reset by HA and set to the correct value only upon the next update)
+        # save the new state to the state machine (otherwise will be reset by HA
+        # and set to the correct value only upon the next update)
         self.async_write_ha_state()
         _LOGGER.debug(
             "[%s] Set %s to %s",

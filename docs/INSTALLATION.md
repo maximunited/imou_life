@@ -122,13 +122,13 @@ run_tests.bat
 .\run_tests.ps1
 
 # Direct Python execution
-python run_simple_tests.py
+python tools/validation/run_simple_tests.py
 ```
 
 #### Advanced Test Runner (Linux/macOS)
 ```bash
 # Install test dependencies
-pip install -r requirements_test.txt
+pip install -r config/requirements_test.txt
 
 # Run tests with coverage
 python run_tests_with_coverage.py
@@ -145,7 +145,7 @@ python -m pytest tests/ -v --cov=custom_components/imou_life
 ### Development Setup
 ```bash
 # Install development dependencies
-pip install -r requirements_dev.txt
+pip install -r config/requirements_dev.txt
 
 # Install pre-commit hooks
 pre-commit install
