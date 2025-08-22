@@ -9,7 +9,6 @@ on:
       - master
     paths-ignore:
       - '**.md'
-      - '.github/workflows/ci-release.yml'
 
 jobs:
   create-draft-release:
