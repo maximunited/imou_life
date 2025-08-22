@@ -1,4 +1,4 @@
-"""Xonfig flow for Imou."""
+"""Config flow for Imou."""
 
 import logging
 
@@ -30,11 +30,10 @@ from .const import (
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 
-class ImouFlowHandler(config_entries.ConfigFlow):
+class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
     """Config flow for imou."""
 
     VERSION = 3
-    CONNECTION_CLASS = config_entries.CONN_CLASS_CLOUD_POLL
 
     def __init__(self):
         """Initialize."""

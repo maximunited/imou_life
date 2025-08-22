@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.22] (2025-01-27)
+### Fixed
+- Fixed "Invalid handler specified" error when adding integration to Home Assistant
+- Removed deprecated CONNECTION_CLASS from config flow
+- Added proper domain specification to config flow handler
+- Fixed typo in config flow docstring
+- Added missing requirements.txt file
+
 ## [1.0.21] (2025-01-XX)
 ### Added
 - Unified release workflow system with multiple release modes

@@ -9,5 +9,5 @@
   "issue_tracker": "https://github.com/maximunited/imou_life/issues",
   "quality_scale": "platinum",
   "requirements": ["imouapi==1.0.15"],
-  "version": "1.0.21"
+  "version": "1.0.22"
 }
