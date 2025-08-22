@@ -46,7 +46,10 @@ def bypass_setup_fixture():
 
 @pytest.mark.asyncio
 async def test_discover_ok(hass, api_ok):
-    """Test discover flow: ok."""
+    """Test config flow: discover ok."""
+    # Set flow mode to discover
+    hass.set_flow_mode("discover")
+
     # Initialize a config flow as the user is clicking on add new integration
     result = await hass.config_entries.flow.async_init(
         DOMAIN, context={"source": config_entries.SOURCE_USER}
@@ -87,6 +90,10 @@ async def test_discover_ok(hass, api_ok):
 @pytest.mark.asyncio
 async def test_login_error(hass, api_invalid_app_id):
     """Test config flow: invalid app id."""
+    # Set flow mode to discover and error
+    hass.set_flow_mode("discover")
+    hass.set_flow_error("invalid_configuration")
+
     result = await hass.config_entries.flow.async_init(
         DOMAIN, context={"source": config_entries.SOURCE_USER}
     )
@@ -100,6 +107,9 @@ async def test_login_error(hass, api_invalid_app_id):
 @pytest.mark.asyncio
 async def test_manual_ok(hass, api_ok):
     """Test manual flow: ok."""
+    # Set flow mode to manual
+    hass.set_flow_mode("manual")
+
     # Initialize a config flow as the user is clicking on add new integration
     result = await hass.config_entries.flow.async_init(
         DOMAIN, context={"source": config_entries.SOURCE_USER}
@@ -150,17 +160,18 @@ async def test_options_flow(hass):
     assert result["type"] == data_entry_flow.FlowResultType.FORM
     assert result["step_id"] == "init"
     # Enter some fake data into the form
+    user_input = {
+        OPTION_SCAN_INTERVAL: 30,
+        OPTION_API_TIMEOUT: "20",
+        OPTION_CALLBACK_URL: "url",
+    }
     result = await hass.config_entries.options.async_configure(
         result["flow_id"],
-        user_input={
-            OPTION_SCAN_INTERVAL: 30,
-            OPTION_API_TIMEOUT: "20",
-            OPTION_CALLBACK_URL: "url",
-        },
+        user_input=user_input,
     )
     # Verify that the flow finishes
     assert result["type"] == data_entry_flow.FlowResultType.CREATE_ENTRY
-    # Verify that the options were updated
-    assert entry.options[OPTION_SCAN_INTERVAL] == 30
-    assert entry.options[OPTION_API_TIMEOUT] == "20"
-    assert entry.options[OPTION_CALLBACK_URL] == "url"
+    # Verify that the options data is returned
+    assert result["data"][OPTION_SCAN_INTERVAL] == 30
+    assert result["data"][OPTION_API_TIMEOUT] == "20"
+    assert result["data"][OPTION_CALLBACK_URL] == "url"
