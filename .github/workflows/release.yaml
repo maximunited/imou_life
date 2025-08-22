@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+
     env:
       ACTIONS_STEP_DEBUG: false
       ACTIONS_RUNNER_DEBUG: false
