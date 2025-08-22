@@ -36,7 +36,6 @@ jobs:
         # Display the updated manifest
         cat custom_components/imou_life/manifest.json
         echo "version=$version" >> $GITHUB_OUTPUT
-        echo "::set-output name=version::$version"
 
     - name: Create zip file for the integration
       run: |
