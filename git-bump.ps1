@@ -4,7 +4,7 @@
     Git alias script for automatic version bumping and tagging
 .DESCRIPTION
     This script is designed to be used as a Git alias: git bump [version]
-    It automatically updates manifest.json, commits, creates tags, and pushes everything.
+    It automatically updates manifest.json, generates changelog entries, commits, creates tags, and pushes everything.
     If no version is supplied, it auto-increments the patch version.
 #>
 
@@ -54,6 +54,50 @@ function Get-NextVersion {
     return "$($parsed.Major).$($parsed.Minor).$($parsed.Patch + 1)"
 }
 
+# Function to generate changelog entry
+function Add-ChangelogEntry {
+    param(
+        [string]$Version,
+        [string]$Message = ""
+    )
+    
+    $changelogPath = "CHANGELOG.md"
+    if (-not (Test-Path $changelogPath)) {
+        Write-Host "Warning: CHANGELOG.md not found, creating new file..." -ForegroundColor Yellow
+        $changelogContent = "# Changelog`n`n## [$Version] ($(Get-Date -Format 'yyyy-MM-dd'))`n### Added`n- Version bump to $Version`n"
+        Set-Content $changelogPath $changelogContent
+        return
+    }
+    
+    # Read existing changelog
+    $changelogContent = Get-Content $changelogPath -Raw
+    
+    # Check if version already exists
+    if ($changelogContent -match "## \[$Version\]") {
+        Write-Host "Warning: Changelog entry for version $Version already exists" -ForegroundColor Yellow
+        return
+    }
+    
+    # Create new entry
+    $newEntry = "`n## [$Version] ($(Get-Date -Format 'yyyy-MM-dd'))`n"
+    if ($Message) {
+        $newEntry += "### Added`n- $Message`n"
+    } else {
+        $newEntry += "### Changed`n- Version bump to $Version`n"
+    }
+    
+    # Insert after the first line (after "# Changelog")
+    $lines = $changelogContent -split "`n"
+    $newLines = @()
+    $newLines += $lines[0]  # "# Changelog"
+    $newLines += $newEntry  # New version entry
+    $newLines += $lines[1..($lines.Length-1)]  # Rest of existing content
+    
+    # Write back to file
+    $newLines -join "`n" | Set-Content $changelogPath -NoNewline
+    Write-Host "✅ Added changelog entry for version $Version" -ForegroundColor Green
+}
+
 Write-Host "🚀 Git Bump - Automatic Version Management" -ForegroundColor Cyan
 Write-Host "=============================================" -ForegroundColor Cyan
 
@@ -61,6 +105,18 @@ Write-Host "=============================================" -ForegroundColor Cyan
 if (-not (Test-Path ".git")) {
     Write-Host "Error: Not in a git repository!" -ForegroundColor Red
     exit 1
+}
+
+# Check if pre-commit hooks exist and should be run
+$preCommitHook = ".git/hooks/pre-commit"
+$shouldRunPreCommit = $false
+if (Test-Path $preCommitHook) {
+    $hookContent = Get-Content $preCommitHook -Raw
+    if ($hookContent -notmatch "pre-commit.com") {
+        # This is a custom pre-commit hook, not the standard one
+        $shouldRunPreCommit = $true
+        Write-Host "🔍 Custom pre-commit hook detected" -ForegroundColor Yellow
+    }
 }
 
 # Read current manifest
@@ -126,9 +182,26 @@ Write-Host "Updating manifest.json..." -ForegroundColor Green
 $manifest.version = $newVersion
 $manifest | ConvertTo-Json -Depth 10 | Set-Content $manifestPath
 
-# Stage the change
+# Generate changelog entry
+Write-Host "Generating changelog entry..." -ForegroundColor Green
+Add-ChangelogEntry -Version $newVersion -Message $Message
+
+# Stage all changes
 Write-Host "Staging changes..." -ForegroundColor Green
 git add $manifestPath
+git add "CHANGELOG.md"
+
+# Run pre-commit hooks if they exist
+if ($shouldRunPreCommit) {
+    Write-Host "Running pre-commit hooks..." -ForegroundColor Green
+    $preCommitResult = & $preCommitHook
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "❌ Pre-commit hooks failed!" -ForegroundColor Red
+        Write-Host "Please fix the issues and try again." -ForegroundColor Red
+        exit 1
+    }
+    Write-Host "✅ Pre-commit hooks passed" -ForegroundColor Green
+}
 
 # Commit
 $commitMessage = if ($Message) { "Bump version to $newVersion - $Message" } else { "Bump version to $newVersion" }
@@ -164,6 +237,7 @@ git push origin $tagName
 Write-Host ""
 Write-Host "🎉 Version bump completed successfully!" -ForegroundColor Green
 Write-Host "✅ Version updated to $newVersion" -ForegroundColor Green
+Write-Host "✅ Changelog entry generated" -ForegroundColor Green
 Write-Host "✅ Changes committed and pushed" -ForegroundColor Green
 Write-Host "✅ Tag $tagName created and pushed" -ForegroundColor Green
 Write-Host "✅ GitHub Actions workflow triggered" -ForegroundColor Green
