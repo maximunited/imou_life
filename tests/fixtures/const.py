@@ -1,5 +1,7 @@
 """Constants for imou_life tests."""
 
+from unittest.mock import MagicMock
+
 from custom_components.imou_life.const import (
     CONF_API_URL,
     CONF_APP_ID,
@@ -10,13 +12,18 @@ from custom_components.imou_life.const import (
     CONF_ENABLE_DISCOVER,
 )
 
-MOCK_CONFIG_ENTRY = {
+# Create a mock ConfigEntry object with the required attributes
+mock_config_entry = MagicMock()
+mock_config_entry.entry_id = "test_entry_id"
+mock_config_entry.data = {
     CONF_API_URL: "http://api.url",
     CONF_APP_ID: "app_id",
     CONF_APP_SECRET: "app_secret",
     CONF_DEVICE_NAME: "device_name",
     CONF_DEVICE_ID: "device_id",
 }
+
+MOCK_CONFIG_ENTRY = mock_config_entry
 
 
 MOCK_LOGIN_WITH_DISCOVER = {

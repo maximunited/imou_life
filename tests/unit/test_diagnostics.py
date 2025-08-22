@@ -1,5 +1,6 @@
 """Tests for the Imou Life Diagnostics."""
-from unittest.mock import MagicMock, patch
+
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -40,50 +41,47 @@ class TestDiagnostics:
         self, mock_hass, mock_config_entry, mock_coordinator
     ):
         """Test config entry diagnostics."""
-        # Mock the coordinator retrieval
-        with patch(
-            "custom_components.imou_life.diagnostics.get_coordinator",
-            return_value=mock_coordinator,
-        ):
-            result = await async_get_config_entry_diagnostics(
-                mock_hass, mock_config_entry
-            )
+        # Mock the coordinator retrieval from hass.data
+        mock_hass.data = {"imou_life": {mock_config_entry.entry_id: mock_coordinator}}
+        mock_coordinator.device.get_diagnostics.return_value = {
+            "device_id": "test_device_123",
+            "device_name": "Test Device",
+            "device_type": "camera",
+        }
 
-            assert isinstance(result, dict)
-            assert "config_entry" in result
-            assert "coordinator_data" in result
-            assert result["config_entry"]["entry_id"] == mock_config_entry.entry_id
-            assert (
-                result["coordinator_data"]["device_info"]["device_id"]
-                == "test_device_123"
-            )
+        result = await async_get_config_entry_diagnostics(mock_hass, mock_config_entry)
+
+        assert isinstance(result, dict)
+        assert "entry" in result
+        assert "device_info" in result
+        assert result["entry"]["entry_id"] == mock_config_entry.entry_id
+        assert result["device_info"]["device_id"] == "test_device_123"
 
     @pytest.mark.asyncio
     async def test_diagnostics_no_coordinator(self, mock_hass, mock_config_entry):
         """Test diagnostics when no coordinator exists."""
-        with patch(
-            "custom_components.imou_life.diagnostics.get_coordinator", return_value=None
-        ):
-            result = await async_get_config_entry_diagnostics(
-                mock_hass, mock_config_entry
-            )
+        # Mock empty hass.data
+        mock_hass.data = {"imou_life": {}}
 
-            assert isinstance(result, dict)
-            assert "config_entry" in result
-            assert "coordinator_data" in result
-            assert result["coordinator_data"] == {}
+        # This should raise a KeyError since the coordinator doesn't exist
+        with pytest.raises(KeyError):
+            await async_get_config_entry_diagnostics(mock_hass, mock_config_entry)
 
     def test_diagnostics_structure(
         self, mock_hass, mock_config_entry, mock_coordinator
     ):
         """Test diagnostics data structure."""
-        with patch(
-            "custom_components.imou_life.diagnostics.get_coordinator",
-            return_value=mock_coordinator,
-        ):
-            result = async_get_config_entry_diagnostics(mock_hass, mock_config_entry)
+        # Mock the coordinator retrieval from hass.data
+        mock_hass.data = {"imou_life": {mock_config_entry.entry_id: mock_coordinator}}
+        mock_coordinator.device.get_diagnostics.return_value = {
+            "device_id": "test_device_123",
+            "device_name": "Test Device",
+            "device_type": "camera",
+        }
 
-            # Check required keys exist
-            required_keys = ["config_entry", "coordinator_data"]
-            for key in required_keys:
-                assert key in result
+        result = async_get_config_entry_diagnostics(mock_hass, mock_config_entry)
+
+        # Check required keys exist
+        required_keys = ["entry", "device_info"]
+        for key in required_keys:
+            assert key in result

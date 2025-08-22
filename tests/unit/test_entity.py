@@ -1,5 +1,6 @@
 """Tests for the Imou Life Entity base class."""
-from unittest.mock import MagicMock, patch
+
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
@@ -32,7 +33,7 @@ class TestImouEntity:
         sensor.get_description.return_value = "Test"
         sensor.get_attributes.return_value = {"last_update": "2023-01-01T00:00:00Z"}
         sensor.set_enabled = MagicMock()
-        sensor.async_update = MagicMock()
+        sensor.async_update = AsyncMock()
         return sensor
 
     @pytest.fixture
@@ -89,18 +90,12 @@ class TestImouEntity:
     @pytest.mark.asyncio
     async def test_entity_async_added_to_hass(self, entity):
         """Test entity added to hass."""
-        with patch.object(
-            entity.sensor_instance, "set_enabled"
-        ) as mock_set_enabled, patch.object(
-            entity.sensor_instance, "async_update"
-        ) as mock_update:
-            await entity.async_added_to_hass()
-            mock_set_enabled.assert_called_once_with(True)
-            mock_update.assert_called_once()
+        await entity.async_added_to_hass()
+        entity.sensor_instance.set_enabled.assert_called_once_with(True)
+        entity.sensor_instance.async_update.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_entity_async_will_remove_from_hass(self, entity):
         """Test entity removed from hass."""
-        with patch.object(entity.sensor_instance, "set_enabled") as mock_set_enabled:
-            await entity.async_will_remove_from_hass()
-            mock_set_enabled.assert_called_once_with(False)
+        await entity.async_will_remove_from_hass()
+        entity.sensor_instance.set_enabled.assert_called_once_with(False)

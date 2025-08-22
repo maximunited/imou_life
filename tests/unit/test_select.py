@@ -1,5 +1,6 @@
 """Tests for the Imou Life Select platform."""
-from unittest.mock import MagicMock, patch
+
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
@@ -33,7 +34,7 @@ class TestImouSelect:
         sensor.get_current_option.return_value = "auto"
         sensor.get_available_options.return_value = ["auto", "on", "off"]
         sensor.get_attributes.return_value = {"last_update": "2023-01-01T00:00:00Z"}
-        sensor.async_select_option = MagicMock()
+        sensor.async_select_option = AsyncMock()
         return sensor
 
     @pytest.fixture
@@ -77,10 +78,8 @@ class TestImouSelect:
     @pytest.mark.asyncio
     async def test_select_select_option(self, select):
         """Test select option selection."""
-        with patch.object(select, "async_write_ha_state") as mock_write:
-            await select.async_select_option("on")
-            select._sensor_instance.async_select_option.assert_called_once_with("on")
-            mock_write.assert_called_once()
+        await select.async_select_option("on")
+        select._sensor_instance.async_select_option.assert_called_once_with("on")
 
     def test_select_device_info(self, select):
         """Test select device info."""

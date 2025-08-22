@@ -1,5 +1,6 @@
 """Tests for the Imou Life Camera platform."""
-from unittest.mock import AsyncMock, MagicMock, patch
+
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
@@ -35,6 +36,9 @@ class TestImouCamera:
         sensor.async_get_stream_url = AsyncMock(return_value="rtsp://test.com/stream")
         sensor.set_enabled = MagicMock()
         sensor.async_update = AsyncMock()
+        # Use AsyncMock for async methods
+        sensor.async_service_ptz_location = AsyncMock()
+        sensor.async_service_ptz_move = AsyncMock()
         return sensor
 
     @pytest.fixture
@@ -92,17 +96,15 @@ class TestImouCamera:
     @pytest.mark.asyncio
     async def test_camera_ptz_location_service(self, camera):
         """Test camera PTZ location service."""
-        with patch.object(
-            camera._sensor_instance, "async_service_ptz_location"
-        ) as mock_ptz:
-            await camera.async_service_ptz_location(0.5, -0.3, 0.8)
-            mock_ptz.assert_called_once_with(0.5, -0.3, 0.8)
+        await camera.async_service_ptz_location(0.5, -0.3, 0.8)
+        camera._sensor_instance.async_service_ptz_location.assert_called_once_with(
+            0.5, -0.3, 0.8
+        )
 
     @pytest.mark.asyncio
     async def test_camera_ptz_move_service(self, camera):
         """Test camera PTZ move service."""
-        with patch.object(
-            camera._sensor_instance, "async_service_ptz_move"
-        ) as mock_ptz:
-            await camera.async_service_ptz_move("up", 2000)
-            mock_ptz.assert_called_once_with("up", 2000)
+        await camera.async_service_ptz_move("up", 2000)
+        camera._sensor_instance.async_service_ptz_move.assert_called_once_with(
+            "up", 2000
+        )

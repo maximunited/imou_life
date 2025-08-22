@@ -1,5 +1,6 @@
 """Tests for the Imou Life Button platform."""
-from unittest.mock import MagicMock, patch
+
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
@@ -31,6 +32,8 @@ class TestImouButton:
         sensor.get_name.return_value = "restartDevice"
         sensor.get_description.return_value = "Restart"
         sensor.get_attributes.return_value = {"last_update": "2023-01-01T00:00:00Z"}
+        # Use AsyncMock for async methods
+        sensor.async_press = AsyncMock()
         return sensor
 
     @pytest.fixture
@@ -67,9 +70,8 @@ class TestImouButton:
     @pytest.mark.asyncio
     async def test_button_press(self, button):
         """Test button press functionality."""
-        with patch.object(button.sensor_instance, "async_press") as mock_press:
-            await button.async_press()
-            mock_press.assert_called_once()
+        await button.async_press()
+        button.sensor_instance.async_press.assert_called_once()
 
     def test_button_device_info(self, button):
         """Test button device info."""

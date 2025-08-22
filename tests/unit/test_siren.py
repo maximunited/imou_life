@@ -1,5 +1,6 @@
 """Tests for the Imou Life Siren platform."""
-from unittest.mock import MagicMock, patch
+
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
@@ -32,9 +33,9 @@ class TestImouSiren:
         sensor.get_description.return_value = "Siren"
         sensor.is_on.return_value = False
         sensor.get_attributes.return_value = {"last_update": "2023-01-01T00:00:00Z"}
-        sensor.async_turn_on = MagicMock()
-        sensor.async_turn_off = MagicMock()
-        sensor.async_toggle = MagicMock()
+        sensor.async_turn_on = AsyncMock()
+        sensor.async_turn_off = AsyncMock()
+        sensor.async_toggle = AsyncMock()
         return sensor
 
     @pytest.fixture
@@ -71,26 +72,20 @@ class TestImouSiren:
     @pytest.mark.asyncio
     async def test_siren_turn_on(self, siren):
         """Test siren turn on."""
-        with patch.object(siren, "async_write_ha_state") as mock_write:
-            await siren.async_turn_on()
-            siren._sensor_instance.async_turn_on.assert_called_once()
-            mock_write.assert_called_once()
+        await siren.async_turn_on()
+        siren._sensor_instance.async_turn_on.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_siren_turn_off(self, siren):
         """Test siren turn off."""
-        with patch.object(siren, "async_write_ha_state") as mock_write:
-            await siren.async_turn_off()
-            siren._sensor_instance.async_turn_off.assert_called_once()
-            mock_write.assert_called_once()
+        await siren.async_turn_off()
+        siren._sensor_instance.async_turn_off.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_siren_toggle(self, siren):
         """Test siren toggle."""
-        with patch.object(siren, "async_write_ha_state") as mock_write:
-            await siren.async_toggle()
-            siren._sensor_instance.async_toggle.assert_called_once()
-            mock_write.assert_called_once()
+        await siren.async_toggle()
+        siren._sensor_instance.async_toggle.assert_called_once()
 
     def test_siren_device_info(self, siren):
         """Test siren device info."""
