@@ -15,8 +15,10 @@ jobs:
 
     - name: Create Release Archive
       run: |
-        # Create a zip file with the custom_components directory
-        zip -r imou_life.zip custom_components/
+        # Create a zip file with the correct structure
+        # Change to custom_components directory and zip its contents directly
+        cd custom_components
+        zip -r ../imou_life.zip imou_life/
 
     - name: Create Release
       uses: softprops/action-gh-release@v1
