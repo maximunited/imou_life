@@ -17,7 +17,7 @@ param(
 )
 
 # Function to parse and validate version
-function Parse-Version {
+function ConvertTo-Version {
     param([string]$VersionString)
 
     # Remove 'v' prefix if present
@@ -45,7 +45,7 @@ function Parse-Version {
 function Get-NextVersion {
     param([string]$CurrentVersion)
 
-    $parsed = Parse-Version $CurrentVersion
+    $parsed = ConvertTo-Version $CurrentVersion
     if (-not $parsed.IsValid) {
         Write-Host "Error: Current version '$CurrentVersion' is not in valid format" -ForegroundColor Red
         exit 1
@@ -130,7 +130,7 @@ if ([string]::IsNullOrWhiteSpace($Version)) {
     Write-Host "Auto-incrementing to: $newVersion" -ForegroundColor Green
 } else {
     # Parse user-provided version
-    $parsed = Parse-Version $Version
+    $parsed = ConvertTo-Version $Version
     if (-not $parsed.IsValid) {
         Write-Host "Error: Version must be in format X.Y.Z or X.Y (e.g., 1.0.24, v1.0.24, 1.0)" -ForegroundColor Red
         exit 1
