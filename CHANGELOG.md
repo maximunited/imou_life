@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.17] (2025-01-XX)
+### Added
+- Automated CI release workflow for draft releases when tests pass
+- Enhanced GitHub Actions workflows for better release management
+- Comprehensive workflow documentation in README
+
 ## [1.0.16] (2025-06-06)
 ### Added
 - Disclaimer on the status of the integration
