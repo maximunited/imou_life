@@ -10,39 +10,49 @@ class MockConfigEntry(ConfigEntry):
 
     def __init__(self, domain, data, entry_id="test", version=1, **kwargs):
         """Initialize mock config entry."""
-        # Use a try-catch approach to handle different ConfigEntry API versions
+        # Start with minimal required parameters
+        init_params = {
+            "entry_id": entry_id,
+            "domain": domain,
+            "data": data,
+            "version": version,
+        }
+
+        # Add commonly required parameters
+        common_params = {
+            "minor_version": kwargs.get("minor_version", 1),
+            "title": kwargs.get("title", "Test Entry"),
+            "source": kwargs.get("source", "user"),
+        }
+
+        # Try different combinations of parameters
         try:
             # Try with minimal parameters first
-            super().__init__(
-                entry_id=entry_id,
-                domain=domain,
-                data=data,
-                version=version,
-            )
+            super().__init__(**init_params)
         except TypeError as e:
-            if "discovery_keys" in str(e):
-                # Python 3.12+ requires discovery_keys
-                super().__init__(
-                    entry_id=entry_id,
-                    domain=domain,
-                    data=data,
-                    version=version,
-                    discovery_keys=kwargs.get("discovery_keys", []),
-                )
-            elif "missing" in str(e):
-                # Try with all possible parameters
-                super().__init__(
-                    entry_id=entry_id,
-                    domain=domain,
-                    data=data,
-                    version=version,
-                    discovery_keys=kwargs.get("discovery_keys", []),
-                    minor_version=kwargs.get("minor_version", 1),
-                    options=kwargs.get("options", {}),
-                    source=kwargs.get("source", "user"),
-                    title=kwargs.get("title", "Test Entry"),
-                    unique_id=kwargs.get("unique_id", "test_unique_id"),
-                )
+            error_str = str(e)
+            if "missing" in error_str:
+                # Try with common required parameters
+                try:
+                    super().__init__(**{**init_params, **common_params})
+                except TypeError as e2:
+                    error_str2 = str(e2)
+                    if "discovery_keys" in error_str2:
+                        # Python 3.12+ requires discovery_keys
+                        super().__init__(
+                            **{**init_params, **common_params},
+                            discovery_keys=kwargs.get("discovery_keys", []),
+                        )
+                    else:
+                        # Try with all possible parameters
+                        all_params = {
+                            **init_params,
+                            **common_params,
+                            "discovery_keys": kwargs.get("discovery_keys", []),
+                            "options": kwargs.get("options", {}),
+                            "unique_id": kwargs.get("unique_id", "test_unique_id"),
+                        }
+                        super().__init__(**all_params)
             else:
                 raise
         self._hass = None
