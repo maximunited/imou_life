@@ -2,9 +2,14 @@
 # Note: pytest-homeassistant-custom-component removed due to Windows compatibility issues
 # Camera component testing may be limited due to turbojpeg compatibility issues
 
+
+# HTTP and async dependencies
 aiohttp>=3.8.0
+
 # Coverage
 coverage>=7.4.0
+
+# Home Assistant
 homeassistant>=2024.1.0
 httpx>=0.24.0
 
@@ -19,7 +24,7 @@ pytest>=8.0.0
 pytest-asyncio>=0.24.0
 pytest-cov>=6.0.0
 pytest-mock>=3.12.0
-turbojpeg==0.0.2
+turbojpeg>=0.0.2
 
 # Note: pytest-homeassistant removed - using standard pytest instead
 # This avoids Python version compatibility issues
