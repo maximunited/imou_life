@@ -1,13 +1,20 @@
 {
-  "domain": "imou_life",
-  "name": "Imou Life",
-  "codeowners": ["@user2684", "@maximunited"],
-  "config_flow": true,
-  "dependencies": [],
-  "documentation": "https://github.com/maximunited/imou_life",
-  "iot_class": "cloud_polling",
-  "issue_tracker": "https://github.com/maximunited/imou_life/issues",
-  "quality_scale": "platinum",
-  "requirements": ["imouapi==1.0.15"],
-  "version": "1.0.23"
+    "domain":  "imou_life",
+    "name":  "Imou Life",
+    "codeowners":  [
+                       "@user2684",
+                       "@maximunited"
+                   ],
+    "config_flow":  true,
+    "dependencies":  [
+
+                     ],
+    "documentation":  "https://github.com/maximunited/imou_life",
+    "iot_class":  "cloud_polling",
+    "issue_tracker":  "https://github.com/maximunited/imou_life/issues",
+    "quality_scale":  "platinum",
+    "requirements":  [
+                         "imouapi==1.0.15"
+                     ],
+    "version":  "1.0.24"
 }
