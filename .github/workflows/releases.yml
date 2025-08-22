@@ -1,5 +1,10 @@
 name: Release Management
 
+# Smart Tag-Based Release System:
+# - v1.0.21 → Creates pre-release (testing)
+# - stable → Graduates pre-release to stable release (keeps both tags)
+# - ci-v1.0.21 → CI drafts (on branch pushes)
+
 on:
   # Manual trigger for pre-releases
   workflow_dispatch:
@@ -17,11 +22,14 @@ on:
         description: 'Override version (leave empty to use manifest)'
         required: false
         type: string
-  # Auto-create drafts on push to master (for CI)
+  # Auto-create drafts on push to master (for CI) and tag-based releases
   push:
     branches:
       - master
       - main
+    tags:
+      - 'v*'        # Pre-releases: v1.0.21, v1.0.22, etc.
+      - 'stable'    # Stable release trigger (graduation)
     paths-ignore:
       - '**.md'
       - '**.txt'
@@ -39,7 +47,7 @@ jobs:
       ACTIONS_RUNNER_DEBUG: false
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v5
 
       - name: Get integration name
         id: information
@@ -49,13 +57,29 @@ jobs:
           echo "name: $name"
           echo "name=$name" >> $GITHUB_OUTPUT
 
-      - name: Get integration version from manifest
+      - name: Get integration version from git tag or manifest
         id: version
         shell: bash
         run: |
           if [ "${{ github.event.inputs.version_override }}" != "" ]; then
+            # Manual override
             version="${{ github.event.inputs.version_override }}"
+          elif [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            # Extract version from git tag
+            if [[ "${{ github.ref }}" == refs/tags/stable ]]; then
+              # For stable tag, we need to find the latest pre-release version
+              version=$(gh release list --json tagName,isPrerelease | jq -r '.[] | select(.isPrerelease == true) | .tagName' | head -1 | sed 's/^v//')
+              if [ -z "$version" ]; then
+                echo "No pre-release found to graduate to stable"
+                exit 1
+              fi
+            else
+              # Extract version from version tag (remove 'v' prefix)
+              version=${GITHUB_REF#refs/tags/}
+              version=${version#v}
+            fi
           else
+            # Use manifest version (for CI drafts)
             version=$(jq -r '.version' custom_components/${{ steps.information.outputs.name }}/manifest.json)
           fi
           echo "version: $version"
@@ -101,12 +125,30 @@ jobs:
                 echo "name_prefix=Draft Release" >> $GITHUB_OUTPUT
                 ;;
             esac
+           elif [[ "${{ github.ref }}" == refs/tags/* ]]; then
+             # Tag-based trigger
+             if [[ "${{ github.ref }}" == refs/tags/stable ]]; then
+               # Stable release - graduate from pre-release
+               echo "draft=false" >> $GITHUB_OUTPUT
+               echo "prerelease=false" >> $GITHUB_OUTPUT
+               echo "tag_prefix=v" >> $GITHUB_OUTPUT
+               echo "name_prefix=Release" >> $GITHUB_OUTPUT
+               echo "graduate=true" >> $GITHUB_OUTPUT
+             else
+               # Pre-release
+               echo "draft=false" >> $GITHUB_OUTPUT
+               echo "prerelease=true" >> $GITHUB_OUTPUT
+               echo "tag_prefix=v" >> $GITHUB_OUTPUT
+               echo "name_prefix=Pre-release" >> $GITHUB_OUTPUT
+               echo "graduate=false" >> $GITHUB_OUTPUT
+             fi
           else
             # Auto-trigger on push (CI mode)
             echo "draft=true" >> $GITHUB_OUTPUT
             echo "prerelease=true" >> $GITHUB_OUTPUT
             echo "tag_prefix=ci-v" >> $GITHUB_OUTPUT
             echo "name_prefix=CI Draft" >> $GITHUB_OUTPUT
+            echo "graduate=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Check if release already exists
@@ -119,8 +161,24 @@ jobs:
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
 
+      - name: Handle pre-release graduation
+        if: steps.config.outputs.graduate == 'true'
+        run: |
+          echo "Graduating pre-release v${{ steps.version.outputs.version }} to stable release"
+
+          # Find the pre-release and update it to stable (don't delete)
+          if gh release list --json tagName,isPrerelease | jq -e '.[] | select(.tagName == "v${{ steps.version.outputs.version }}" and .isPrerelease == true)' > /dev/null; then
+            echo "Found pre-release v${{ steps.version.outputs.version }}, updating to stable..."
+            # Update the existing release to remove pre-release status
+            gh release edit "v${{ steps.version.outputs.version }}" --prerelease=false
+            echo "Pre-release v${{ steps.version.outputs.version }} graduated to stable release"
+          else
+            echo "No pre-release found for v${{ steps.version.outputs.version }}"
+            exit 1
+          fi
+
       - name: Create/Update GitHub Release
-        if: steps.config.outputs.exists != 'true'
+        if: steps.config.outputs.exists != 'true' && steps.config.outputs.graduate != 'true'
         uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -130,7 +188,7 @@ jobs:
           body: |
             ## ${{ steps.config.outputs.name_prefix }} - ${{ steps.version.outputs.version }}
 
-            ${{ steps.config.outputs.draft == 'true' && 'This is an automatic draft release created after all tests passed successfully.' || 'This is a manually created release.' }}
+            ${{ steps.config.outputs.draft == 'true' && 'This is an automatic draft release created after all tests passed successfully.' || (steps.config.outputs.graduate == 'true' && 'This is a stable release graduated from pre-release.' || 'This is a manually created release.') }}
 
             ### Changes
             ${{ steps.changelog_reader.outputs.changes }}
@@ -150,6 +208,10 @@ jobs:
             ✅ Code quality checks passed
             ✅ HACS validation passed
             ✅ Hassfest validation passed' || '' }}
+
+            ${{ steps.config.outputs.graduate == 'true' && '### Release Status
+            🎉 **Stable Release** - This version has been tested and is ready for production use.
+            ✅ Graduated from pre-release v${{ steps.version.outputs.version }}' || '' }}
 
           files: |
             ${{ github.workspace }}/${{ steps.information.outputs.name }}.zip

@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.21] (2025-01-XX)
+### Added
+- Unified release workflow system with multiple release modes
+- Smart CI draft creation with duplicate prevention
+- Flexible manual release options (pre-release/release/draft)
+
 ## [1.0.20] (2025-01-XX)
 ### Added
 - HACS-compatible pre-release workflow (automatically publishes pre-releases)
