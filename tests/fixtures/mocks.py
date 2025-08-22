@@ -10,49 +10,49 @@ class MockConfigEntry(ConfigEntry):
 
     def __init__(self, domain, data, entry_id="test", version=1, **kwargs):
         """Initialize mock config entry."""
-        # Start with minimal required parameters
-        init_params = {
+        # Always include all possible parameters to handle different HA versions
+        all_params = {
             "entry_id": entry_id,
             "domain": domain,
             "data": data,
             "version": version,
-        }
-
-        # Add commonly required parameters
-        common_params = {
             "minor_version": kwargs.get("minor_version", 1),
             "title": kwargs.get("title", "Test Entry"),
             "source": kwargs.get("source", "user"),
+            "discovery_keys": kwargs.get("discovery_keys", []),
+            "options": kwargs.get("options", {}),
+            "unique_id": kwargs.get("unique_id", "test_unique_id"),
         }
 
-        # Try different combinations of parameters
+        # Try to initialize with all parameters
         try:
-            # Try with minimal parameters first
-            super().__init__(**init_params)
+            super().__init__(**all_params)
         except TypeError as e:
+            # If that fails, try to identify which parameters are actually required
             error_str = str(e)
             if "missing" in error_str:
-                # Try with common required parameters
-                try:
-                    super().__init__(**{**init_params, **common_params})
-                except TypeError as e2:
-                    error_str2 = str(e2)
-                    if "discovery_keys" in error_str2:
-                        # Python 3.12+ requires discovery_keys
-                        super().__init__(
-                            **{**init_params, **common_params},
-                            discovery_keys=kwargs.get("discovery_keys", []),
-                        )
-                    else:
-                        # Try with all possible parameters
-                        all_params = {
-                            **init_params,
-                            **common_params,
-                            "discovery_keys": kwargs.get("discovery_keys", []),
-                            "options": kwargs.get("options", {}),
-                            "unique_id": kwargs.get("unique_id", "test_unique_id"),
-                        }
-                        super().__init__(**all_params)
+                # Extract missing parameter names from the error
+                import re
+
+                missing_match = re.search(
+                    r"missing \d+ required keyword-only arguments?: '([^']+)'",
+                    error_str,
+                )
+                if missing_match:
+                    missing_params = missing_match.group(1).split("', '")
+                    # Try with only the required parameters
+                    required_params = {
+                        k: v for k, v in all_params.items() if k in missing_params
+                    }
+                    super().__init__(**required_params)
+                else:
+                    # Fallback: try with minimal parameters
+                    super().__init__(
+                        entry_id=entry_id,
+                        domain=domain,
+                        data=data,
+                        version=version,
+                    )
             else:
                 raise
         self._hass = None
