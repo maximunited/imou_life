@@ -11,17 +11,47 @@ jobs:
     permissions:
       contents: write
     steps:
-    - uses: actions/checkout@v4
+    - name: Check out the repository
+      uses: actions/checkout@v4
 
-    - name: Create Release Archive
+    - name: Get integration name
+      id: information
+      shell: bash
       run: |
-        # Create a zip file with the correct structure
-        # Change to custom_components directory and zip its contents directly
-        cd custom_components
-        zip -r ../imou_life.zip imou_life/
+        name=$(find custom_components/ -type d -maxdepth 1 | tail -n 1 | cut -d "/" -f2)
+        echo "name: $name"
+        echo "::set-output name=name::$name"
+
+    - name: Update manifest version
+      id: version
+      run: |
+        # Extract version from git tag (remove 'v' prefix)
+        VERSION=${GITHUB_REF#refs/tags/}
+        VERSION=${VERSION#v}
+        echo "Updating manifest.json version to $VERSION"
+
+        # Update version in manifest.json
+        sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"$VERSION\"/" custom_components/imou_life/manifest.json
+
+        # Display the updated manifest
+        cat custom_components/imou_life/manifest.json
+        echo "::set-output name=version::$version"
+
+    - name: Create zip file for the integration
+      run: |
+        cd "${{ github.workspace }}/custom_components/${{ steps.information.outputs.name }}"
+        zip ${{ steps.information.outputs.name }}.zip -r ./
+
+    - name: Get Changelog Entry
+      id: changelog_reader
+      uses: mindsers/changelog-reader-action@v2
+      with:
+        validation_depth: 10
+        version: ${{ steps.version.outputs.version }}
+        path: ./CHANGELOG.md
 
     - name: Create Release
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       with:
         name: Imou Life ${{ github.ref_name }}
         body: |
