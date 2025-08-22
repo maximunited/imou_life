@@ -5,8 +5,8 @@ This script validates the basic structure and imports without requiring pytest.
 """
 
 import json
-from pathlib import Path
 import sys
+from pathlib import Path
 
 
 def validate_manifest():

@@ -2,13 +2,13 @@
 
 from unittest.mock import patch
 
+import pytest
 from homeassistant.components.switch import SERVICE_TURN_OFF, SERVICE_TURN_ON
 from homeassistant.const import ATTR_ENTITY_ID
-import pytest
-from tests.fixtures.const import MOCK_CONFIG_ENTRY
-from tests.fixtures.mocks import MockConfigEntry
 
 from custom_components.imou_life.const import DOMAIN
+from tests.fixtures.const import MOCK_CONFIG_ENTRY
+from tests.fixtures.mocks import MockConfigEntry
 
 
 # This fixture bypasses the actual setup of the integration

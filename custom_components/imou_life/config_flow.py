@@ -2,13 +2,13 @@
 
 import logging
 
+import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 from imouapi.api import ImouAPIClient
 from imouapi.device import ImouDevice, ImouDiscoverService
 from imouapi.exceptions import ImouException
-import voluptuous as vol
 
 from .const import (
     CONF_API_URL,

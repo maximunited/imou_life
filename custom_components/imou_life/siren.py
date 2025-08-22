@@ -1,7 +1,7 @@
 """Siren platform for Imou."""
 
-from collections.abc import Callable
 import logging
+from collections.abc import Callable
 
 from homeassistant.components.siren import SirenEntity, SirenEntityFeature
 from homeassistant.config_entries import ConfigEntry

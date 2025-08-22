@@ -5,9 +5,9 @@ This script runs tests without pytest to avoid Home Assistant plugin issues on W
 """
 
 import importlib
-from pathlib import Path
 import sys
 import traceback
+from pathlib import Path
 
 # Add the project root to Python path
 project_root = Path(__file__).parent.parent.parent

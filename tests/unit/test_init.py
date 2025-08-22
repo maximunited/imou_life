@@ -1,9 +1,7 @@
 """Test imou setup process."""
 
-from homeassistant.exceptions import ConfigEntryNotReady
 import pytest
-from tests.fixtures.const import MOCK_CONFIG_ENTRY
-from tests.fixtures.mocks import MockConfigEntry
+from homeassistant.exceptions import ConfigEntryNotReady
 
 from custom_components.imou_life import (
     async_reload_entry,
@@ -12,6 +10,8 @@ from custom_components.imou_life import (
 )
 from custom_components.imou_life.const import DOMAIN
 from custom_components.imou_life.coordinator import ImouDataUpdateCoordinator
+from tests.fixtures.const import MOCK_CONFIG_ENTRY
+from tests.fixtures.mocks import MockConfigEntry
 
 
 @pytest.mark.asyncio
