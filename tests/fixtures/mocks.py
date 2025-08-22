@@ -10,21 +10,50 @@ class MockConfigEntry(ConfigEntry):
 
     def __init__(self, domain, data, entry_id="test", version=1, **kwargs):
         """Initialize mock config entry."""
-        super().__init__(
-            entry_id=entry_id,
-            domain=domain,
-            data=data,
-            version=version,
-            discovery_keys=kwargs.get("discovery_keys", []),
-            minor_version=kwargs.get("minor_version", 1),
-            options=kwargs.get("options", {}),
-            source=kwargs.get("source", "user"),
-            subentries_data=kwargs.get("subentries_data", []),
-            title=kwargs.get("title", "Test Entry"),
-            unique_id=kwargs.get("unique_id", "test_unique_id"),
-        )
+        # Only pass parameters that exist in the ConfigEntry constructor
+        init_params = {
+            "entry_id": entry_id,
+            "domain": domain,
+            "data": data,
+            "version": version,
+        }
+
+        # Add optional parameters only if they exist in the parent class
+        if hasattr(super(), "__init__"):
+            # Try to get the signature to see what parameters are accepted
+            import inspect
+
+            try:
+                sig = inspect.signature(super().__init__)
+                for param_name in [
+                    "minor_version",
+                    "options",
+                    "source",
+                    "title",
+                    "unique_id",
+                ]:
+                    if param_name in sig.parameters:
+                        init_params[param_name] = kwargs.get(
+                            param_name, self._get_default_value(param_name)
+                        )
+            except (ValueError, TypeError):
+                # If we can't inspect the signature, use a minimal set
+                pass
+
+        super().__init__(**init_params)
         self._hass = None
         self._options = kwargs.get("options", {})
+
+    def _get_default_value(self, param_name):
+        """Get default value for a parameter."""
+        defaults = {
+            "minor_version": 1,
+            "options": {},
+            "source": "user",
+            "title": "Test Entry",
+            "unique_id": "test_unique_id",
+        }
+        return defaults.get(param_name)
 
     def add_to_hass(self, hass):
         """Add this config entry to hass."""
