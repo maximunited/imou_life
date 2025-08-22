@@ -82,7 +82,7 @@ class TestImouSelect:
     async def test_select_select_option(self, select):
         """Test select option selection."""
         await select.async_select_option("on")
-        select._sensor_instance.async_select_option.assert_called_once_with("on")
+        select.sensor_instance.async_select_option.assert_called_once_with("on")
 
     def test_select_device_info(self, select):
         """Test select device info."""

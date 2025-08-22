@@ -76,19 +76,19 @@ class TestImouSiren:
     async def test_siren_turn_on(self, siren):
         """Test siren turn on."""
         await siren.async_turn_on()
-        siren._sensor_instance.async_turn_on.assert_called_once()
+        siren.sensor_instance.async_turn_on.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_siren_turn_off(self, siren):
         """Test siren turn off."""
         await siren.async_turn_off()
-        siren._sensor_instance.async_turn_off.assert_called_once()
+        siren.sensor_instance.async_turn_off.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_siren_toggle(self, siren):
         """Test siren toggle."""
         await siren.async_toggle()
-        siren._sensor_instance.async_toggle.assert_called_once()
+        siren.sensor_instance.async_toggle.assert_called_once()
 
     def test_siren_device_info(self, siren):
         """Test siren device info."""
