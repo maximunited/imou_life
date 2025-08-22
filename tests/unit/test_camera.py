@@ -1,39 +1,56 @@
 """Tests for the Imou Life Camera platform."""
-import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from custom_components.imou_life.camera import ImouLifeCamera
+import pytest
+
+from custom_components.imou_life.camera import ImouCamera
 from tests.fixtures.const import MOCK_CONFIG_ENTRY
 
 
-class TestImouLifeCamera:
+class TestImouCamera:
     """Test the Imou Life Camera."""
 
     @pytest.fixture
     def mock_coordinator(self):
         """Create a mock coordinator."""
         coordinator = MagicMock()
-        coordinator.data = {
-            "device_info": {
-                "device_id": "test_device_123",
-                "device_name": "Test Camera",
-                "device_type": "camera"
-            }
-        }
+        coordinator.device = MagicMock()
+        coordinator.device.get_name.return_value = "Test Camera"
+        coordinator.device.get_model.return_value = "Test Model"
+        coordinator.device.get_manufacturer.return_value = "Imou"
+        coordinator.device.get_firmware.return_value = "1.0.0"
+        coordinator.device.get_device_id.return_value = "test_camera_123"
+        coordinator.device.get_status.return_value = True
+        coordinator.hass = MagicMock()
         return coordinator
 
     @pytest.fixture
-    def camera(self, mock_coordinator):
+    def mock_sensor_instance(self):
+        """Create a mock sensor instance."""
+        sensor = MagicMock()
+        sensor.get_name.return_value = "camera"
+        sensor.get_description.return_value = "Camera"
+        sensor.get_attributes.return_value = {"last_update": "2023-01-01T00:00:00Z"}
+        sensor.async_get_image = AsyncMock(return_value=b"fake_image_data")
+        sensor.async_get_stream_url = AsyncMock(return_value="rtsp://test.com/stream")
+        sensor.set_enabled = MagicMock()
+        sensor.async_update = AsyncMock()
+        return sensor
+
+    @pytest.fixture
+    def camera(self, mock_coordinator, mock_sensor_instance):
         """Create a camera instance."""
-        return ImouLifeCamera(mock_coordinator, MOCK_CONFIG_ENTRY)
+        return ImouCamera(
+            mock_coordinator, MOCK_CONFIG_ENTRY, mock_sensor_instance, "camera.{}"
+        )
 
     def test_camera_name(self, camera):
         """Test camera name property."""
-        assert camera.name == "Test Camera"
+        assert camera.name == "Test Camera Camera"
 
     def test_camera_unique_id(self, camera):
         """Test camera unique ID."""
-        assert camera.unique_id == "test_device_123"
+        assert camera.unique_id == f"{MOCK_CONFIG_ENTRY.entry_id}_camera"
 
     def test_camera_should_poll(self, camera):
         """Test camera should_poll property."""
@@ -42,56 +59,50 @@ class TestImouLifeCamera:
     @pytest.mark.asyncio
     async def test_camera_image(self, camera):
         """Test camera image property."""
-        # Mock the image data
-        mock_image_data = b"fake_image_data"
-        with patch.object(camera, '_get_image', return_value=mock_image_data):
-            image = await camera.async_camera_image()
-            assert image == mock_image_data
+        image = await camera.async_camera_image()
+        assert image == b"fake_image_data"
 
     @pytest.mark.asyncio
-    async def test_camera_image_error(self, camera):
-        """Test camera image error handling."""
-        with patch.object(camera, '_get_image', side_effect=Exception("Test error")):
-            image = await camera.async_camera_image()
-            assert image is None
-
-    def test_camera_state(self, camera):
-        """Test camera state property."""
-        assert camera.state == "idle"
-
-    @pytest.mark.asyncio
-    async def test_get_image_success(self, camera):
-        """Test successful image retrieval."""
-        mock_response = MagicMock()
-        mock_response.content = b"test_image_data"
-        
-        with patch('httpx.AsyncClient.get', new_callable=AsyncMock) as mock_get:
-            mock_get.return_value = mock_response
-            
-            result = await camera._get_image()
-            assert result == b"test_image_data"
-
-    @pytest.mark.asyncio
-    async def test_get_image_failure(self, camera):
-        """Test image retrieval failure."""
-        with patch('httpx.AsyncClient.get', new_callable=AsyncMock) as mock_get:
-            mock_get.side_effect = Exception("Network error")
-            
-            result = await camera._get_image()
-            assert result is None
+    async def test_camera_stream_source(self, camera):
+        """Test camera stream source."""
+        stream_url = await camera.stream_source()
+        assert stream_url == "rtsp://test.com/stream"
 
     def test_camera_icon(self, camera):
         """Test camera icon property."""
-        assert camera.icon == "mdi:camera"
+        assert camera.icon == "mdi:video"
 
     def test_camera_available(self, camera):
         """Test camera available property."""
         assert camera.available is True
 
+    def test_camera_device_info(self, camera):
+        """Test camera device info."""
+        device_info = camera.device_info
+        assert device_info["identifiers"] == {("imou_life", MOCK_CONFIG_ENTRY.entry_id)}
+        assert device_info["name"] == "Test Camera"
+        assert device_info["manufacturer"] == "Imou"
+
+    def test_camera_extra_state_attributes(self, camera):
+        """Test camera extra state attributes."""
+        attrs = camera.extra_state_attributes
+        assert "last_update" in attrs
+        assert attrs["last_update"] == "2023-01-01T00:00:00Z"
+
     @pytest.mark.asyncio
-    async def test_camera_snapshot(self, camera):
-        """Test camera snapshot functionality."""
-        mock_image_data = b"snapshot_data"
-        with patch.object(camera, '_get_image', return_value=mock_image_data):
-            snapshot = await camera.async_camera_image()
-            assert snapshot == mock_image_data
+    async def test_camera_ptz_location_service(self, camera):
+        """Test camera PTZ location service."""
+        with patch.object(
+            camera._sensor_instance, "async_service_ptz_location"
+        ) as mock_ptz:
+            await camera.async_service_ptz_location(0.5, -0.3, 0.8)
+            mock_ptz.assert_called_once_with(0.5, -0.3, 0.8)
+
+    @pytest.mark.asyncio
+    async def test_camera_ptz_move_service(self, camera):
+        """Test camera PTZ move service."""
+        with patch.object(
+            camera._sensor_instance, "async_service_ptz_move"
+        ) as mock_ptz:
+            await camera.async_service_ptz_move("up", 2000)
+            mock_ptz.assert_called_once_with("up", 2000)
