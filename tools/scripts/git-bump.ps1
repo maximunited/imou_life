@@ -61,7 +61,7 @@ function Add-ChangelogEntry {
         [string]$Message = ""
     )
 
-    $changelogPath = "CHANGELOG.md"
+    $changelogPath = "docs/CHANGELOG.md"
     if (-not (Test-Path $changelogPath)) {
         Write-Host "Warning: CHANGELOG.md not found, creating new file..." -ForegroundColor Yellow
         $changelogContent = "# Changelog`n`n## [$Version] ($(Get-Date -Format 'yyyy-MM-dd'))`n### Added`n- Version bump to $Version`n"
@@ -177,7 +177,7 @@ Add-ChangelogEntry -Version $newVersion -Message $Message
 # Stage all changes
 Write-Host "Staging changes..." -ForegroundColor Green
 git add $manifestPath
-git add "CHANGELOG.md"
+git add "docs/CHANGELOG.md"
 
 # Commit
 $commitMessage = if ($Message) { "Bump version to $newVersion - $Message" } else { "Bump version to $newVersion" }
