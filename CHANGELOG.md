@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.20] (2025-01-XX)
+### Added
+- HACS-compatible pre-release workflow (automatically publishes pre-releases)
+- Enhanced release automation for immediate HACS availability
+
 ## [1.0.19] (2025-01-XX)
 ### Added
 - Pre-release workflow configuration for better release management
