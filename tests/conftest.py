@@ -135,7 +135,6 @@ def mock_hass_components():
     """Mock Home Assistant components that are not available in tests."""
     with (
         patch("homeassistant.helpers.aiohttp_client.async_get_clientsession"),
-        patch("homeassistant.components.zeroconf.async_get_async_zeroconf"),
         patch("homeassistant.helpers.frame.report_usage"),
     ):
         yield
