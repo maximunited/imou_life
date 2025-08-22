@@ -54,12 +54,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: "Manual Release - ${{ steps.version.outputs.version }}"
-          tag_name: "manual-${{ steps.version.outputs.version }}"
+          name: "Pre-release - ${{ steps.version.outputs.version }}"
+          tag_name: "v${{ steps.version.outputs.version }}"
           body: |
-            ## Manual Release - ${{ steps.version.outputs.version }}
+            ## Pre-release - ${{ steps.version.outputs.version }}
 
-            This is a manually triggered release.
+            This is a pre-release version. Please test thoroughly before using in production.
 
             ### Changes
             ${{ steps.changelog_reader.outputs.changes }}
@@ -77,4 +77,4 @@ jobs:
           files: |
             ${{ github.workspace }}/${{ steps.information.outputs.name }}.zip
           draft: true
-          prerelease: false
+          prerelease: true
