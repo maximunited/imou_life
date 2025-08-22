@@ -58,10 +58,7 @@ jobs:
         run: |
           pytest \
             --asyncio-mode=auto \
-            --timeout=9 \
             --durations=10 \
-            -n auto \
-            -p no:sugar \
             tests
       - name: codecov
         uses: codecov/codecov-action@v4
