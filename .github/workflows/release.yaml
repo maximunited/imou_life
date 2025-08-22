@@ -41,6 +41,8 @@ jobs:
         run: |
           cd "${{ github.workspace }}/custom_components/${{ steps.information.outputs.name }}"
           zip ${{ steps.information.outputs.name }}.zip -r ./
+          mv ${{ steps.information.outputs.name }}.zip "${{ github.workspace }}/"
+          ls -la "${{ github.workspace }}/"
 
       - name: Draft GitHub Release
         id: draft_release
@@ -69,6 +71,6 @@ jobs:
             - imouapi==1.0.15
 
           files: |
-            ${{ steps.information.outputs.name }}.zip
+            ${{ github.workspace }}/${{ steps.information.outputs.name }}.zip
           draft: true
           prerelease: false
