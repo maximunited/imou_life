@@ -1,11 +1,11 @@
-name: Publish a new release
+name: Publish a new pre-release
 
 on:
   workflow_dispatch:
 
 jobs:
-  draft_release:
-    name: Release Drafter
+  publish_prerelease:
+    name: Pre-release Publisher
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -48,8 +48,8 @@ jobs:
           mv ${{ steps.information.outputs.name }}.zip "${{ github.workspace }}/"
           ls -la "${{ github.workspace }}/"
 
-      - name: Draft GitHub Release
-        id: draft_release
+      - name: Publish GitHub Pre-release
+        id: publish_prerelease
         uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -76,5 +76,5 @@ jobs:
 
           files: |
             ${{ github.workspace }}/${{ steps.information.outputs.name }}.zip
-          draft: true
+          draft: false
           prerelease: true
