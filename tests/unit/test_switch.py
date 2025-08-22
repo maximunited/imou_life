@@ -8,8 +8,8 @@ from homeassistant.const import ATTR_ENTITY_ID
 
 from custom_components.imou_life.const import DOMAIN
 
-from .const import MOCK_CONFIG_ENTRY
-from .mocks import MockConfigEntry
+from tests.fixtures.const import MOCK_CONFIG_ENTRY
+from tests.fixtures.mocks import MockConfigEntry
 
 
 # This fixture bypasses the actual setup of the integration

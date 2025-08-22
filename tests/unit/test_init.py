@@ -11,8 +11,8 @@ from custom_components.imou_life import (
 from custom_components.imou_life.const import DOMAIN
 from custom_components.imou_life.coordinator import ImouDataUpdateCoordinator
 
-from .const import MOCK_CONFIG_ENTRY
-from .mocks import MockConfigEntry
+from tests.fixtures.const import MOCK_CONFIG_ENTRY
+from tests.fixtures.mocks import MockConfigEntry
 
 
 @pytest.mark.asyncio

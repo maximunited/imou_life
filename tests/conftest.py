@@ -81,7 +81,7 @@ def auto_enable_custom_integrations():
 @pytest.fixture
 def hass():
     """Create a mock Home Assistant instance."""
-    from .mocks import create_mock_hass
+    from tests.fixtures.mocks import create_mock_hass
 
     return create_mock_hass()
 

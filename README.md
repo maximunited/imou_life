@@ -1,3 +1,4 @@
+
 # Imou Life - Home Assistant Integration
 
 [![HACS](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/custom-components/hacs)

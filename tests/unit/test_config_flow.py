@@ -16,7 +16,7 @@ from custom_components.imou_life.const import (
     OPTION_SCAN_INTERVAL,
 )
 
-from .const import (
+from tests.fixtures.const import (
     CONF_DISCOVERED_DEVICE,
     MOCK_CONFIG_ENTRY,
     MOCK_CREATE_ENTRY_FROM_DISCOVER,
@@ -24,7 +24,7 @@ from .const import (
     MOCK_LOGIN_WITH_DISCOVER,
     MOCK_LOGIN_WITHOUT_DISCOVER,
 )
-from .mocks import MockConfigEntry
+from tests.fixtures.mocks import MockConfigEntry
 
 
 # This fixture bypasses the actual setup of the integration
