@@ -137,5 +137,7 @@ def mock_hass_components():
         patch("homeassistant.helpers.aiohttp_client.async_get_clientsession"),
         patch("homeassistant.helpers.frame.report_usage"),
         patch("homeassistant.helpers.frame.report_non_thread_safe_operation"),
+        patch("homeassistant.components.zeroconf.async_get_async_zeroconf"),
+        patch("homeassistant.components.zeroconf.usage.report_usage"),
     ):
         yield
