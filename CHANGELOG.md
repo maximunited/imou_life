@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.26] (2025-08-22)
+### Changed
+- Version bump to 1.0.26
+
+
 ## [1.0.25] (2025-01-27)
 ### Added
 - Automated version bumping with git-bump script
