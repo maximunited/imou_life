@@ -3,6 +3,7 @@
 
 [![HACS](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/custom-components/hacs)
 [![Quality Scale](https://img.shields.io/badge/Quality%20Scale-Platinum-brightgreen.svg)](https://github.com/custom-components/hacs#quality-scale)
+[![Coverage Status](https://coveralls.io/repos/github/maximunited/imou_life/badge.svg?branch=master)](https://coveralls.io/github/maximunited/imou_life?branch=master)
 [![Maintainer](https://img.shields.io/badge/maintainer-@maximunited-blue.svg)](https://github.com/maximunited)
 
 A Home Assistant integration for Imou Life cameras and devices, providing comprehensive monitoring and control capabilities.
@@ -112,6 +113,22 @@ python -m pytest tests/integration/
 # Or manually
 docker-compose -f tools/docker/docker-compose.test.yml up --build
 ```
+
+## 📊 Code Coverage
+
+This project maintains comprehensive test coverage for all custom components:
+
+- **Integration Module** (`__init__.py`) - Setup and coordinator logic
+- **Configuration Flow** (`config_flow.py`) - User setup wizard
+- **Camera Platform** (`camera.py`) - Video streaming and snapshots
+- **Switch Platform** (`switch.py`) - Device controls and toggles
+- **Sensor Platform** (`sensor.py`) - Status monitoring
+- **Binary Sensor Platform** (`binary_sensor.py`) - Motion detection
+- **Select Platform** (`select.py`) - Dropdown controls
+- **Button Platform** (`button.py`) - Action triggers
+- **Siren Platform** (`siren.py`) - Alarm controls
+
+Coverage reports are automatically generated and uploaded to [Coveralls](https://coveralls.io/github/maximunited/imou_life) on every test run.
 
 ## 📚 Documentation
 
