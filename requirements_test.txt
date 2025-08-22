@@ -5,6 +5,7 @@
 
 # Coverage
 coverage>=7.4.0
+homeassistant>=2024.1.0
 # Integration runtime dependencies
 imouapi==1.0.15
 # Core testing
