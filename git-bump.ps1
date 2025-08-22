@@ -3,8 +3,8 @@
 .SYNOPSIS
     Git alias script for automatic version bumping and tagging
 .DESCRIPTION
-    This script is designed to be used as a Git alias: git bump [version]
-    It automatically updates manifest.json, generates changelog entries, commits, creates tags, and pushes everything.
+    This script automatically updates manifest.json, generates changelog entries, 
+    commits, creates tags, and pushes everything.
     If no version is supplied, it auto-increments the patch version.
 #>
 
@@ -107,18 +107,6 @@ if (-not (Test-Path ".git")) {
     exit 1
 }
 
-# Check if pre-commit hooks exist and should be run
-$preCommitHook = ".git/hooks/pre-commit"
-$shouldRunPreCommit = $false
-if (Test-Path $preCommitHook) {
-    $hookContent = Get-Content $preCommitHook -Raw
-    if ($hookContent -notmatch "pre-commit.com") {
-        # This is a custom pre-commit hook, not the standard one
-        $shouldRunPreCommit = $true
-        Write-Host "🔍 Custom pre-commit hook detected" -ForegroundColor Yellow
-    }
-}
-
 # Read current manifest
 $manifestPath = "custom_components/imou_life/manifest.json"
 if (-not (Test-Path $manifestPath)) {
@@ -190,18 +178,6 @@ Add-ChangelogEntry -Version $newVersion -Message $Message
 Write-Host "Staging changes..." -ForegroundColor Green
 git add $manifestPath
 git add "CHANGELOG.md"
-
-# Run pre-commit hooks if they exist
-if ($shouldRunPreCommit) {
-    Write-Host "Running pre-commit hooks..." -ForegroundColor Green
-    $preCommitResult = & $preCommitHook
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "❌ Pre-commit hooks failed!" -ForegroundColor Red
-        Write-Host "Please fix the issues and try again." -ForegroundColor Red
-        exit 1
-    }
-    Write-Host "✅ Pre-commit hooks passed" -ForegroundColor Green
-}
 
 # Commit
 $commitMessage = if ($Message) { "Bump version to $newVersion - $Message" } else { "Bump version to $newVersion" }
