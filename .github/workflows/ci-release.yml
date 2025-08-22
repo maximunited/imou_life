@@ -48,6 +48,7 @@ jobs:
         run: |
           cd "${{ github.workspace }}/custom_components/${{ steps.information.outputs.name }}"
           zip ${{ steps.information.outputs.name }}.zip -r ./
+          mv ${{ steps.information.outputs.name }}.zip "${{ github.workspace }}/"
 
       - name: Check if release already exists
         id: check_release
