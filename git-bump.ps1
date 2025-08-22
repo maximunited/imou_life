@@ -3,7 +3,7 @@
 .SYNOPSIS
     Git alias script for automatic version bumping and tagging
 .DESCRIPTION
-    This script automatically updates manifest.json, generates changelog entries, 
+    This script automatically updates manifest.json, generates changelog entries,
     commits, creates tags, and pushes everything.
     If no version is supplied, it auto-increments the patch version.
 #>
@@ -11,7 +11,7 @@
 param(
     [Parameter(Position=0)]
     [string]$Version = "",
-    
+
     [Parameter(Position=1)]
     [string]$Message = ""
 )
@@ -19,16 +19,16 @@ param(
 # Function to parse and validate version
 function Parse-Version {
     param([string]$VersionString)
-    
+
     # Remove 'v' prefix if present
     $cleanVersion = $VersionString -replace '^v', ''
-    
+
     # Check if it's a valid version format
     if ($cleanVersion -match '^(\d+)\.(\d+)(?:\.(\d+))?$') {
         $major = [int]$matches[1]
         $minor = [int]$matches[2]
         $patch = if ($matches[3]) { [int]$matches[3] } else { 0 }
-        
+
         return @{
             Major = $major
             Minor = $minor
@@ -37,20 +37,20 @@ function Parse-Version {
             IsValid = $true
         }
     }
-    
+
     return @{ IsValid = $false }
 }
 
 # Function to auto-increment version
 function Get-NextVersion {
     param([string]$CurrentVersion)
-    
+
     $parsed = Parse-Version $CurrentVersion
     if (-not $parsed.IsValid) {
         Write-Host "Error: Current version '$CurrentVersion' is not in valid format" -ForegroundColor Red
         exit 1
     }
-    
+
     return "$($parsed.Major).$($parsed.Minor).$($parsed.Patch + 1)"
 }
 
@@ -60,7 +60,7 @@ function Add-ChangelogEntry {
         [string]$Version,
         [string]$Message = ""
     )
-    
+
     $changelogPath = "CHANGELOG.md"
     if (-not (Test-Path $changelogPath)) {
         Write-Host "Warning: CHANGELOG.md not found, creating new file..." -ForegroundColor Yellow
@@ -68,16 +68,16 @@ function Add-ChangelogEntry {
         Set-Content $changelogPath $changelogContent
         return
     }
-    
+
     # Read existing changelog
     $changelogContent = Get-Content $changelogPath -Raw
-    
+
     # Check if version already exists
     if ($changelogContent -match "## \[$Version\]") {
         Write-Host "Warning: Changelog entry for version $Version already exists" -ForegroundColor Yellow
         return
     }
-    
+
     # Create new entry
     $newEntry = "`n## [$Version] ($(Get-Date -Format 'yyyy-MM-dd'))`n"
     if ($Message) {
@@ -85,14 +85,14 @@ function Add-ChangelogEntry {
     } else {
         $newEntry += "### Changed`n- Version bump to $Version`n"
     }
-    
+
     # Insert after the first line (after "# Changelog")
     $lines = $changelogContent -split "`n"
     $newLines = @()
     $newLines += $lines[0]  # "# Changelog"
     $newLines += $newEntry  # New version entry
     $newLines += $lines[1..($lines.Length-1)]  # Rest of existing content
-    
+
     # Write back to file
     $newLines -join "`n" | Set-Content $changelogPath -NoNewline
     Write-Host "✅ Added changelog entry for version $Version" -ForegroundColor Green
@@ -135,7 +135,7 @@ if ([string]::IsNullOrWhiteSpace($Version)) {
         Write-Host "Error: Version must be in format X.Y.Z or X.Y (e.g., 1.0.24, v1.0.24, 1.0)" -ForegroundColor Red
         exit 1
     }
-    
+
     $newVersion = $parsed.Full
     Write-Host "New version: $newVersion" -ForegroundColor Green
 }
@@ -157,7 +157,7 @@ if ($gitStatus) {
     Write-Host "Uncommitted changes:" -ForegroundColor Yellow
     Write-Host $gitStatus
     Write-Host ""
-    
+
     $continue = Read-Host "Continue anyway? (y/N)"
     if ($continue -ne "y" -and $continue -ne "Y") {
         Write-Host "Aborting version bump." -ForegroundColor Red
