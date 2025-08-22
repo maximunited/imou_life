@@ -5,6 +5,8 @@
 
 # Coverage
 coverage>=7.4.0
+# Integration runtime dependencies
+imouapi==1.0.15
 # Core testing
 pytest>=8.0.0
 pytest-asyncio>=0.24.0
