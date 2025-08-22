@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.0.25] (2025-01-27)
+### Added
+- Automated version bumping with git-bump script
+- One-command version management system
+- Auto-increment version functionality
+
+## [1.0.24] (2025-01-27)
+### Added
+- Enhanced version management scripts
+- Improved release automation workflow
+
+## [1.0.23] (2025-01-27)
+### Added
+- Version management automation scripts
+- Git hooks for automatic tagging
+
 ## [1.0.22] (2025-01-27)
 ### Fixed
 - Fixed "Invalid handler specified" error when adding integration to Home Assistant
