@@ -5,7 +5,6 @@ from unittest.mock import MagicMock
 import pytest
 
 from custom_components.imou_life.diagnostics import async_get_config_entry_diagnostics
-from tests.fixtures.const import MOCK_CONFIG_ENTRY
 
 
 class TestDiagnostics:
@@ -20,7 +19,20 @@ class TestDiagnostics:
     @pytest.fixture
     def mock_config_entry(self):
         """Create a mock config entry."""
-        return MOCK_CONFIG_ENTRY
+        # Create a proper mock that returns a real dictionary from as_dict()
+        config_entry = MagicMock()
+        config_entry.entry_id = "test_entry_id"
+        config_entry.as_dict.return_value = {
+            "entry_id": "test_entry_id",
+            "data": {
+                "api_url": "http://api.url",
+                "app_id": "app_id",
+                "app_secret": "app_secret",
+                "device_name": "device_name",
+                "device_id": "device_id",
+            },
+        }
+        return config_entry
 
     @pytest.fixture
     def mock_coordinator(self):

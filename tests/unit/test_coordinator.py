@@ -1,4 +1,5 @@
 """Tests for the Imou Life Coordinator."""
+
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest

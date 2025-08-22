@@ -2,10 +2,10 @@
 
 from unittest.mock import MagicMock, patch
 
+import pytest
 from imouapi.device import ImouDevice
 from imouapi.device_entity import ImouBinarySensor, ImouSensor, ImouSwitch
 from imouapi.exceptions import ImouException
-import pytest
 
 # pytest_plugins = "pytest_homeassistant_custom_component"
 # Removed due to Windows compatibility issues
@@ -19,8 +19,9 @@ import pytest
 @pytest.fixture(name="skip_notifications", autouse=True)
 def skip_notifications_fixture():
     """Skip notification calls."""
-    with patch("homeassistant.components.persistent_notification.async_create"), patch(
-        "homeassistant.components.persistent_notification.async_dismiss"
+    with (
+        patch("homeassistant.components.persistent_notification.async_create"),
+        patch("homeassistant.components.persistent_notification.async_dismiss"),
     ):
         yield
 
@@ -38,20 +39,26 @@ def mock_get_sensors_by_platform(platform):
 @pytest.fixture(name="api_ok")
 def bypass_get_data_fixture():
     """Ensure all the calls to the underlying APIs are working fine."""
-    with patch("imouapi.device.ImouDevice.async_initialize"), patch(
-        "imouapi.device.ImouDevice.async_get_data"
-    ), patch("imouapi.api.ImouAPIClient.async_connect"), patch(
-        "imouapi.device.ImouDiscoverService.async_discover_devices",
-        return_value={"device_id": ImouDevice(None, None)},
-    ), patch(
-        "imouapi.device.ImouDevice.get_name",
-        return_value="device_name",
-    ), patch(
-        "imouapi.device.ImouDevice.get_device_id",
-        return_value="device_id",
-    ), patch(
-        "imouapi.device.ImouDevice.get_sensors_by_platform",
-        side_effect=mock_get_sensors_by_platform,
+    with (
+        patch("imouapi.device.ImouDevice.async_initialize"),
+        patch("imouapi.device.ImouDevice.async_get_data"),
+        patch("imouapi.api.ImouAPIClient.async_connect"),
+        patch(
+            "imouapi.device.ImouDiscoverService.async_discover_devices",
+            return_value={"device_id": ImouDevice(None, None)},
+        ),
+        patch(
+            "imouapi.device.ImouDevice.get_name",
+            return_value="device_name",
+        ),
+        patch(
+            "imouapi.device.ImouDevice.get_device_id",
+            return_value="device_id",
+        ),
+        patch(
+            "imouapi.device.ImouDevice.get_sensors_by_platform",
+            side_effect=mock_get_sensors_by_platform,
+        ),
     ):
         yield
 
@@ -59,19 +66,24 @@ def bypass_get_data_fixture():
 @pytest.fixture(name="api_invalid_app_id")
 def error_invalid_app_id_fixture():
     """Simulate error when retrieving data from API."""
-    with patch(
-        "imouapi.exceptions.ImouException.get_title",
-        return_value="invalid_configuration",
-    ), patch("imouapi.api.ImouAPIClient.async_connect", side_effect=ImouException()):
+    with (
+        patch(
+            "imouapi.exceptions.ImouException.get_title",
+            return_value="invalid_configuration",
+        ),
+        patch("imouapi.api.ImouAPIClient.async_connect", side_effect=ImouException()),
+    ):
         yield
 
 
 @pytest.fixture(name="api_invalid_data")
 def error_get_data_fixture():
     """Simulate error when retrieving data from API."""
-    with patch("imouapi.device.ImouDevice.async_initialize"), patch(
-        "imouapi.api.ImouAPIClient.async_connect"
-    ), patch("imouapi.device.ImouDevice.async_get_data", side_effect=Exception()):
+    with (
+        patch("imouapi.device.ImouDevice.async_initialize"),
+        patch("imouapi.api.ImouAPIClient.async_connect"),
+        patch("imouapi.device.ImouDevice.async_get_data", side_effect=Exception()),
+    ):
         yield
 
 
@@ -121,9 +133,10 @@ def mock_turbojpeg():
 @pytest.fixture(autouse=True)
 def mock_hass_components():
     """Mock Home Assistant components that are not available in tests."""
-    with patch("homeassistant.helpers.aiohttp_client.async_get_clientsession"), patch(
-        "homeassistant.components.network.async_get_loaded_adapters"
-    ), patch("homeassistant.components.zeroconf.async_get_async_zeroconf"), patch(
-        "homeassistant.helpers.frame.report_usage"
+    with (
+        patch("homeassistant.helpers.aiohttp_client.async_get_clientsession"),
+        patch("homeassistant.components.network.async_get_loaded_adapters"),
+        patch("homeassistant.components.zeroconf.async_get_async_zeroconf"),
+        patch("homeassistant.helpers.frame.report_usage"),
     ):
         yield

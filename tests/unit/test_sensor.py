@@ -1,4 +1,5 @@
 """Tests for the Imou Life Sensor platform."""
+
 from unittest.mock import MagicMock
 
 import pytest
