@@ -10,37 +10,41 @@ class MockConfigEntry(ConfigEntry):
 
     def __init__(self, domain, data, entry_id="test", version=1, **kwargs):
         """Initialize mock config entry."""
-        # Only pass parameters that exist in the ConfigEntry constructor
-        init_params = {
-            "entry_id": entry_id,
-            "domain": domain,
-            "data": data,
-            "version": version,
-        }
-
-        # Add optional parameters only if they exist in the parent class
-        if hasattr(super(), "__init__"):
-            # Try to get the signature to see what parameters are accepted
-            import inspect
-
-            try:
-                sig = inspect.signature(super().__init__)
-                for param_name in [
-                    "minor_version",
-                    "options",
-                    "source",
-                    "title",
-                    "unique_id",
-                ]:
-                    if param_name in sig.parameters:
-                        init_params[param_name] = kwargs.get(
-                            param_name, self._get_default_value(param_name)
-                        )
-            except (ValueError, TypeError):
-                # If we can't inspect the signature, use a minimal set
-                pass
-
-        super().__init__(**init_params)
+        # Use a try-catch approach to handle different ConfigEntry API versions
+        try:
+            # Try with minimal parameters first
+            super().__init__(
+                entry_id=entry_id,
+                domain=domain,
+                data=data,
+                version=version,
+            )
+        except TypeError as e:
+            if "discovery_keys" in str(e):
+                # Python 3.12+ requires discovery_keys
+                super().__init__(
+                    entry_id=entry_id,
+                    domain=domain,
+                    data=data,
+                    version=version,
+                    discovery_keys=kwargs.get("discovery_keys", []),
+                )
+            elif "missing" in str(e):
+                # Try with all possible parameters
+                super().__init__(
+                    entry_id=entry_id,
+                    domain=domain,
+                    data=data,
+                    version=version,
+                    discovery_keys=kwargs.get("discovery_keys", []),
+                    minor_version=kwargs.get("minor_version", 1),
+                    options=kwargs.get("options", {}),
+                    source=kwargs.get("source", "user"),
+                    title=kwargs.get("title", "Test Entry"),
+                    unique_id=kwargs.get("unique_id", "test_unique_id"),
+                )
+            else:
+                raise
         self._hass = None
         self._options = kwargs.get("options", {})
 
