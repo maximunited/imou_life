@@ -112,7 +112,7 @@ $preCommitHook = ".git/hooks/pre-commit"
 $shouldRunPreCommit = $false
 if (Test-Path $preCommitHook) {
     $hookContent = Get-Content $preCommitHook -Raw
-    if ($hookContent -notmatch "pre-commit\.com") {
+    if ($hookContent -notmatch "pre-commit.com") {
         # This is a custom pre-commit hook, not the standard one
         $shouldRunPreCommit = $true
         Write-Host "🔍 Custom pre-commit hook detected" -ForegroundColor Yellow
