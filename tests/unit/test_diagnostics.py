@@ -68,7 +68,11 @@ class TestDiagnostics:
         assert "device_info" in result
         # The entry_id gets redacted, so we can't assert on it
         assert "entry_id" in result["entry"]
-        assert result["device_info"]["device_id"] == "test_device_123"
+        # The device_id gets redacted, so we can't assert on its specific value
+        assert "device_id" in result["device_info"]
+        # But we can check that other non-redacted fields are preserved
+        assert result["device_info"]["device_name"] == "Test Device"
+        assert result["device_info"]["device_type"] == "camera"
 
     @pytest.mark.asyncio
     async def test_diagnostics_no_coordinator(self, mock_hass, mock_config_entry):
@@ -99,3 +103,9 @@ class TestDiagnostics:
         required_keys = ["entry", "device_info"]
         for key in required_keys:
             assert key in result
+
+        # Check that device_info contains the expected keys
+        # (some values may be redacted)
+        device_info_keys = ["device_id", "device_name", "device_type"]
+        for key in device_info_keys:
+            assert key in result["device_info"]
