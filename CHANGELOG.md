@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.19] (2025-01-XX)
+### Added
+- Pre-release workflow configuration for better release management
+- Enhanced release automation with proper pre-release tagging
+
 ## [1.0.18] (2025-01-XX)
 ### Added
 - Automated CI release workflow for draft releases when tests pass
