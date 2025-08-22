@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.18] (2025-01-XX)
+### Added
+- Automated CI release workflow for draft releases when tests pass
+- Enhanced GitHub Actions workflows for better release management
+- Comprehensive workflow documentation in README
+- Fixed ZIP file path issues in release workflows
+
 ## [1.0.17] (2025-01-XX)
 ### Added
 - Automated CI release workflow for draft releases when tests pass
