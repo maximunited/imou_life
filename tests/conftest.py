@@ -121,17 +121,19 @@ def mock_hass_components():
     """Mock Home Assistant components that are not available in tests."""
     with (
         patch("homeassistant.helpers.aiohttp_client.async_get_clientsession"),
-        patch("homeassistant.helpers.frame.report_usage"),
-        patch("homeassistant.helpers.frame.report_non_thread_safe_operation"),
         patch("homeassistant.helpers.entity_platform.async_get_current_platform"),
     ):
-        # Conditionally mock zeroconf components if they exist
+        # Conditionally mock frame helper functions if they exist
         try:
-            with (
-                patch("homeassistant.components.zeroconf.HaZeroconf"),
-                patch("homeassistant.components.zeroconf.usage.report_usage"),
-            ):
-                yield
+            with patch("homeassistant.helpers.frame.report_usage"):
+                try:
+                    with patch(
+                        "homeassistant.helpers.frame.report_non_thread_safe_operation"
+                    ):
+                        yield
+                except AttributeError:
+                    # report_non_thread_safe_operation doesn't exist, continue without it
+                    yield
         except AttributeError:
-            # If zeroconf components don't exist, just yield without them
+            # report_usage doesn't exist, continue without frame helper mocking
             yield
