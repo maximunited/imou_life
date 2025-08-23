@@ -19,13 +19,6 @@ release = "1.1.0"
 # ones.
 extensions = [
     "myst_parser",  # For Markdown support
-    "sphinx.ext.napoleon",  # For Google style docstrings
-    "sphinx.ext.autodoc",  # For auto documentation
-    "sphinx.ext.viewcode",  # For source code viewing
-    "sphinx.ext.intersphinx",  # For cross-referencing documentation
-    "sphinx.ext.coverage",  # For code coverage
-    "sphinx.ext.doctest",  # For testing docstrings
-    "sphinx.ext.todo",  # For todo items
 ]
 
 # The suffix of source filenames.
@@ -51,11 +44,6 @@ html_theme = "sphinx_rtd_theme"
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
-
-# -- Options for Read the Docs ----------------------------------------------
-
-# Read the Docs theme
-html_theme = "sphinx_rtd_theme"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.
