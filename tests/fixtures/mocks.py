@@ -10,42 +10,26 @@ class MockConfigEntry(ConfigEntry):
 
     def __init__(self, domain, data, entry_id="test", version=1, **kwargs):
         """Initialize mock config entry."""
-        # Build parameter sets dynamically with required defaults
-        base_params = {
+        # Always include required parameters for newer Home Assistant versions
+        params = {
             "entry_id": entry_id,
             "domain": domain,
             "data": data,
             "version": version,
+            "minor_version": kwargs.get("minor_version", 1),
+            "title": kwargs.get("title", "Test Entry"),
+            "source": kwargs.get("source", "user"),
+            "options": kwargs.get("options", {}),
+            "discovery_keys": kwargs.get("discovery_keys", []),
+            "subentries_data": kwargs.get("subentries_data", {}),
+            "unique_id": kwargs.get("unique_id", "test_unique_id"),
         }
 
-        # Define additional parameter sets in order of preference
-        param_sets = [
-            {**base_params, **kwargs},  # Full parameter set
-            {
-                **base_params,
-                **{
-                    "minor_version": kwargs.get("minor_version", 1),
-                    "title": kwargs.get("title", "Test Entry"),
-                    "source": kwargs.get("source", "user"),
-                    "options": kwargs.get("options", {}),
-                    "discovery_keys": kwargs.get("discovery_keys", []),
-                    "subentries_data": kwargs.get("subentries_data", {}),
-                    "unique_id": kwargs.get("unique_id", "test_unique_id"),
-                },
-            },  # Essential parameters
-            base_params,  # Minimal parameters
-        ]
+        # Add any additional kwargs
+        params.update(kwargs)
 
-        # Try each parameter set until one works
-        for params in param_sets:
-            try:
-                super().__init__(**params)
-                break
-            except TypeError:
-                continue
-        else:
-            # If all fail, use minimal params as fallback
-            super().__init__(**base_params)
+        # Initialize the parent class with all parameters
+        super().__init__(**params)
 
         self._hass = None
         self._options = kwargs.get("options", {})
