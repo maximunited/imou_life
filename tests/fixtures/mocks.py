@@ -22,6 +22,7 @@ class MockConfigEntry(ConfigEntry):
             "discovery_keys": kwargs.get("discovery_keys", []),
             "options": kwargs.get("options", {}),
             "unique_id": kwargs.get("unique_id", "test_unique_id"),
+            "subentries_data": kwargs.get("subentries_data", {}),
         }
 
         # Try to initialize with all parameters

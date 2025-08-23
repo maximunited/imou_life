@@ -1,5 +1,18 @@
 """Global fixtures for imou_life integration."""
 
+# Mock turbojpeg before any other imports to prevent import errors
+import sys
+from unittest.mock import MagicMock
+
+# Create a mock turbojpeg module
+mock_turbojpeg = MagicMock()
+sys.modules["turbojpeg"] = mock_turbojpeg
+
+# Mock camera img_util to prevent import issues
+mock_img_util = MagicMock()
+sys.modules["homeassistant.components.camera.img_util"] = mock_img_util
+
+# flake8: noqa: E402
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -102,36 +115,17 @@ def hass():
     return create_mock_hass()
 
 
-# Mock camera component to avoid turbojpeg import issues
-@pytest.fixture(autouse=True)
-def mock_camera_component():
-    """Mock the camera component to avoid turbojpeg import issues."""
-    with patch.dict(
-        "sys.modules",
-        {
-            "homeassistant.components.camera": MagicMock(),
-            "homeassistant.components.camera.img_util": MagicMock(),
-        },
-    ):
-        yield
-
-
-# Mock turbojpeg if it's imported anywhere
-@pytest.fixture(autouse=True)
-def mock_turbojpeg():
-    """Mock turbojpeg to avoid import issues."""
-    with patch.dict(
-        "sys.modules",
-        {
-            "turbojpeg": MagicMock(),
-        },
-    ):
-        yield
-
-
 # Mock Home Assistant components that are not available in tests
 @pytest.fixture(autouse=True)
 def mock_hass_components():
     """Mock Home Assistant components that are not available in tests."""
-    with (patch("homeassistant.helpers.aiohttp_client.async_get_clientsession"),):
+    with (
+        patch("homeassistant.helpers.aiohttp_client.async_get_clientsession"),
+        patch("homeassistant.helpers.frame.report_usage"),
+        patch("homeassistant.helpers.frame.report_non_thread_safe_operation"),
+        patch("homeassistant.helpers.entity_platform.async_get_current_platform"),
+        patch("homeassistant.components.zeroconf.HaZeroconf"),
+        patch("homeassistant.components.zeroconf.usage.report_usage"),
+        patch("homeassistant.helpers.frame.report_usage"),
+    ):
         yield
