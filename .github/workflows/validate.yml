@@ -1,9 +1,9 @@
-name: Validate Integration
+name: Comprehensive Validation
 
 on:
   push:
     branches: [ main, master, develop ]  # Only run on main branches
-  pull_request:  # Runs on ALL PRs from ANY branch
+  # Removed pull_request triggers to avoid duplication with test workflow
 
 jobs:
   validate:
@@ -33,9 +33,16 @@ jobs:
     - name: Verify dependencies
       run: |
         python -c "import homeassistant; print('Home Assistant OK')"
-    - name: Run tests with coverage
+    - name: Run comprehensive tests with coverage
       run: |
-        pytest --cov=custom_components.imou_life --cov-config=config/.coveragerc --cov-report=lcov --cov-report=term-missing tests/unit/
+        pytest \
+          --asyncio-mode=auto \
+          --durations=10 \
+          --cov=custom_components.imou_life \
+          --cov-config=config/.coveragerc \
+          --cov-report=lcov \
+          --cov-report=term-missing \
+          tests/  # Full test suite including integration tests
     - name: Upload coverage to Coveralls
       uses: coverallsapp/github-action@v2
       with:

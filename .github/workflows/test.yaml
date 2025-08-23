@@ -1,9 +1,8 @@
-name: Test
+name: Quick PR Checks
 
 on:
-  push:
-    branches: [ main, master ]  # Only run on main/master pushes
-  pull_request:  # Runs on ALL PRs from ANY branch
+  pull_request:  # Only run on PRs for quick feedback
+  # Removed push triggers to avoid duplication with validate workflow
 
 env:
   DEFAULT_PYTHON: 3.13
@@ -33,13 +32,13 @@ jobs:
         run: |
           pre-commit run --all-files --show-diff-on-failure --color=always
 
-  tests:
+  quick-tests:
     runs-on: "ubuntu-latest"
     strategy:
-      max-parallel: 4
+      max-parallel: 2
       matrix:
-        python-version: [3.11, 3.12, 3.13]
-    name: Run tests
+        python-version: [3.12, 3.13]  # Reduced matrix for faster PR feedback
+    name: Quick Tests
     steps:
       - name: Check out code from GitHub
         uses: actions/checkout@v5
@@ -51,21 +50,14 @@ jobs:
         run: |
           pip install --constraint=.github/workflows/constraints.txt pip
           pip install -r config/requirements_test.txt
-      - name: Tests suite
+      - name: Quick test suite
         run: |
           pytest \
             --asyncio-mode=auto \
-            --durations=10 \
-            --cov=custom_components.imou_life \
-            --cov-config=config/.coveragerc \
-            --cov-report=lcov \
-            --cov-report=term-missing \
-            tests
-      - name: Upload coverage to Coveralls
-        uses: coverallsapp/github-action@v2
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: coverage.lcov
+            --durations=5 \
+            --maxfail=10 \
+            --tb=short \
+            tests/unit/  # Only unit tests for speed
 
   hacs:
     runs-on: "ubuntu-latest"
