@@ -8,6 +8,10 @@ from unittest.mock import MagicMock
 mock_turbojpeg = MagicMock()
 sys.modules["turbojpeg"] = mock_turbojpeg
 
+# Also mock PyTurboJPEG to prevent import issues
+mock_pyturbojpeg = MagicMock()
+sys.modules["PyTurboJPEG"] = mock_pyturbojpeg
+
 # Mock camera img_util to prevent import issues
 mock_img_util = MagicMock()
 sys.modules["homeassistant.components.camera.img_util"] = mock_img_util
