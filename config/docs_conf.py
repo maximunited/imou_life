@@ -17,14 +17,11 @@ release = "1.1.0"
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = [
-    "myst_parser",  # For Markdown support
-]
+extensions = []
 
 # The suffix of source filenames.
 source_suffix = {
     ".rst": "restructuredtext",
-    ".md": "markdown",
 }
 
 # The master toctree document.
@@ -39,18 +36,3 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 # The theme to use for HTML and HTML Help pages.
 html_theme = "sphinx_rtd_theme"
-
-# Add any paths that contain custom static files (such as style sheets) here,
-# relative to this directory. They are copied after the builtin static files,
-# so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ["_static"]
-
-# Theme options are theme-specific and customize the look and feel of a theme
-# further.
-html_theme_options = {
-    "navigation_depth": 4,
-    "collapse_navigation": False,
-    "sticky_navigation": True,
-    "includehidden": True,
-    "titles_only": False,
-}

@@ -9,21 +9,9 @@ sphinx:
   fail_on_warning: false
 
 # Set the version of Python and requirements
-# Project supports Python >=3.9, and 3.13 is fully supported in CI
 python:
   install:
     - method: pip
       path: .
       extra_requirements:
         - docs
-
-# Build additional formats
-formats:
-  - pdf
-  - epub
-
-# Build environment
-build:
-  os: ubuntu-22.04
-  tools:
-    python: "3.13"
