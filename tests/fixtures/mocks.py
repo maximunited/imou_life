@@ -19,82 +19,59 @@ class MockConfigEntry(ConfigEntry):
             "minor_version": kwargs.get("minor_version", 1),
             "title": kwargs.get("title", "Test Entry"),
             "source": kwargs.get("source", "user"),
-            "discovery_keys": kwargs.get("discovery_keys", []),
             "options": kwargs.get("options", {}),
-            "unique_id": kwargs.get("unique_id", "test_unique_id"),
+            "discovery_keys": kwargs.get("discovery_keys", []),
             "subentries_data": kwargs.get("subentries_data", {}),
+            "unique_id": kwargs.get("unique_id", "test_unique_id"),
         }
 
-        # Try to initialize with all parameters
+        # Try to initialize with all parameters first
         try:
             super().__init__(**all_params)
         except TypeError as e:
-            # If that fails, try to identify which parameters are actually required
-            error_str = str(e)
-            if "unexpected keyword argument" in error_str:
+            # If we get an error about unexpected keyword arguments, remove them and
+            # retry
+            if "unexpected keyword argument" in str(e):
                 # Extract the unexpected parameter name from the error
                 import re
 
                 unexpected_match = re.search(
                     r"unexpected keyword argument '([^']+)'",
-                    error_str,
+                    str(e),
                 )
                 if unexpected_match:
                     unexpected_param = unexpected_match.group(1)
-                    # Remove the unexpected parameter and try again
                     if unexpected_param in all_params:
                         del all_params[unexpected_param]
                         try:
                             super().__init__(**all_params)
+                            return
                         except TypeError:
-                            # If still failing, try with minimal parameters
-                            super().__init__(
-                                entry_id=entry_id,
-                                domain=domain,
-                                data=data,
-                                version=version,
-                            )
-                    else:
-                        # Fallback: try with minimal parameters
-                        super().__init__(
-                            entry_id=entry_id,
-                            domain=domain,
-                            data=data,
-                            version=version,
-                        )
-                else:
-                    # Fallback: try with minimal parameters
-                    super().__init__(
-                        entry_id=entry_id,
-                        domain=domain,
-                        data=data,
-                        version=version,
-                    )
-            elif "missing" in error_str:
-                # Extract missing parameter names from the error
-                import re
+                            pass
 
-                missing_match = re.search(
-                    r"missing \d+ required keyword-only arguments?: '([^']+)'",
-                    error_str,
-                )
-                if missing_match:
-                    missing_params = missing_match.group(1).split("', '")
-                    # Try with only the required parameters
-                    required_params = {
-                        k: v for k, v in all_params.items() if k in missing_params
-                    }
-                    super().__init__(**required_params)
-                else:
-                    # Fallback: try with minimal parameters
-                    super().__init__(
-                        entry_id=entry_id,
-                        domain=domain,
-                        data=data,
-                        version=version,
-                    )
-            else:
-                raise
+            # If we still have issues, try with just the essential parameters
+            essential_params = {
+                "entry_id": entry_id,
+                "domain": domain,
+                "data": data,
+                "version": version,
+                "minor_version": kwargs.get("minor_version", 1),
+                "title": kwargs.get("title", "Test Entry"),
+                "source": kwargs.get("source", "user"),
+                "options": kwargs.get("options", {}),
+            }
+
+            try:
+                super().__init__(**essential_params)
+            except TypeError:
+                # If we still have issues, try with minimal parameters
+                minimal_params = {
+                    "entry_id": entry_id,
+                    "domain": domain,
+                    "data": data,
+                    "version": version,
+                }
+                super().__init__(**minimal_params)
         self._hass = None
         self._options = kwargs.get("options", {})
 
