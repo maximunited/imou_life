@@ -27,6 +27,7 @@ on:
     branches:
       - master
       - main
+      - refactor/fix-scrutinizer-issues
     tags:
       - 'v*'        # Pre-releases: v1.0.21, v1.0.22, etc.
       - 'stable'    # Stable release trigger (graduation)
