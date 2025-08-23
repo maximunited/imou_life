@@ -1,7 +1,7 @@
 version: 2
 
 sphinx:
-  configuration: config/docs_conf.py
+  configuration: docs/conf.py
 
 python:
   install:
@@ -9,3 +9,4 @@ python:
       path: .
       extra_requirements:
         - docs
+  system_packages: false
