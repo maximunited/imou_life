@@ -38,7 +38,7 @@ Related to #[issue_number]
 
 ## 🏠 Home Assistant Information (if applicable)
 - **Home Assistant Version**: [e.g., 2023.12.0]
-- **Integration Version**: [e.g., 1.0.16]
+- **Integration Version**: [e.g., 1.1.0]
 
 ## 📸 Screenshots (if applicable)
 Add screenshots to help explain your changes.

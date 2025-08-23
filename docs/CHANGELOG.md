@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.0] (2025-01-27)
+### Changed
+- Graduated to stable release v1.1.0
+- Updated development status from Beta to Production/Stable
+- Version bump to 1.1.0
+
 ## [1.0.33] (2025-08-23)
 ### Changed
 - Version bump to 1.0.33

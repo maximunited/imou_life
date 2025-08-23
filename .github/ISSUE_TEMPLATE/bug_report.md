@@ -28,7 +28,7 @@ A clear and concise description of what actually happened.
 
 ## 🏠 Home Assistant Information
 - **Home Assistant Version**: [e.g., 2023.12.0]
-- **Integration Version**: [e.g., 1.0.16]
+- **Integration Version**: [e.g., 1.1.0]
 - **HACS Version**: [e.g., 1.34.0]
 
 ## 📋 Configuration
