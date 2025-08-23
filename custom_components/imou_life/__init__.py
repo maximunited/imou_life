@@ -52,21 +52,42 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up this integration using UI."""
     if hass.data.get(DOMAIN) is None:
         hass.data.setdefault(DOMAIN, {})
+
+    # Initialize API client and device
+    api_client, device = await _setup_api_client_and_device(hass, entry)
+
+    # Initialize device with timeout protection
+    await _initialize_device(device, entry)
+
+    # Create and configure coordinator
+    coordinator = await _setup_coordinator(hass, device, entry)
+
+    # Store coordinator and setup platforms
+    hass.data[DOMAIN][entry.entry_id] = coordinator
+    await _setup_platforms(hass, entry, coordinator)
+
+    _LOGGER.debug("Integration setup completed successfully")
+    return True
+
+
+async def _setup_api_client_and_device(hass: HomeAssistant, entry: ConfigEntry):
+    """Set up API client and device instance."""
     session = async_get_clientsession(hass)
 
-    # retrieve the configuration entry parameters
-    _LOGGER.debug("Loading entry %s", entry.entry_id)
+    # Retrieve configuration parameters
     name = entry.data.get(CONF_DEVICE_NAME)
     api_url = entry.data.get(CONF_API_URL)
     app_id = entry.data.get(CONF_APP_ID)
     app_secret = entry.data.get(CONF_APP_SECRET)
     device_id = entry.data.get(CONF_DEVICE_ID)
+
     _LOGGER.debug("Setting up device %s (%s)", name, device_id)
 
-    # create an imou api client instance
+    # Create API client
     api_client = ImouAPIClient(app_id, app_secret, session)
-    _LOGGER.debug("Setting API base url to %s", api_url)
     api_client.set_base_url(api_url)
+
+    # Configure timeout if specified
     timeout = entry.options.get(OPTION_API_TIMEOUT, None)
     if isinstance(timeout, str):
         timeout = None if timeout == "" else int(timeout)
@@ -74,10 +95,19 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         _LOGGER.debug("Setting API timeout to %d", timeout)
         api_client.set_timeout(timeout)
 
-    # create an imou device instance
+    # Create device instance
     device = ImouDevice(api_client, device_id)
     if name is not None:
         device.set_name(name)
+
+    # Configure device options
+    _configure_device_options(device, entry)
+
+    return api_client, device
+
+
+def _configure_device_options(device: ImouDevice, entry: ConfigEntry):
+    """Configure device-specific options."""
     camera_wait_before_download = entry.options.get(
         OPTION_CAMERA_WAIT_BEFORE_DOWNLOAD, None
     )
@@ -86,13 +116,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             "Setting camera wait before download to %f", camera_wait_before_download
         )
         device.set_camera_wait_before_download(camera_wait_before_download)
+
     wait_after_wakeup = entry.options.get(OPTION_WAIT_AFTER_WAKE_UP, None)
     if wait_after_wakeup is not None:
         _LOGGER.debug("Setting wait after wakeup to %f", wait_after_wakeup)
         device.set_wait_after_wakeup(wait_after_wakeup)
 
-    # initialize the device so to discover all the sensors with timeout protection
+
+async def _initialize_device(device: ImouDevice, entry: ConfigEntry):
+    """Initialize device with timeout protection."""
     setup_timeout = entry.options.get(OPTION_SETUP_TIMEOUT, SETUP_TIMEOUT)
+
     try:
         _LOGGER.debug("Initializing device with timeout %d seconds...", setup_timeout)
         await asyncio.wait_for(device.async_initialize(), timeout=setup_timeout)
@@ -104,17 +138,22 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         _LOGGER.error(exception.to_string())
         raise ImouException() from exception
 
-    # at this time, all sensors must be disabled
-    # (will be enabled individually by async_added_to_hass())
+    # Disable all sensors initially (will be enabled individually by
+    # async_added_to_hass())
     for sensor_instance in device.get_all_sensors():
         sensor_instance.set_enabled(False)
 
-    # create a coordinator
+
+async def _setup_coordinator(
+    hass: HomeAssistant, device: ImouDevice, entry: ConfigEntry
+):
+    """Set up and initialize coordinator."""
     coordinator = ImouDataUpdateCoordinator(
         hass, device, entry.options.get(OPTION_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
     )
 
-    # fetch the data with timeout protection
+    # Fetch initial data with timeout protection
+    setup_timeout = entry.options.get(OPTION_SETUP_TIMEOUT, SETUP_TIMEOUT)
     try:
         _LOGGER.debug("Fetching initial data with timeout %d seconds...", setup_timeout)
         await asyncio.wait_for(coordinator.async_refresh(), timeout=setup_timeout)
@@ -126,18 +165,18 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     if not coordinator.last_update_success:
         raise ConfigEntryNotReady
 
-    # store the coordinator so to be accessible by each platform
-    hass.data[DOMAIN][entry.entry_id] = coordinator
+    return coordinator
 
-    # for each enabled platform, forward the configuration entry for its setup
+
+async def _setup_platforms(hass: HomeAssistant, entry: ConfigEntry, coordinator):
+    """Set up all platforms."""
+    # Add platforms to coordinator
     for platform in PLATFORMS:
         coordinator.platforms.append(platform)
 
     _LOGGER.debug("Setting up platforms: %s", PLATFORMS)
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     entry.add_update_listener(async_reload_entry)
-    _LOGGER.debug("Integration setup completed successfully")
-    return True
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:

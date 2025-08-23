@@ -106,23 +106,8 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
             # get the device instance from the selected input
             device = self._discovered_devices[user_input[CONF_DISCOVERED_DEVICE]]
             if device is not None:
-                # set the name
-                name = (
-                    f"{user_input[CONF_DEVICE_NAME]}"
-                    if CONF_DEVICE_NAME in user_input
-                    and user_input[CONF_DEVICE_NAME] != ""
-                    else device.get_name()
-                )
-                # create the entry
-                data = {
-                    CONF_API_URL: self._api_url,
-                    CONF_DEVICE_NAME: name,
-                    CONF_APP_ID: self._app_id,
-                    CONF_APP_SECRET: self._app_secret,
-                    CONF_DEVICE_ID: device.get_device_id(),
-                }
-                await self.async_set_unique_id(device.get_device_id())
-                return self.async_create_entry(title=name, data=data)
+                # create the entry using common method
+                return await self._create_entry_from_device(device, user_input)
 
         # discover registered devices
         try:
@@ -163,23 +148,8 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
                 _LOGGER.error(exception.to_string())
             # valid credentials provided, create the entry
             if valid:
-                # set the name
-                name = (
-                    f"{user_input[CONF_DEVICE_NAME]}"
-                    if CONF_DEVICE_NAME in user_input
-                    and user_input[CONF_DEVICE_NAME] != ""
-                    else device.get_name()
-                )
-                # create the entry
-                data = {
-                    CONF_API_URL: self._api_url,
-                    CONF_DEVICE_NAME: name,
-                    CONF_APP_ID: self._app_id,
-                    CONF_APP_SECRET: self._app_secret,
-                    CONF_DEVICE_ID: user_input[CONF_DEVICE_ID],
-                }
-                await self.async_set_unique_id(user_input[CONF_DEVICE_ID])
-                return self.async_create_entry(title=name, data=data)
+                # create the entry using common method
+                return await self._create_entry_from_device(device, user_input)
 
         # by default show up the form
         return self.async_show_form(
@@ -192,6 +162,25 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
             ),
             errors=self._errors,
         )
+
+    async def _create_entry_from_device(self, device, user_input):
+        """Create configuration entry from device instance."""
+        # set the name
+        name = (
+            f"{user_input[CONF_DEVICE_NAME]}"
+            if CONF_DEVICE_NAME in user_input and user_input[CONF_DEVICE_NAME] != ""
+            else device.get_name()
+        )
+        # create the entry
+        data = {
+            CONF_API_URL: self._api_url,
+            CONF_DEVICE_NAME: name,
+            CONF_APP_ID: self._app_id,
+            CONF_APP_SECRET: self._app_secret,
+            CONF_DEVICE_ID: device.get_device_id(),
+        }
+        await self.async_set_unique_id(device.get_device_id())
+        return self.async_create_entry(title=name, data=data)
 
     @staticmethod
     @callback
