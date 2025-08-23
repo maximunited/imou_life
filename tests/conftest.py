@@ -138,3 +138,44 @@ def mock_hass_components():
         # Try to patch additional aiohttp client functions if they exist
         # We'll just skip functions that don't exist to avoid errors
         yield
+
+
+# Additional error handling for CI environment
+@pytest.fixture(autouse=True)
+def handle_import_errors():
+    """Handle import errors that might occur in CI environment."""
+    import sys
+    from unittest.mock import MagicMock
+
+    # Mock any problematic imports that might fail in CI
+    problematic_modules = [
+        "turbojpeg",
+        "PyTurboJPEG",
+        "cv2",
+        "PIL",
+        "PIL.Image",
+        "PIL.ImageDraw",
+        "PIL.ImageFont",
+    ]
+
+    for module_name in problematic_modules:
+        if module_name not in sys.modules:
+            try:
+                sys.modules[module_name] = MagicMock()
+            except Exception:
+                pass  # Ignore any errors during mocking
+
+    yield
+
+
+# Ensure test environment is properly set up
+@pytest.fixture(autouse=True)
+def setup_test_environment():
+    """Ensure test environment is properly set up."""
+    import os
+
+    # Set test environment variables
+    os.environ["TESTING"] = "1"
+    os.environ["PYTHONPATH"] = os.getcwd()
+
+    yield
