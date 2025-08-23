@@ -3,9 +3,13 @@
 
 version: 2
 
+# Build documentation in the docs/ directory with Sphinx
+sphinx:
+  configuration: config/docs_conf.py
+  fail_on_warning: false
+
 # Set the version of Python and requirements
-# Using Python 3.12 for best performance and compatibility
-# Project supports Python >=3.9, and 3.12 is fully supported in CI
+# Project supports Python >=3.9, and 3.13 is fully supported in CI
 python:
   version: "3.13"
   install:
