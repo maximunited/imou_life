@@ -1,6 +1,7 @@
 """Global fixtures for imou_life integration."""
 
 # Mock turbojpeg before any other imports to prevent import errors
+
 import sys
 from unittest.mock import MagicMock
 
@@ -53,8 +54,10 @@ def mock_get_sensors_by_platform(platform):
     """Provide mock sensors by platform."""
     if platform == "switch":
         return [ImouSwitch(None, "device_id", "device_name", "motionDetect")]
+
     elif platform == "sensor":
         return [ImouSensor(None, "device_id", "device_name", "lastAlarm")]
+
     elif platform == "binary_sensor":
         return [ImouBinarySensor(None, "device_id", "device_name", "online")]
 
@@ -138,71 +141,3 @@ def mock_hass_components():
         # Try to patch additional aiohttp client functions if they exist
         # We'll just skip functions that don't exist to avoid errors
         yield
-
-
-# Additional error handling for CI environment
-@pytest.fixture(autouse=True)
-def handle_import_errors():
-    """Handle import errors that might occur in CI environment."""
-    import sys
-    from unittest.mock import MagicMock
-
-    # Mock any problematic imports that might fail in CI
-    problematic_modules = [
-        "turbojpeg",
-        "PyTurboJPEG",
-        "cv2",
-        "PIL",
-        "PIL.Image",
-        "PIL.ImageDraw",
-        "PIL.ImageFont",
-    ]
-
-    for module_name in problematic_modules:
-        if module_name not in sys.modules:
-            try:
-                sys.modules[module_name] = MagicMock()
-            except Exception:
-                pass  # Ignore any errors during mocking
-
-    yield
-
-
-# Enhanced error handling for CI environment
-@pytest.fixture(autouse=True)
-def enhanced_ci_support():
-    """Enhanced support for CI environment issues."""
-    import os
-    import sys
-    from unittest.mock import MagicMock
-
-    # Set environment variables for CI
-    os.environ["CI"] = "true"
-    os.environ["PYTHONPATH"] = os.getcwd()
-
-    # Additional mocking for CI-specific issues
-    try:
-        # Mock any missing system modules
-        if "homeassistant" not in sys.modules:
-            sys.modules["homeassistant"] = MagicMock()
-        if "homeassistant.core" not in sys.modules:
-            sys.modules["homeassistant.core"] = MagicMock()
-        if "homeassistant.helpers" not in sys.modules:
-            sys.modules["homeassistant.helpers"] = MagicMock()
-    except Exception:
-        pass  # Ignore any errors during setup
-
-    yield
-
-
-# Ensure test environment is properly set up
-@pytest.fixture(autouse=True)
-def setup_test_environment():
-    """Ensure test environment is properly set up."""
-    import os
-
-    # Set test environment variables
-    os.environ["TESTING"] = "1"
-    os.environ["PYTHONPATH"] = os.getcwd()
-
-    yield
