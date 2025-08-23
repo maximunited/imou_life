@@ -10,40 +10,30 @@ class MockConfigEntry(ConfigEntry):
 
     def __init__(self, domain, data, entry_id="test", version=1, **kwargs):
         """Initialize mock config entry."""
-        # Define parameter sets in order of preference
+        # Build parameter sets dynamically with required defaults
+        base_params = {
+            "entry_id": entry_id,
+            "domain": domain,
+            "data": data,
+            "version": version,
+        }
+
+        # Define additional parameter sets in order of preference
         param_sets = [
-            # Full parameter set
+            {**base_params, **kwargs},  # Full parameter set
             {
-                "entry_id": entry_id,
-                "domain": domain,
-                "data": data,
-                "version": version,
-                "minor_version": kwargs.get("minor_version", 1),
-                "title": kwargs.get("title", "Test Entry"),
-                "source": kwargs.get("source", "user"),
-                "options": kwargs.get("options", {}),
-                "discovery_keys": kwargs.get("discovery_keys", []),
-                "subentries_data": kwargs.get("subentries_data", {}),
-                "unique_id": kwargs.get("unique_id", "test_unique_id"),
-            },
-            # Essential parameters
-            {
-                "entry_id": entry_id,
-                "domain": domain,
-                "data": data,
-                "version": version,
-                "minor_version": kwargs.get("minor_version", 1),
-                "title": kwargs.get("title", "Test Entry"),
-                "source": kwargs.get("source", "user"),
-                "options": kwargs.get("options", {}),
-            },
-            # Minimal parameters
-            {
-                "entry_id": entry_id,
-                "domain": domain,
-                "data": data,
-                "version": version,
-            },
+                **base_params,
+                **{
+                    "minor_version": kwargs.get("minor_version", 1),
+                    "title": kwargs.get("title", "Test Entry"),
+                    "source": kwargs.get("source", "user"),
+                    "options": kwargs.get("options", {}),
+                    "discovery_keys": kwargs.get("discovery_keys", []),
+                    "subentries_data": kwargs.get("subentries_data", {}),
+                    "unique_id": kwargs.get("unique_id", "test_unique_id"),
+                },
+            },  # Essential parameters
+            base_params,  # Minimal parameters
         ]
 
         # Try each parameter set until one works
@@ -55,9 +45,7 @@ class MockConfigEntry(ConfigEntry):
                 continue
         else:
             # If all fail, use minimal params as fallback
-            super().__init__(
-                entry_id=entry_id, domain=domain, data=data, version=version
-            )
+            super().__init__(**base_params)
 
         self._hass = None
         self._options = kwargs.get("options", {})
