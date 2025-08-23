@@ -12,6 +12,12 @@ sys.modules["turbojpeg"] = mock_turbojpeg
 mock_img_util = MagicMock()
 sys.modules["homeassistant.components.camera.img_util"] = mock_img_util
 
+# Mock frame helper to prevent "Frame helper not set up" errors
+mock_frame = MagicMock()
+mock_frame.report_usage = MagicMock()
+mock_frame.report_non_thread_safe_operation = MagicMock()
+sys.modules["homeassistant.helpers.frame"] = mock_frame
+
 # flake8: noqa: E402
 from unittest.mock import MagicMock, patch
 
@@ -119,21 +125,14 @@ def hass():
 @pytest.fixture(autouse=True)
 def mock_hass_components():
     """Mock Home Assistant components that are not available in tests."""
+    # Apply all patches in a single context manager
     with (
         patch("homeassistant.helpers.aiohttp_client.async_get_clientsession"),
         patch("homeassistant.helpers.entity_platform.async_get_current_platform"),
+        patch("homeassistant.helpers.aiohttp_client._async_create_clientsession"),
+        patch("homeassistant.helpers.aiohttp_client._async_get_connector"),
+        patch("homeassistant.helpers.aiohttp_client._async_get_or_create_resolver"),
+        patch("homeassistant.helpers.aiohttp_client._async_make_resolver"),
+        patch("homeassistant.helpers.aiohttp_client.HassAsyncDNSResolver"),
     ):
-        # Conditionally mock frame helper functions if they exist
-        try:
-            with patch("homeassistant.helpers.frame.report_usage"):
-                try:
-                    with patch(
-                        "homeassistant.helpers.frame.report_non_thread_safe_operation"
-                    ):
-                        yield
-                except AttributeError:
-                    # report_non_thread_safe_operation doesn't exist, continue without it
-                    yield
-        except AttributeError:
-            # report_usage doesn't exist, continue without frame helper mocking
-            yield
+        yield
