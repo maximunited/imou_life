@@ -45,12 +45,7 @@ addopts = [
     "--strict-markers",
     "--disable-warnings",
     "--tb=short",
-    "-v",
-    "--cov=custom_components/imou_life",
-    "--cov-report=term-missing",
-    "--cov-report=html",
-    "--cov-report=xml",
-    "--cov-fail-under=10"
+    "-v"
 ]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
@@ -62,6 +57,7 @@ markers = [
     "integration: marks tests as integration tests",
     "unit: marks tests as unit tests",
 ]
+asyncio_mode = "auto"
 filterwarnings = [
     "ignore::DeprecationWarning",
     "ignore::PendingDeprecationWarning",

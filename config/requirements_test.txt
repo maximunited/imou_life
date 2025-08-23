@@ -9,8 +9,8 @@ aiohttp>=3.8.0
 # Coverage
 coverage>=7.4.0
 
-# Home Assistant
-homeassistant>=2024.1.0
+# Home Assistant - pin to stable version for CI compatibility
+homeassistant>=2024.1.0,<2025.0.0
 httpx>=0.24.0
 
 # Integration runtime dependencies
