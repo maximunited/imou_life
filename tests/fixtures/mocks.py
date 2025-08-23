@@ -10,25 +10,32 @@ class MockConfigEntry(ConfigEntry):
 
     def __init__(self, domain, data, entry_id="test", version=1, **kwargs):
         """Initialize mock config entry."""
-        # Always include required parameters for newer Home Assistant versions
+        # Include all required parameters for Home Assistant 2025.8.2+
         params = {
             "entry_id": entry_id,
             "domain": domain,
             "data": data,
             "version": version,
-            "minor_version": kwargs.get("minor_version", 1),
-            "title": kwargs.get("title", "Test Entry"),
-            "source": kwargs.get("source", "user"),
-            "options": kwargs.get("options", {}),
             "discovery_keys": kwargs.get("discovery_keys", []),
             "subentries_data": kwargs.get("subentries_data", {}),
             "unique_id": kwargs.get("unique_id", "test_unique_id"),
         }
 
-        # Add any additional kwargs
-        params.update(kwargs)
+        # Add optional parameters
+        optional_params = ["minor_version", "title", "source", "options"]
+        for param in optional_params:
+            if param in kwargs:
+                params[param] = kwargs[param]
+            elif param == "minor_version":
+                params[param] = 1
+            elif param == "title":
+                params[param] = "Test Entry"
+            elif param == "source":
+                params[param] = "user"
+            elif param == "options":
+                params[param] = {}
 
-        # Initialize the parent class with all parameters
+        # Initialize the parent class with all required parameters
         super().__init__(**params)
 
         self._hass = None
