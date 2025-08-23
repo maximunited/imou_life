@@ -43,47 +43,81 @@ def bypass_setup_fixture():
         yield
 
 
-@pytest.mark.asyncio
-async def test_discover_ok(hass, api_ok):
-    """Test config flow: discover ok."""
-    # Set flow mode to discover
-    hass.set_flow_mode("discover")
+async def _test_flow_init(hass, flow_mode):
+    """Common flow initialization logic."""
+    hass.set_flow_mode(flow_mode)
 
-    # Initialize a config flow as the user is clicking on add new integration
     result = await hass.config_entries.flow.async_init(
         DOMAIN, context={"source": config_entries.SOURCE_USER}
     )
+
     # Check that the config flow shows the login form as the first step
     assert result["type"] == data_entry_flow.FlowResultType.FORM
     assert result["step_id"] == "login"
-    # simulate the user entering app id, app secret and discover checked
+
+    return result
+
+
+async def _test_flow_configure(hass, flow_id, user_input, expected_step):
+    """Common flow configuration logic."""
     result = await hass.config_entries.flow.async_configure(
-        result["flow_id"], user_input=MOCK_LOGIN_WITH_DISCOVER
+        flow_id, user_input=user_input
     )
-    # ensure a new form is requested
+
+    # Ensure a new form is requested
     assert result["type"] == data_entry_flow.FlowResultType.FORM
-    # get the next step in the flow
+
+    # Get the next step in the flow
     next(
         flow
         for flow in hass.config_entries.flow.async_progress()
-        if flow["flow_id"] == result["flow_id"]
+        if flow["flow_id"] == flow_id
     )
-    # ensure it is the discover step
-    assert result["step_id"] == "discover"
-    # submit the discover form
+
+    # Ensure it is the expected step
+    assert result["step_id"] == expected_step
+
+    return result
+
+
+async def _test_flow_completion(hass, flow_id, user_input, expected_data):
+    """Common flow completion logic."""
     result = await hass.config_entries.flow.async_configure(
-        result["flow_id"], user_input=MOCK_CREATE_ENTRY_FROM_DISCOVER
+        flow_id, user_input=user_input
     )
-    # check that the config flow is complete and a new entry is created
+
+    # Check that the config flow is complete and a new entry is created
     assert result["type"] == data_entry_flow.FlowResultType.CREATE_ENTRY
-    assert result["data"][CONF_API_URL] == MOCK_LOGIN_WITH_DISCOVER[CONF_API_URL]
-    assert result["data"][CONF_APP_ID] == MOCK_LOGIN_WITH_DISCOVER[CONF_APP_ID]
-    assert result["data"][CONF_APP_SECRET] == MOCK_LOGIN_WITH_DISCOVER[CONF_APP_SECRET]
-    assert (
-        result["data"][CONF_DEVICE_ID]
-        == MOCK_CREATE_ENTRY_FROM_DISCOVER[CONF_DISCOVERED_DEVICE]
-    )
+
+    # Verify the data matches expected values
+    for key, expected_value in expected_data.items():
+        assert result["data"][key] == expected_value
+
     assert result["result"]
+    return result
+
+
+@pytest.mark.asyncio
+async def test_discover_ok(hass, api_ok):
+    """Test config flow: discover ok."""
+    # Initialize flow
+    result = await _test_flow_init(hass, "discover")
+
+    # Configure login step
+    result = await _test_flow_configure(
+        hass, result["flow_id"], MOCK_LOGIN_WITH_DISCOVER, "discover"
+    )
+
+    # Complete flow
+    expected_data = {
+        CONF_API_URL: MOCK_LOGIN_WITH_DISCOVER[CONF_API_URL],
+        CONF_APP_ID: MOCK_LOGIN_WITH_DISCOVER[CONF_APP_ID],
+        CONF_APP_SECRET: MOCK_LOGIN_WITH_DISCOVER[CONF_APP_SECRET],
+        CONF_DEVICE_ID: MOCK_CREATE_ENTRY_FROM_DISCOVER[CONF_DISCOVERED_DEVICE],
+    }
+    await _test_flow_completion(
+        hass, result["flow_id"], MOCK_CREATE_ENTRY_FROM_DISCOVER, expected_data
+    )
 
 
 @pytest.mark.asyncio
@@ -106,45 +140,24 @@ async def test_login_error(hass, api_invalid_app_id):
 @pytest.mark.asyncio
 async def test_manual_ok(hass, api_ok):
     """Test manual flow: ok."""
-    # Set flow mode to manual
-    hass.set_flow_mode("manual")
+    # Initialize flow
+    result = await _test_flow_init(hass, "manual")
 
-    # Initialize a config flow as the user is clicking on add new integration
-    result = await hass.config_entries.flow.async_init(
-        DOMAIN, context={"source": config_entries.SOURCE_USER}
+    # Configure login step
+    result = await _test_flow_configure(
+        hass, result["flow_id"], MOCK_LOGIN_WITHOUT_DISCOVER, "manual"
     )
-    # Check that the config flow shows the login form as the first step
-    assert result["type"] == data_entry_flow.FlowResultType.FORM
-    assert result["step_id"] == "login"
-    # simulate the user entering app id, app secret and discover checked
-    result = await hass.config_entries.flow.async_configure(
-        result["flow_id"], user_input=MOCK_LOGIN_WITHOUT_DISCOVER
+
+    # Complete flow
+    expected_data = {
+        CONF_API_URL: MOCK_LOGIN_WITHOUT_DISCOVER[CONF_API_URL],
+        CONF_APP_ID: MOCK_LOGIN_WITHOUT_DISCOVER[CONF_APP_ID],
+        CONF_APP_SECRET: MOCK_LOGIN_WITHOUT_DISCOVER[CONF_APP_SECRET],
+        CONF_DEVICE_ID: MOCK_CREATE_ENTRY_FROM_MANUAL[CONF_DEVICE_ID],
+    }
+    await _test_flow_completion(
+        hass, result["flow_id"], MOCK_CREATE_ENTRY_FROM_MANUAL, expected_data
     )
-    # ensure a new form is requested
-    assert result["type"] == data_entry_flow.FlowResultType.FORM
-    # get the next step in the flow
-    next(
-        flow
-        for flow in hass.config_entries.flow.async_progress()
-        if flow["flow_id"] == result["flow_id"]
-    )
-    # ensure it is the discover step
-    assert result["step_id"] == "manual"
-    # submit the discover form
-    result = await hass.config_entries.flow.async_configure(
-        result["flow_id"], user_input=MOCK_CREATE_ENTRY_FROM_MANUAL
-    )
-    # check that the config flow is complete and a new entry is created
-    assert result["type"] == data_entry_flow.FlowResultType.CREATE_ENTRY
-    assert result["data"][CONF_API_URL] == MOCK_LOGIN_WITHOUT_DISCOVER[CONF_API_URL]
-    assert result["data"][CONF_APP_ID] == MOCK_LOGIN_WITHOUT_DISCOVER[CONF_APP_ID]
-    assert (
-        result["data"][CONF_APP_SECRET] == MOCK_LOGIN_WITHOUT_DISCOVER[CONF_APP_SECRET]
-    )
-    assert (
-        result["data"][CONF_DEVICE_ID] == MOCK_CREATE_ENTRY_FROM_MANUAL[CONF_DEVICE_ID]
-    )
-    assert result["result"]
 
 
 @pytest.mark.asyncio

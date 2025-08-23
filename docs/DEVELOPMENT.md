@@ -5,6 +5,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/maximunited/imou_life/badge.svg?branch=master)](https://coveralls.io/github/maximunited/imou_life?branch=master)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/maximunited/imou_life/master.svg)](https://results.pre-commit.ci/latest/github/maximunited/imou_life/master)
+[![Scrutinizer Code Quality](https://img.shields.io/scrutinizer/quality/g/maximunited/imou_life/master)](https://scrutinizer-ci.com/g/maximunited/imou_life/)
 
 This guide covers development setup, testing, and contribution guidelines for the Imou Life Home Assistant integration.
 

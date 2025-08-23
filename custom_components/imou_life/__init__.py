@@ -74,36 +74,59 @@ async def _setup_api_client_and_device(hass: HomeAssistant, entry: ConfigEntry):
     """Set up API client and device instance."""
     session = async_get_clientsession(hass)
 
-    # Retrieve configuration parameters
-    name = entry.data.get(CONF_DEVICE_NAME)
-    api_url = entry.data.get(CONF_API_URL)
-    app_id = entry.data.get(CONF_APP_ID)
-    app_secret = entry.data.get(CONF_APP_SECRET)
-    device_id = entry.data.get(CONF_DEVICE_ID)
+    # Extract configuration parameters
+    config_data = entry.data
+    name = config_data.get(CONF_DEVICE_NAME)
+    api_url = config_data.get(CONF_API_URL)
+    app_id = config_data.get(CONF_APP_ID)
+    app_secret = config_data.get(CONF_APP_SECRET)
+    device_id = config_data.get(CONF_DEVICE_ID)
 
     _LOGGER.debug("Setting up device %s (%s)", name, device_id)
 
-    # Create API client
+    # Create and configure API client
+    api_client = _create_api_client(app_id, app_secret, session, api_url, entry)
+
+    # Create and configure device instance
+    device = _create_device_instance(api_client, device_id, name, entry)
+
+    return api_client, device
+
+
+def _create_api_client(
+    app_id: str, app_secret: str, session, api_url: str, entry: ConfigEntry
+):
+    """Create and configure the API client."""
     api_client = ImouAPIClient(app_id, app_secret, session)
     api_client.set_base_url(api_url)
 
     # Configure timeout if specified
-    timeout = entry.options.get(OPTION_API_TIMEOUT, None)
-    if isinstance(timeout, str):
-        timeout = None if timeout == "" else int(timeout)
+    timeout = _parse_timeout_option(entry.options.get(OPTION_API_TIMEOUT, None))
     if timeout is not None:
         _LOGGER.debug("Setting API timeout to %d", timeout)
         api_client.set_timeout(timeout)
 
-    # Create device instance
+    return api_client
+
+
+def _parse_timeout_option(timeout_value):
+    """Parse timeout option value safely."""
+    if isinstance(timeout_value, str):
+        return None if timeout_value == "" else int(timeout_value)
+    return timeout_value
+
+
+def _create_device_instance(api_client, device_id: str, name: str, entry: ConfigEntry):
+    """Create and configure the device instance."""
     device = ImouDevice(api_client, device_id)
+
     if name is not None:
         device.set_name(name)
 
     # Configure device options
     _configure_device_options(device, entry)
 
-    return api_client, device
+    return device
 
 
 def _configure_device_options(device: ImouDevice, entry: ConfigEntry):
