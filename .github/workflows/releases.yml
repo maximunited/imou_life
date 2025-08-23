@@ -68,8 +68,8 @@ jobs:
           elif [[ "${{ github.ref }}" == refs/tags/* ]]; then
             # Extract version from git tag
             if [[ "${{ github.ref }}" == refs/tags/stable ]]; then
-              # For stable tag, we need to find the latest pre-release version by creation date
-              version=$(gh release list --json tagName,isPrerelease,createdAt | jq -r '.[] | select(.isPrerelease == true) | [.tagName, .createdAt] | @tsv' | sort -k2 -r | head -1 | cut -f1 | sed 's/^v//')
+              # For stable tag, we need to find the latest version pre-release (not CI) by creation date
+              version=$(gh release list --json tagName,isPrerelease,createdAt | jq -r '.[] | select(.isPrerelease == true and (.tagName | startswith("v"))) | [.tagName, .createdAt] | @tsv' | sort -k2 -r | head -1 | cut -f1 | sed 's/^v//')
               if [ -z "$version" ]; then
                 echo "No pre-release found to graduate to stable"
                 exit 1
