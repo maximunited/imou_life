@@ -23,7 +23,7 @@ A Home Assistant integration for Imou Life cameras and devices, providing compre
 
 ### System Requirements
 - **Home Assistant**: 2023.8.0 or later (including latest 2025.x versions)
-- **Python**: 3.9, 3.10, 3.11, 3.12, 3.13 (fully compatible)
+- **Python**: 3.11, 3.12, 3.13 (fully compatible)
 - **Operating System**: Any platform supported by Home Assistant
 
 ### Account Requirements
@@ -32,7 +32,7 @@ A Home Assistant integration for Imou Life cameras and devices, providing compre
 
 ### Version Compatibility
 - **Latest Home Assistant**: ✅ Fully supported (tested with 2025.8.2+)
-- **Python 3.9-3.13**: ✅ All versions supported
+- **Python 3.11-3.13**: ✅ All versions supported
 - **Cross-platform**: ✅ Windows, macOS, Linux, Docker, etc.
 
 ## 🔑 Getting Your Imou API Credentials
@@ -169,7 +169,7 @@ Download diagnostics from the device page in Home Assistant for detailed informa
 
 ### Tested Environments
 - **Home Assistant**: 2023.8.0 → 2025.8.2+ (latest)
-- **Python**: 3.9, 3.10, 3.11, 3.12, 3.13
+- **Python**: 3.11, 3.12, 3.13
 - **Platforms**: Windows, macOS, Linux, Docker, Home Assistant OS
 - **Architectures**: x86_64, ARM64, ARM32
 
