@@ -1,12 +1,12 @@
 
 # Imou Life - Home Assistant Integration
 
-![Home Assistant](https://img.shields.io/badge/home%20assistant-%2341BDF5.svg?style=for-the-badge&logo=home-assistant&logoColor=white)
+![Home Assistant](https://img.shields.io/badge/home%20assistant-%2341BDF5.svg?logo=home-assistant&logoColor=white)
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
-[![Buy Me a Coffee](https://img.shields.io/badge/buy%20me%20a%20coffee-%23FFDD00.svg?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/maxim_united)
+[![Buy Me a Coffee](https://img.shields.io/badge/buy%20me%20a%20coffee-%23FFDD00.svg?logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/maxim_united)
 
-**Current Version**: ![Release](https://img.shields.io/badge/release-1.1.0-blue.svg)
-**Pre-release**: ![Pre-release](https://img.shields.io/badge/pre--release-1.1.0-orange.svg)
+![Release](https://img.shields.io/badge/release-1.1.0-blue.svg)
+![Pre-release](https://img.shields.io/badge/pre--release-1.1.0-orange.svg)
 
 A Home Assistant integration for Imou Life cameras and devices, providing comprehensive monitoring and control capabilities.
 

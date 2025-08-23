@@ -1,7 +1,7 @@
 # Development Guide - Imou Life Integration
 
-![GitHub Actions](https://img.shields.io/badge/github%20actions-%232671E5.svg?style=for-the-badge&logo=githubactions&logoColor=white)
-[![Buy Me a Coffee](https://img.shields.io/badge/buy%20me%20a%20coffee-%23FFDD00.svg?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/maxim_united)
+![GitHub Actions](https://img.shields.io/badge/github%20actions-%232671E5.svg?logo=githubactions&logoColor=white)
+[![Buy Me a Coffee](https://img.shields.io/badge/buy%20me%20a%20coffee-%23FFDD00.svg?logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/maxim_united)
 [![Coverage Status](https://coveralls.io/repos/github/maximunited/imou_life/badge.svg?branch=master)](https://coveralls.io/github/maximunited/imou_life?branch=master)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 
@@ -255,6 +255,26 @@ The `git bump` script automatically:
 - **Minor**: New features, backward compatible
 - **Major**: Breaking changes
 
+### Conventional Commits Integration
+
+The `git bump` script can automatically determine version bumps based on conventional commit messages:
+
+- **feat**: Triggers minor version bump
+- **fix**: Triggers patch version bump
+- **BREAKING CHANGE**: Triggers major version bump
+
+#### Automatic Version Bumping
+
+```bash
+# Auto-bump based on commit history
+git bump auto
+
+# Manual bump with conventional commit type
+git bump --type feat    # Minor version bump
+git bump --type fix     # Patch version bump
+git bump --type major   # Major version bump
+```
+
 ## 🤝 Contributing Guidelines
 
 ### Development Workflow
@@ -298,6 +318,59 @@ The `git bump` script automatically:
 - **Error Handling**: Proper exception handling
 - **Logging**: Appropriate logging levels
 - **Testing**: High test coverage for new code
+
+### Conventional Commits
+
+This project follows the [Conventional Commits](https://www.conventionalcommits.org/) specification for commit messages. This ensures consistent commit history and enables automatic changelog generation.
+
+#### Commit Message Format
+
+```
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+#### Types
+
+- **feat**: A new feature
+- **fix**: A bug fix
+- **docs**: Documentation only changes
+- **style**: Changes that do not affect the meaning of the code
+- **refactor**: A code change that neither fixes a bug nor adds a feature
+- **perf**: A code change that improves performance
+- **test**: Adding missing tests or correcting existing tests
+- **chore**: Changes to the build process or auxiliary tools
+
+#### Examples
+
+```bash
+# Feature
+git commit -m "feat: add motion detection sensitivity control"
+
+# Bug fix
+git commit -m "fix: resolve API timeout issues"
+
+# Documentation
+git commit -m "docs: update installation guide"
+
+# Breaking change
+git commit -m "feat!: change API response format
+
+BREAKING CHANGE: API now returns JSON instead of XML"
+
+# With scope
+git commit -m "feat(camera): add PTZ preset support"
+```
+
+#### Benefits
+
+- **Automatic Changelog**: GitHub Actions can generate changelogs
+- **Version Bumping**: Automatic version management based on commit types
+- **Release Notes**: Clear categorization of changes
+- **Team Communication**: Consistent commit message format
 
 ## 📊 Code Coverage
 
