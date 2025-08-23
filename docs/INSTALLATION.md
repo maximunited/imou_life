@@ -1,6 +1,7 @@
 # Imou Life Integration - Complete Installation Guide
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
+[![Buy Me a Coffee](https://img.shields.io/badge/buy%20me%20a%20coffee-%23FFDD00.svg?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/maxim_united)
 
 **PLEASE NOTE**: This is an UNOFFICIAL integration, NOT supported or validated by Imou or linked in any way to Imou.
 
