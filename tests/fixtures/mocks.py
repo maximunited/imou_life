@@ -10,47 +10,10 @@ class MockConfigEntry(ConfigEntry):
 
     def __init__(self, domain, data, entry_id="test", version=1, **kwargs):
         """Initialize mock config entry."""
-        # Always include all possible parameters to handle different HA versions
-        all_params = {
-            "entry_id": entry_id,
-            "domain": domain,
-            "data": data,
-            "version": version,
-            "minor_version": kwargs.get("minor_version", 1),
-            "title": kwargs.get("title", "Test Entry"),
-            "source": kwargs.get("source", "user"),
-            "options": kwargs.get("options", {}),
-            "discovery_keys": kwargs.get("discovery_keys", []),
-            "subentries_data": kwargs.get("subentries_data", {}),
-            "unique_id": kwargs.get("unique_id", "test_unique_id"),
-        }
-
-        # Try to initialize with all parameters first
-        try:
-            super().__init__(**all_params)
-        except TypeError as e:
-            # If we get an error about unexpected keyword arguments, remove them and
-            # retry
-            if "unexpected keyword argument" in str(e):
-                # Extract the unexpected parameter name from the error
-                import re
-
-                unexpected_match = re.search(
-                    r"unexpected keyword argument '([^']+)'",
-                    str(e),
-                )
-                if unexpected_match:
-                    unexpected_param = unexpected_match.group(1)
-                    if unexpected_param in all_params:
-                        del all_params[unexpected_param]
-                        try:
-                            super().__init__(**all_params)
-                            return
-                        except TypeError:
-                            pass
-
-            # If we still have issues, try with just the essential parameters
-            essential_params = {
+        # Define parameter sets in order of preference
+        param_sets = [
+            # Full parameter set
+            {
                 "entry_id": entry_id,
                 "domain": domain,
                 "data": data,
@@ -59,32 +22,45 @@ class MockConfigEntry(ConfigEntry):
                 "title": kwargs.get("title", "Test Entry"),
                 "source": kwargs.get("source", "user"),
                 "options": kwargs.get("options", {}),
-            }
+                "discovery_keys": kwargs.get("discovery_keys", []),
+                "subentries_data": kwargs.get("subentries_data", {}),
+                "unique_id": kwargs.get("unique_id", "test_unique_id"),
+            },
+            # Essential parameters
+            {
+                "entry_id": entry_id,
+                "domain": domain,
+                "data": data,
+                "version": version,
+                "minor_version": kwargs.get("minor_version", 1),
+                "title": kwargs.get("title", "Test Entry"),
+                "source": kwargs.get("source", "user"),
+                "options": kwargs.get("options", {}),
+            },
+            # Minimal parameters
+            {
+                "entry_id": entry_id,
+                "domain": domain,
+                "data": data,
+                "version": version,
+            },
+        ]
 
+        # Try each parameter set until one works
+        for params in param_sets:
             try:
-                super().__init__(**essential_params)
+                super().__init__(**params)
+                break
             except TypeError:
-                # If we still have issues, try with minimal parameters
-                minimal_params = {
-                    "entry_id": entry_id,
-                    "domain": domain,
-                    "data": data,
-                    "version": version,
-                }
-                super().__init__(**minimal_params)
+                continue
+        else:
+            # If all fail, use minimal params as fallback
+            super().__init__(
+                entry_id=entry_id, domain=domain, data=data, version=version
+            )
+
         self._hass = None
         self._options = kwargs.get("options", {})
-
-    def _get_default_value(self, param_name):
-        """Get default value for a parameter."""
-        defaults = {
-            "minor_version": 1,
-            "options": {},
-            "source": "user",
-            "title": "Test Entry",
-            "unique_id": "test_unique_id",
-        }
-        return defaults.get(param_name)
 
     def add_to_hass(self, hass):
         """Add this config entry to hass."""

@@ -1,38 +1,28 @@
-"""Binary sensor platform for Imou."""
+"""Button platform for Imou."""
 
 import logging
-from collections.abc import Callable
 
 from homeassistant.components.button import ENTITY_ID_FORMAT, ButtonEntity
-from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
 
-from .const import DOMAIN
 from .entity import ImouEntity
+from .entity_mixins import DeviceClassMixin
+from .platform_setup import setup_platform
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 
-# async def async_setup_entry(hass, entry, async_add_devices):
-async def async_setup_entry(
-    hass: HomeAssistant, entry: ConfigEntry, async_add_devices: Callable
-):
+async def async_setup_entry(hass, entry, async_add_devices):
     """Configure platform."""
-    coordinator = hass.data[DOMAIN][entry.entry_id]
-    device = coordinator.device
-    sensors = []
-    for sensor_instance in device.get_sensors_by_platform("button"):
-        sensor = ImouButton(coordinator, entry, sensor_instance, ENTITY_ID_FORMAT)
-        sensors.append(sensor)
-        coordinator.entities.append(sensor)
-        _LOGGER.debug(
-            "[%s] Adding %s", device.get_name(), sensor_instance.get_description()
-        )
-    async_add_devices(sensors)
+    await setup_platform(
+        hass, entry, "button", ImouButton, ENTITY_ID_FORMAT, async_add_devices
+    )
 
 
-class ImouButton(ImouEntity, ButtonEntity):
+class ImouButton(ImouEntity, ButtonEntity, DeviceClassMixin):
     """imou button class."""
+
+    # Device class mapping
+    DEVICE_CLASS_MAPPING = {"restartDevice": "restart"}
 
     async def async_press(self) -> None:
         """Handle the button press."""
@@ -60,6 +50,6 @@ class ImouButton(ImouEntity, ButtonEntity):
     @property
     def device_class(self) -> str:
         """Device device class."""
-        if self.sensor_instance.get_name() == "restartDevice":
-            return "restart"
-        return None
+        return self._get_device_class_by_name(
+            self.sensor_instance.get_name(), self.DEVICE_CLASS_MAPPING
+        )

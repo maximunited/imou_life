@@ -1,34 +1,20 @@
-"""Switch platform for Imou."""
+"""Select platform for Imou."""
 
 import logging
-from collections.abc import Callable
 
 from homeassistant.components.select import ENTITY_ID_FORMAT, SelectEntity
-from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
 
-from .const import DOMAIN
 from .entity import ImouEntity
+from .platform_setup import setup_platform
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 
-# async def async_setup_entry(hass, entry, async_add_devices):
-async def async_setup_entry(
-    hass: HomeAssistant, entry: ConfigEntry, async_add_devices: Callable
-):
+async def async_setup_entry(hass, entry, async_add_devices):
     """Configure platform."""
-    coordinator = hass.data[DOMAIN][entry.entry_id]
-    device = coordinator.device
-    sensors = []
-    for sensor_instance in device.get_sensors_by_platform("select"):
-        sensor = ImouSelect(coordinator, entry, sensor_instance, ENTITY_ID_FORMAT)
-        sensors.append(sensor)
-        coordinator.entities.append(sensor)
-        _LOGGER.debug(
-            "[%s] Adding %s", device.get_name(), sensor_instance.get_description()
-        )
-    async_add_devices(sensors)
+    await setup_platform(
+        hass, entry, "select", ImouSelect, ENTITY_ID_FORMAT, async_add_devices
+    )
 
 
 class ImouSelect(ImouEntity, SelectEntity):
