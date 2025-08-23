@@ -1,0 +1,43 @@
+# Read the Docs configuration file
+# See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
+
+version: 2
+
+# Build documentation in the docs/ directory with Sphinx
+sphinx:
+  configuration: docs/conf.py
+  fail_on_warning: false
+
+# Build documentation with MkDocs
+mkdocs:
+  configuration: mkdocs.yml
+  fail_on_warning: false
+
+# Set the version of Python and requirements
+# Using Python 3.12 for best performance and compatibility
+# Project supports Python >=3.9, and 3.12 is fully supported in CI
+python:
+  version: "3.12"
+  install:
+    - method: pip
+      path: .
+      extra_requirements:
+        - docs
+  pip_install: true
+
+# Build additional formats
+formats:
+  - pdf
+  - epub
+
+# Build environment
+build:
+  os: ubuntu-22.04
+  tools:
+    python: "3.12"
+
+# Requirements file
+requirements_file: config/requirements.txt
+
+# Documentation directory
+docs_dir: docs
