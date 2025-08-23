@@ -124,8 +124,14 @@ def mock_hass_components():
         patch("homeassistant.helpers.frame.report_usage"),
         patch("homeassistant.helpers.frame.report_non_thread_safe_operation"),
         patch("homeassistant.helpers.entity_platform.async_get_current_platform"),
-        patch("homeassistant.components.zeroconf.HaZeroconf"),
-        patch("homeassistant.components.zeroconf.usage.report_usage"),
-        patch("homeassistant.helpers.frame.report_usage"),
     ):
-        yield
+        # Conditionally mock zeroconf components if they exist
+        try:
+            with (
+                patch("homeassistant.components.zeroconf.HaZeroconf"),
+                patch("homeassistant.components.zeroconf.usage.report_usage"),
+            ):
+                yield
+        except AttributeError:
+            # If zeroconf components don't exist, just yield without them
+            yield
