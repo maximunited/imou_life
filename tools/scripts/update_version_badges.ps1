@@ -42,6 +42,9 @@ function Update-VersionBadges {
     # Update pre-release badge (same version for now)
     $content = $content -replace 'badge/pre--release-\d+\.\d+\.\d+', "badge/pre--release-$CurrentVersion"
 
+    # Update release links to point to the correct version
+    $content = $content -replace 'releases/tag/v\d+\.\d+\.\d+', "releases/tag/v$CurrentVersion"
+
     # Write back to file
     Set-Content $FilePath $content -NoNewline
     Write-Host "✅ Updated version badges in $FilePath" -ForegroundColor Green
