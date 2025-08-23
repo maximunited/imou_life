@@ -1,14 +1,28 @@
-# Development Setup
+# Development Guide - Imou Life Integration
 
-This guide will help you set up a development environment for the Imou Life integration.
+This guide covers development setup, testing, and contribution guidelines for the Imou Life Home Assistant integration.
 
-## Prerequisites
+## 📋 Table of Contents
 
-- Python 3.9+ (3.13 recommended)
-- Git
-- PowerShell (Windows) or Bash (Linux/macOS)
+1. [Prerequisites](#prerequisites)
+2. [Development Setup](#development-setup)
+3. [Project Structure](#project-structure)
+4. [Testing](#testing)
+5. [Code Quality](#code-quality)
+6. [Automated Workflows](#automated-workflows)
+7. [Version Management](#version-management)
+8. [Contributing Guidelines](#contributing-guidelines)
 
-## Quick Setup
+## 🔑 Prerequisites
+
+Before setting up the development environment, ensure you have:
+
+- **Python**: 3.9 or later
+- **Home Assistant**: 2023.8.0 or later
+- **Git**: Latest version
+- **Docker**: For containerized testing (optional)
+
+## 🛠️ Development Setup
 
 ### 1. Clone the Repository
 
@@ -17,192 +31,338 @@ git clone https://github.com/maximunited/imou_life.git
 cd imou_life
 ```
 
-### 2. Create Virtual Environment
+### 2. Set Up Virtual Environment
 
+#### Windows
 ```bash
-python -m venv venv
+# Command Prompt
+.\tools\scripts\activate_venv.bat
+
+# PowerShell
+.\tools\scripts\activate_venv.ps1
 ```
 
-### 3. Activate Virtual Environment
-
-**Windows (PowerShell):**
-```powershell
-.\venv\Scripts\Activate.ps1
-```
-
-**Windows (Command Prompt):**
-```cmd
-venv\Scripts\activate.bat
-```
-
-**Linux/macOS:**
+#### Linux/macOS
 ```bash
 source venv/bin/activate
 ```
 
-### 4. Install Dependencies
+### 3. Install Dependencies
 
 ```bash
-        pip install -r config/requirements_dev.txt
-pip install black flake8 isort codespell pre-commit
+# Development dependencies
+pip install -r config/requirements_dev.txt
+
+# Test dependencies
+pip install -r config/requirements_test.txt
 ```
 
-### 5. Install Pre-commit Hooks
+### 4. Install Pre-commit Hooks
 
 ```bash
 pre-commit install
 ```
 
-## Pre-CI Validation
+## 📁 Project Structure
 
-**🚨 IMPORTANT**: Always run validation before pushing to prevent CI failures!
-
-### Quick Validation
-
-**Windows (PowerShell):**
-```powershell
-.\validate_setup.ps1
+```
+imou_life/
+├── 📁 custom_components/imou_life/    # Home Assistant integration
+│   ├── __init__.py                    # Integration setup and coordinator
+│   ├── config_flow.py                 # Configuration flow
+│   ├── entity.py                      # Base entity class
+│   ├── camera.py                      # Camera platform
+│   ├── switch.py                      # Switch platform
+│   ├── sensor.py                      # Sensor platform
+│   ├── binary_sensor.py               # Binary sensor platform
+│   ├── select.py                      # Select platform
+│   ├── button.py                      # Button platform
+│   ├── siren.py                       # Siren platform
+│   ├── coordinator.py                 # Data coordinator
+│   ├── diagnostics.py                 # Diagnostics support
+│   ├── const.py                       # Constants and configuration
+│   └── manifest.json                  # Integration manifest
+├── 📁 tools/                          # Development and utility tools
+│   ├── 📁 scripts/                    # PowerShell/Batch scripts
+│   ├── 📁 docker/                     # Docker testing files
+│   └── 📁 validation/                 # Setup validation tools
+├── 📁 tests/                          # Test suite
+│   ├── 📁 unit/                       # Unit tests
+│   ├── 📁 integration/                # Integration tests
+│   └── 📁 fixtures/                   # Test data and fixtures
+├── 📁 docs/                           # Documentation
+├── 📁 scripts/                        # Build and deployment scripts
+└── 📁 config/                         # Configuration files
 ```
 
-**Windows (Command Prompt):**
-```cmd
-validate_setup.bat
-```
-
-**Linux/macOS:**
-```bash
-        python tools/validation/validate_setup.py
-```
-
-### What Validation Checks
-
-✅ **Python version compatibility** (3.9+)
-✅ **Requirements file validation** (packages exist on PyPI)
-✅ **Component structure** (all required files present)
-✅ **Manifest validation** (required fields present)
-✅ **Core imports** (dependencies can be imported)
-✅ **Pre-commit hooks** (code quality checks)
-
-### Validation Results
-
-- **🎉 All checks passed**: Safe to push to CI
-- **❌ Some checks failed**: Fix issues before pushing
-
-## Testing
-
-### Platform-Specific Testing
-
-**Note**: The full pytest suite may not work on Windows due to platform-specific dependencies (specifically the `resource` module). This is normal and expected.
+## 🧪 Testing
 
 ### Running Tests
 
-#### Option 1: Test Runner Script (Recommended for Windows)
+#### Simple Test Runner (Recommended for Windows)
 ```bash
-        python tools/validation/run_tests.py
+# Windows Command Prompt
+run_tests.bat
+
+# Windows PowerShell
+.\run_tests.ps1
+
+# Direct Python execution
+python tools/validation/run_simple_tests.py
 ```
 
-This script will:
-- Run basic import and structure tests
-- Attempt to run pytest with minimal configuration
-- Provide clear feedback about what's working
-
-#### Option 2: Direct Pytest (Linux/macOS)
+#### Advanced Test Runner (Linux/macOS)
 ```bash
-pytest tests/ -v
+# Install test dependencies
+pip install -r config/requirements_test.txt
+
+# Run tests with coverage
+python run_tests_with_coverage.py
+
+# Run pytest directly
+python -m pytest tests/ -v --cov=custom_components/imou_life
 ```
 
-#### Option 3: Pre-commit Hooks
+#### Test Categories
 ```bash
-pre-commit run --all-files
+# Run all tests
+python -m pytest tests/
+
+# Run specific test categories
+python -m pytest tests/unit/           # Unit tests only
+python -m pytest tests/integration/    # Integration tests only
+
+# Run with coverage
+python -m pytest tests/ --cov=custom_components/imou_life --cov-report=html
 ```
 
-## Code Quality
+### Docker Testing
+
+```bash
+# Run tests in Docker
+.\tools\scripts\run_docker_tests.ps1
+
+# Or manually
+docker-compose -f tools/docker/docker-compose.test.yml up --build
+```
+
+### Test Coverage
+
+- **Minimum Coverage**: 70% required
+- **Coverage Reports**: Generated in HTML and XML formats
+- **CI Integration**: Automatically uploaded to Codecov
+
+## ✨ Code Quality
 
 ### Pre-commit Hooks
 
 The project uses pre-commit hooks to ensure code quality:
 
-- **black**: Code formatting
-- **flake8**: Linting
-- **isort**: Import sorting
-- **codespell**: Spelling checks
-
-### Manual Code Quality Checks
-
 ```bash
-# Format code
-black custom_components/imou_life/
+# Install hooks
+pre-commit install
 
-# Check linting
-flake8 custom_components/imou_life/
+# Run all hooks
+pre-commit run --all-files
 
-# Sort imports
-isort custom_components/imou_life/
+# Run specific hook
+pre-commit run black --all-files
 ```
 
-## Troubleshooting
+### Available Hooks
 
-### Windows-Specific Issues
+- **black**: Code formatting
+- **flake8**: Linting and style checking
+- **isort**: Import sorting
+- **mypy**: Type checking
+- **codespell**: Spell checking
 
-If you encounter issues with pytest on Windows:
+### Code Style
 
-1. **Use the test runner script**: `python tools/validation/run_tests.py`
-2. **Focus on basic tests**: The core functionality tests should work
-3. **CI/CD**: Tests run successfully on Linux in GitHub Actions
+- **Line Length**: 88 characters (black default)
+- **Python Version**: 3.9+ compatibility
+- **Import Style**: isort configuration
+- **Type Hints**: mypy compliance
 
-### Import Errors
+## 🤖 Automated Workflows
 
-If you get import errors:
+### GitHub Actions
 
-1. **Ensure virtual environment is activated**
-2. **Install requirements**: `pip install -r config/requirements_dev.txt`
-3. **Check Python version**: Use Python 3.9+ (3.13 recommended)
+The project uses GitHub Actions for continuous integration and deployment:
 
-### Validation Failures
+#### Test Workflow (`test.yaml`)
+- **Triggers**: On push to main/master branch and pull requests
+- **Jobs**:
+  - Pre-commit checks (code formatting, linting)
+  - Python tests with pytest
+  - HACS validation
+  - Hassfest validation
+- **Status**: All jobs must pass for the workflow to succeed
 
-If validation fails:
+#### CI Release Workflow (`ci-release.yml`)
+- **Triggers**: Automatically after successful test workflow completion
+- **Purpose**: Creates draft releases when all tests pass
+- **Features**:
+  - Automatic draft release creation
+  - Includes test artifacts (ZIP file)
+  - Prevents duplicate releases
+  - Only runs on main/master branch
 
-1. **Read the error messages** carefully
-2. **Fix the specific issues** mentioned
-3. **Run validation again** until all checks pass
-4. **Only push after validation succeeds**
+#### Manual Release Workflow (`release.yaml`)
+- **Triggers**: Manual workflow dispatch
+- **Purpose**: Create draft releases on demand
+- **Use case**: When you want to create a release without waiting for CI
 
-## Contributing
+#### Tagged Release Workflow (`release.yml`)
+- **Triggers**: When git tags are pushed (e.g., `v1.0.0`)
+- **Purpose**: Create official releases from version tags
+- **Features**: Updates manifest version and creates published releases
+
+## 🏷️ Version Management
+
+### Automated Version Management
+
+Use the `git bump` command for automatic version management:
+
+```bash
+# Auto-increment patch version
+git bump
+
+# Specific version
+git bump 1.0.30
+
+# With custom message
+git bump 1.0.30 "Added new feature"
+```
+
+### What the Script Does
+
+The `git bump` script automatically:
+- Updates `manifest.json` version
+- Generates changelog entries
+- Commits changes with appropriate message
+- Creates and pushes git tags
+- Triggers GitHub Actions workflows
+
+### Version Bumping Strategy
+
+- **Patch**: Bug fixes and minor improvements
+- **Minor**: New features, backward compatible
+- **Major**: Breaking changes
+
+## 🤝 Contributing Guidelines
+
+### Development Workflow
 
 1. **Fork the repository**
-2. **Create a feature branch**
+2. **Create a feature branch**:
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
 3. **Make your changes**
-4. **Run validation**: `python tools/validation/validate_setup.py`
-5. **Run tests**: `python tools/validation/run_tests.py`
-6. **Run pre-commit**: `pre-commit run --all-files`
+4. **Add tests** for new functionality
+5. **Ensure all tests pass**:
+   ```bash
+   python -m pytest tests/
+   ```
+6. **Run pre-commit hooks**:
+   ```bash
+   pre-commit run --all-files
+   ```
 7. **Submit a pull request**
 
-## CI/CD
+### Code Review Process
 
-The project uses GitHub Actions for continuous integration:
+1. **Automated Checks**: All CI checks must pass
+2. **Code Review**: At least one maintainer must approve
+3. **Testing**: Changes must include appropriate tests
+4. **Documentation**: Update relevant documentation
 
-- **Pre-commit**: Code quality checks
-- **Tests**: Automated testing (Linux)
-- **HACS**: Integration validation
-- **Hassfest**: Home Assistant manifest validation
+### Pull Request Guidelines
 
-All checks must pass before merging.
+- **Title**: Clear, descriptive title
+- **Description**: Detailed description of changes
+- **Testing**: Include test results and coverage
+- **Breaking Changes**: Clearly mark any breaking changes
+- **Related Issues**: Link to relevant issues
 
-## Development Workflow
+### Code Standards
 
-### Before Every Push
+- **Documentation**: Clear docstrings for all functions
+- **Type Hints**: Use type hints where appropriate
+- **Error Handling**: Proper exception handling
+- **Logging**: Appropriate logging levels
+- **Testing**: High test coverage for new code
 
-1. **Run validation**: `python tools/validation/validate_setup.py`
-2. **Fix any issues** found
-3. **Run tests**: `python tools/validation/run_tests.py`
-4. **Run pre-commit**: `pre-commit run --all-files`
-5. **Commit changes**
-6. **Push to remote**
+## 📊 Code Coverage
 
-### If CI Fails
+### Coverage Requirements
 
-1. **Check CI logs** for specific errors
-2. **Reproduce locally** using validation scripts
-3. **Fix the issues**
-4. **Test locally** before pushing again
-5. **Re-run validation** to ensure fixes work
+This project maintains comprehensive test coverage for all custom components:
+
+- **Integration Module** (`__init__.py`) - Setup and coordinator logic
+- **Configuration Flow** (`config_flow.py`) - User setup wizard
+- **Camera Platform** (`camera.py`) - Video streaming and snapshots
+- **Switch Platform** (`switch.py`) - Device controls and toggles
+- **Sensor Platform** (`sensor.py`) - Status monitoring
+- **Binary Sensor Platform** (`binary_sensor.py`) - Motion detection
+- **Select Platform** (`select.py`) - Dropdown controls
+- **Button Platform** (`button.py`) - Action triggers
+- **Siren Platform** (`siren.py`) - Alarm controls
+
+### Coverage Reports
+
+- **HTML Reports**: Generated in `htmlcov/` directory
+- **XML Reports**: Generated for CI integration
+- **Coveralls**: Automatic upload on every test run
+
+## 🔧 Development Tools
+
+### Validation Scripts
+
+```bash
+# Validate setup
+.\tools\scripts\validate_setup.ps1
+
+# Project information
+.\tools\scripts\project-info.ps1
+
+# Run tests
+.\tools\scripts\run_tests.ps1
+```
+
+### Docker Development
+
+```bash
+# Build development container
+docker build -f tools/docker/Dockerfile.test -t imou_life_test .
+
+# Run tests in container
+docker run --rm imou_life_test
+```
+
+## 📚 Additional Resources
+
+- **[Performance Guide](PERFORMANCE_TROUBLESHOOTING.md)**: Optimization tips
+- **[HACS Guide](HACS_ENHANCEMENTS.md)**: HACS-specific features
+- **[Contributing Guide](CONTRIBUTING.md)**: Detailed contribution guidelines
+- **[Project Wiki](https://github.com/maximunited/imou_life/wiki)**: Additional development resources
+
+## 🆘 Getting Help
+
+### Development Issues
+
+- **Code Problems**: Check the logs and test output
+- **Setup Issues**: Review prerequisites and setup steps
+- **GitHub Issues**: Search existing issues or create new ones
+- **Discussions**: Use GitHub Discussions for questions
+
+### Support Channels
+
+- **Issues**: [GitHub Issues](https://github.com/maximunited/imou_life/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/maximunited/imou_life/discussions)
+- **Wiki**: [Project Wiki](https://github.com/maximunited/imou_life/wiki)
+
+---
+
+**Happy coding! 🚀**

@@ -1,275 +1,224 @@
-# Home Assistant custom component for controlling Imou Life devices
+# Imou Life Integration - Complete Installation Guide
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
-[![Donate](https://img.shields.io/badge/donate-BuyMeCoffee-yellow.svg)](https://www.buymeacoffee.com/maxim_united)
 
-**PLEASE NOTE this is an UNOFFICIAL integration, NOT supported or validated by Imou or linked in any way to Imou**
-
-> **Note**: This is a fork of [user2684/imou_life](https://github.com/user2684/imou_life) with additional improvements and fixes. If you're looking for the original integration, please visit the upstream repository.
-
-## About This Fork
-
-This repository is a fork of the original [user2684/imou_life](https://github.com/user2684/imou_life) integration. The fork includes:
-
-- **Code quality improvements**: Fixed pre-commit hook issues, improved formatting
-- **Repository maintenance**: Updated documentation and configuration files
-- **Bug fixes**: Resolved duplicate method definitions and import issues
-
-### Relationship with Upstream
-
-- **Original Repository**: [user2684/imou_life](https://github.com/user2684/imou_life)
-- **Original Author**: [@user2684](https://github.com/user2684)
-- **Fork Maintainer**: [@maximunited](https://github.com/maximunited)
-
-This fork is intended to contribute improvements back to the upstream repository. If you're experiencing issues or have feature requests, please consider:
-
-1. **For general issues**: Use the [upstream repository](https://github.com/user2684/imou_life/issues)
-2. **For fork-specific improvements**: Use this repository's [issues page](https://github.com/maximunited/imou_life/issues)
-
-_This integration is the result of the analysis of the public documentation released by Imou for its open platform and created before the vendor published its own [official Home Assistant integration](https://github.com/Imou-OpenPlatform/Imou-Home-Assistant). Since this integration is based on information no more updated since 2021 it may not fully work with most recent devices and there is no way to support newer models since the documentation of the the APIs has not been made public by the vendor._
-
-_For this reason, I have decided to <ins>***stop actively developing the integration***</ins>. No new functionalities will be added or bugs fixed since it would require access to vendor's APIs which are neither public nor documented. Regardless, the integration is still supposed to work for those devices where it has been working so far. And I will keep the code up to date to ensure it will continue to run smoothly on newer version of Home Assistant._
-
-_The official integration, supported by the vendor, is available for download [here](https://github.com/Imou-OpenPlatform/Imou-Home-Assistant)._
-
-## Overview
-
-This Home Assistant component helps in interacting with devices registered with the Imou Life App and specifically enabling/disabling motion detection, siren, and other switches.
-
-Despite Imou webcams video streams can be integrated in Home Assistant through Onvif, the only way to interact with the device as if using the Imou Life App is to leverage the Imou API,
-that is what this component under the hood does.
-
-Once an Imou device is added to Home Assistant, switches can be controlled through the frontend or convenientely used in your automations.
-
-## Features
-
-- Configuration through the UI
-- Auto discover registered devices
-- Auto discover device capabilities and supported switches
-- Sensors, binary sensors, select, buttons to control key features of each device
-- Support for push notifications
-- Image snapshots, video streaming and PTZ controls
-- Support for dormant devices
-
-## Supported Models
-
-You can find [here](https://github.com/maximunited/imou_life/wiki/Supported-models) a list with all the Imou models which have been tested and if they are working or not with the integration. Please feel free to report any missing model or add any working model to the list.
-
-## Installation
-
-### [HACS](https://hacs.xyz/) (recommended)
-
-After installing and configuring HACS, go to "Integrations", "Explore & Download Repositories", search for "Imou Life" and download the integration.
-
-### Manual installation
-
-1. Using the tool of choice open the directory (folder) for your HA configuration (where you find `configuration.yaml`).
-2. If you do not have a `custom_components` directory (folder) there, you need to create it.
-3. In the `custom_components` directory (folder) create a new folder called `imou_life`.
-4. Download _all_ the files from the `custom_components/imou_life/` directory (folder) in this repository.
-5. Place the files you downloaded in the new directory (folder) you created.
-6. Restart Home Assistant
-
-This integration depends on the library `imouapi` for interacting with the end device. The library should be installed automatically by Home Assistante when initializing the integration.
-If this is not happening, install it manually with:
-
-```
-pip3 install imouapi
-```
-
-## Development and Testing
-
-### Automated Workflows
-
-This project uses GitHub Actions to automatically test and create draft releases:
-
-#### Test Workflow (`test.yaml`)
-- **Triggers**: On push to main/master branch and pull requests
-- **Jobs**:
-  - Pre-commit checks (code formatting, linting)
-  - Python tests with pytest
-  - HACS validation
-  - Hassfest validation
-- **Status**: All jobs must pass for the workflow to succeed
-
-#### CI Release Workflow (`ci-release.yml`)
-- **Triggers**: Automatically after successful test workflow completion
-- **Purpose**: Creates draft releases when all tests pass
-- **Features**:
-  - Automatic draft release creation
-  - Includes test artifacts (ZIP file)
-  - Prevents duplicate releases
-  - Only runs on main/master branch
-
-#### Manual Release Workflow (`release.yaml`)
-- **Triggers**: Manual workflow dispatch
-- **Purpose**: Create draft releases on demand
-- **Use case**: When you want to create a release without waiting for CI
-
-#### Tagged Release Workflow (`release.yml`)
-- **Triggers**: When git tags are pushed (e.g., `v1.0.0`)
-- **Purpose**: Create official releases from version tags
-- **Features**: Updates manifest version and creates published releases
-
-### Running Tests Locally
-
-#### Simple Test Runner (Recommended for Windows)
-```bash
-# Windows Command Prompt
-run_tests.bat
-
-# Windows PowerShell
-.\run_tests.ps1
-
-# Direct Python execution
-python tools/validation/run_simple_tests.py
-```
-
-#### Advanced Test Runner (Linux/macOS)
-```bash
-# Install test dependencies
-pip install -r config/requirements_test.txt
-
-# Run tests with coverage
-python run_tests_with_coverage.py
-
-# Run pytest directly (may not work on Windows)
-python -m pytest tests/ -v --cov=custom_components/imou_life
-```
-
-#### Test Coverage
-- Tests are configured to require at least 70% code coverage
-- Coverage reports are generated in HTML and XML formats
-- CI/CD pipeline automatically uploads coverage to Codecov
-
-### Development Setup
-```bash
-# Install development dependencies
-pip install -r config/requirements_dev.txt
-
-# Install pre-commit hooks
-pre-commit install
-
-# Run code quality checks
-pre-commit run --all-files
-```
-
-## Requirements
-
-To interact with the Imou API, valid `App Id` and `App Secret` are **required**.
-
-In order to get them:
-
-- Register an account on Imou Life if not done already
-- Register a developer account on [https://open.imoulife.com](https://open.imoulife.com)
-- Open the Imou Console at [https://open.imoulife.com/consoleNew/myApp/appInfo](https://open.imoulife.com/consoleNew/myApp/appInfo)
-  - Go to "My App", "App Information" and click on Edit
-  - Fill in the required information and copy your AppId and AppSecret
-
-## Configuration
-
-The configuration of the component is done entirely through the UI.
-
-1. In the Home Assistant UI to "Configuration" -> "Integrations" click "+" and search for "Imou Life"
-1. Fill in `App Id` and `App Secret`
-   1. If `Discover registered devices` is selected:
-      - A list of all the devices associated with your account is presented
-      - Select the device you want to add
-      - Optionally provide a name (otherwise the same name used in Imou Life will be used)
-   1. If `Discover registered devices` is NOT selected:
-      - Provide the Device ID of the device you want to add
-      - Optionally provide a name (otherwise the same name used in Imou Life will be used)
-
-Once done, you should see the integration added to Home Assistant, a new device and a few entities associated with it.
-
-The following entities are created (if supported by the device):
-
-- Switches:
-  - All of those supported by the remote device
-  - Enable/disable push notifications
-- Sensors:
-  - Storage Used on SD card
-  - Callback URL used for push notifications
-- Binary Sensors:
-  - Online
-  - Motion alarm
-- Select:
-  - Night Vision Mode
-- Buttons:
-  - Restart device
-  - Refresh all data
-  - Refresh motion alarm sensor
-
-If you need to add another device, repeat the process above.
-
-### Advanced Options
-
-The following options can be customized through the UI by clicking on the "Configure" link:
-
-- Polling interval - how often to refresh the data (in seconds, default 15 minutes)
-- API Base URL - th url of the Imou Life API (default https://openapi.easy4ip.com/openapi)
-- API Timeout - API call timeout in seconds (default 10 seconds)
-- Callback URL - when push notifications are enabled, full url to use as a callback for push notifications
-
-### Motion Detection
-
-When adding a new device, a `Motion Alarm` binary sensor is created (provided your device supports motion detection). You can use it for building your automations, when its state changes, like any other motion sensors you are already familiar with.
-There are multiple options available to keep the motion alarm sensor regularly updated, described below. All the options will update the same "Motion Alarm" sensor, just the frequency changes depending on the option. Option 1 and 2 does not require Home Assistant to be exposed over the Internet, Option 3 does but ensure realtime updates of the sensor.
-
-#### Option 1
-
-If you do nothing, by default the sensor will be updated every 15 minutes, like any other sensor of the device. If a motion is detected, the sensor triggers and it will get back to a "Clear" state at the next update cycle (e.g. after other 15 minutes)
-
-#### Option 2
-
-If you want to increase the frequency, you can force an update of the "Motion Alarm" sensor state manually or automatically, through the "Refresh Alarm" button which is created in the same device.
-For example, you can create an automation like the below which press every 30 seconds the "Refresh Alarm" button for you, causing an update of the "Motion Alarm" sensor state (replace `button.webcam_refreshalarm` with the name of your entity):
-
-```
-alias: Imou - Refresh Alarm
-description: ""
-trigger:
-  - platform: time_pattern
-    seconds: "30"
-condition: []
-action:
-  - service: button.press
-    data: {}
-    target:
-      entity_id: <button.webcam_refreshalarm>
-mode: single
-```
-
-Please note, the underlying Imou API is limited to 20000 calls per day.
-
-#### Option 3
-
-If you want relatime updates of the "Motion Alarm" sensor, you need to enable push notifications. In this scenario, upon an event occurs (e.g. alarm, device offline, etc.) a realtime notification is sent by the Imou API directly to your Home Assistance instance so you can immediately react upon it.
-Since this is happening via a direct HTTP call to your instance, your Home Assistance must be [exposed to the Internet](https://www.home-assistant.io/docs/configuration/remote/) as a requirement.
-Please note, push notification is a global configuration, not per device, meaning once enabled on one device it applies to ALL devices registered in your Imou account.
-
-**Requirements**
-
-- Home Assistant exposed to the Internet
-- Home Assistant behind a reverse proxy, due to malformed requests sent by the Imou API (see below for details and examples)
-
-**Configuration**
-
-- Ensure Home Assistant is exposed over the Internet, is behind a reverse proxy, and you have implemented the [security checklists](https://www.home-assistant.io/docs/configuration/securing/)
-- In Home Assistant, add at least a device through the Imou Life integration
-- Go to "Settings", "Devices & Services", select your Imou Life integration and click on "Configure"
-- In "Callback URL" add the external URL of your Home Assistant instance, followed by `/api/webhook/`, followed by a random string difficult to guess such as `imou_life_callback_123jkls` and save. For example `https://yourhomeassistant.duckdns.org/api/webhook/imou_life_callback_123jkls`. This will be name of the webhook which will be called when an event occurs.
-- Visit the Device page, you should see a "Push Notifications" switch
-- Enable the switch. Please remember **this is a global configuration, you just need to do it once** and in a SINGLE device only
-- Go to "Settings", "Automation & Scenes" and click on "Create Automation" and select "Start with an empty automation"
-- Click the three dots in the top-right of the screen, select "Edit in YAML", copy, paste the following and replace `<your_string_difficult_to_guess>` with yours (e.g. `imou_life_callback_123jkls`) and save it:
-
-```
+**PLEASE NOTE**: This is an UNOFFICIAL integration, NOT supported or validated by Imou or linked in any way to Imou.
+
+> **Note**: This is a fork of [user2684/imou_life](https://github.com/user2684/imou_life) with additional improvements and fixes.
+
+## 📋 Table of Contents
+
+1. [Prerequisites](#prerequisites)
+2. [Getting Imou API Credentials](#getting-imou-api-credentials)
+3. [Installation Methods](#installation-methods)
+4. [Initial Configuration](#initial-configuration)
+5. [Device Setup](#device-setup)
+6. [Advanced Configuration](#advanced-configuration)
+7. [Push Notifications Setup](#push-notifications-setup)
+8. [Motion Detection Configuration](#motion-detection-configuration)
+9. [PTZ Controls](#ptz-controls)
+10. [Troubleshooting](#troubleshooting)
+11. [Limitations and Known Issues](#limitations-and-known-issues)
+
+## 🔑 Prerequisites
+
+Before installing the integration, ensure you have:
+
+- **Home Assistant**: Version 2023.8.0 or later
+- **Imou Life Account**: Valid account with registered devices
+- **Internet Access**: Required for API communication and push notifications
+- **Reverse Proxy**: Required for push notifications (NGINX recommended)
+
+## 🔐 Getting Imou API Credentials
+
+The integration requires valid `App ID` and `App Secret` from Imou's developer platform:
+
+### Step 1: Register on Imou Life
+1. Download and install the Imou Life app
+2. Create an account and register your devices
+3. Ensure your devices are working properly in the app
+
+### Step 2: Create Developer Account
+1. Visit [https://open.imoulife.com](https://open.imoulife.com)
+2. Click "Register" and create a developer account
+3. Verify your email address
+
+### Step 3: Get API Credentials
+1. Access the [Imou Console](https://open.imoulife.com/consoleNew/myApp/appInfo)
+2. Go to "My App" → "App Information"
+3. Click "Edit" and fill in the required information:
+   - **App Name**: Choose a descriptive name
+   - **App Description**: Brief description of your use case
+   - **Category**: Select appropriate category
+4. **Copy your App ID and App Secret** - you'll need these for the integration
+
+> **Important**: Keep your App Secret secure and don't share it publicly.
+
+## 📥 Installation Methods
+
+### Method 1: HACS Installation (Recommended)
+
+#### Prerequisites
+- [HACS](https://hacs.xyz/) must be installed and configured in your Home Assistant instance
+
+#### Installation Steps
+1. **Open HACS** in Home Assistant
+2. **Go to Integrations** → **Explore & Download Repositories**
+3. **Search for "Imou Life"**
+4. **Click "Download this repository with HACS"**
+5. **Restart Home Assistant**
+6. **Add the integration** via Settings → Devices & Services → Add Integration
+
+### Method 2: Manual Installation
+
+#### Prerequisites
+- Access to your Home Assistant configuration directory
+- Ability to restart Home Assistant
+
+#### Installation Steps
+1. **Navigate to your Home Assistant configuration directory** (where `configuration.yaml` is located)
+2. **Create the custom_components directory** if it doesn't exist:
+   ```bash
+   mkdir custom_components
+   ```
+3. **Create the imou_life directory**:
+   ```bash
+   mkdir custom_components/imou_life
+   ```
+4. **Download the integration files**:
+   - Go to [GitHub Releases](https://github.com/maximunited/imou_life/releases)
+   - Download the latest release ZIP file
+   - Extract all files to `custom_components/imou_life/`
+5. **Restart Home Assistant**
+6. **Add the integration** via Settings → Devices & Services → Add Integration
+
+## ⚙️ Initial Configuration
+
+### Step 1: Add Integration
+1. **Go to Settings** → **Devices & Services**
+2. **Click the "+" button** to add a new integration
+3. **Search for "Imou Life"**
+4. **Click on the integration** to start configuration
+
+### Step 2: Enter Credentials
+1. **App ID**: Enter your Imou developer App ID
+2. **App Secret**: Enter your Imou developer App Secret
+3. **Click "Submit"**
+
+### Step 3: Choose Discovery Method
+You have two options for adding devices:
+
+#### Option A: Auto-Discover Devices
+- **Check "Discover registered devices"**
+- The integration will automatically find all devices in your Imou account
+- Select the devices you want to add
+- Optionally provide custom names
+
+#### Option B: Manual Device Entry
+- **Uncheck "Discover registered devices"**
+- **Device ID**: Enter the specific Device ID of the device you want to add
+- **Device Name**: Optionally provide a custom name
+
+## 📱 Device Setup
+
+### Automatic Device Discovery
+When using auto-discovery:
+1. **Review the device list** presented by the integration
+2. **Select devices** you want to add to Home Assistant
+3. **Provide custom names** if desired (optional)
+4. **Click "Submit"** to add the selected devices
+
+### Manual Device Entry
+When adding devices manually:
+1. **Find your Device ID** in the Imou Life app or console
+2. **Enter the Device ID** in the configuration
+3. **Provide a custom name** if desired
+4. **Click "Submit"** to add the device
+
+### What Gets Created
+Each device will create several entities in Home Assistant:
+
+#### Core Entities
+- **Device**: Main device entity with device information
+- **Camera**: Live streaming and snapshot capabilities
+
+#### Control Entities
+- **Switches**: Enable/disable features and push notifications
+- **Buttons**: Restart device, refresh data, refresh motion alarm
+- **Select**: Night vision mode selection
+
+#### Sensor Entities
+- **Binary Sensors**: Online status, motion detection
+- **Sensors**: Storage usage, callback URL, device status
+
+## 🔧 Advanced Configuration
+
+### Accessing Advanced Settings
+After adding a device:
+1. **Go to Settings** → **Devices & Services**
+2. **Find your Imou Life integration**
+3. **Click "Configure"**
+
+### Configurable Options
+
+#### Polling Interval
+- **Description**: How often to refresh device data
+- **Default**: 15 minutes (900 seconds)
+- **Range**: 30 seconds to 24 hours
+- **Recommendation**: 15 minutes for most use cases
+
+#### API Base URL
+- **Description**: Imou API endpoint
+- **Default**: `https://openapi.easy4ip.com/openapi`
+- **Note**: Usually doesn't need to be changed
+
+#### API Timeout
+- **Description**: API call timeout in seconds
+- **Default**: 10 seconds
+- **Range**: 5 to 60 seconds
+- **Recommendation**: 10-15 seconds
+
+#### Callback URL
+- **Description**: URL for push notifications
+- **Format**: `https://your-domain.com/api/webhook/unique-string`
+- **Required**: Only if using push notifications
+- **Note**: Must be accessible from the internet
+
+## 🔔 Push Notifications Setup
+
+### Overview
+Push notifications provide real-time updates for motion detection and other events. They require:
+- Home Assistant exposed to the internet
+- Reverse proxy configuration
+- Webhook automation setup
+
+### Step 1: Internet Exposure
+1. **Configure Home Assistant** to be accessible from the internet
+2. **Set up a reverse proxy** (NGINX recommended)
+3. **Ensure proper security** (HTTPS, authentication, etc.)
+
+### Step 2: Configure Callback URL
+1. **Go to integration settings** (Configure button)
+2. **Set Callback URL** to: `https://your-domain.com/api/webhook/imou_life_callback_123`
+3. **Replace parts**:
+   - `your-domain.com` with your actual domain
+   - `imou_life_callback_123` with a unique, hard-to-guess string
+
+### Step 3: Enable Push Notifications
+1. **Go to your device page** in Home Assistant
+2. **Find the "Push Notifications" switch**
+3. **Enable the switch**
+4. **Note**: This applies to ALL devices in your Imou account
+
+### Step 4: Create Webhook Automation
+Create this automation in Home Assistant:
+
+```yaml
 alias: Imou Push Notifications
-description: "Handle Imou push notifications by requesting to update the Motion Alarm sensor of the involved device (v1)"
+description: "Handle Imou push notifications for motion detection"
 trigger:
   - platform: webhook
-    webhook_id: <your_string_difficult_to_guess>
+    webhook_id: imou_life_callback_123  # Replace with your unique string
 condition:
   - condition: template
     value_template: |
@@ -302,54 +251,156 @@ mode: queued
 max: 10
 ```
 
-When using this option, please note the following:
+**Important Notes**:
+- Replace `imou_life_callback_123` with your actual webhook ID
+- The API limits push notification changes to 10 times per day
+- Changes may take up to 5 minutes to apply
 
-- The API for enabling/disabling push notification is currently limited to 10 times per day by Imou so do not perform too many consecutive changes. Keep also in mind that if you change the URL, sometimes it may take up to 5 minutes for a change to apply on Imou side
-- In Home Assistant you cannot have more than one webhook trigger with the same ID so customize the example above if you need to add any custom logic
-- Unfortunately HTTP requests sent by the Imou API server to Home Assistant are somehow malformed, causing HA to reject the request (404 error, without any evidence in the logs). A reverse proxy like NGINX in front of Home Assistant without any special configuration takes care of cleaning out the request, hence this is a requirement. Instructions on how to configured it and examples are available [here](https://github.com/maximunited/imou_life/wiki/Reverse-proxy-configuration-for-push-notifications).
+## 🚨 Motion Detection Configuration
 
-### PTZ Controls
+### Motion Sensor Overview
+The integration creates a "Motion Alarm" binary sensor that detects motion events. You have three update options:
 
-The integration exposes two services for interacting with the PTZ capabilities of the device:
+### Option 1: Default Polling (No Internet Required)
+- **Update Frequency**: Every 15 minutes (or your configured polling interval)
+- **Pros**: No internet exposure required, simple setup
+- **Cons**: Delayed updates, may miss short events
+- **Best For**: Basic monitoring, no real-time requirements
 
-- `imou_life.ptz_location`: if the device supports PTZ, you will be able to move it to a specified location by providing horizontal (between -1 and 1), vertical (between -1 and 1) and zoom (between 0 and 1)
-- `imou_life.ptz_move` If the device supports PTZ, you will be able to move it around by providing an operation (one of "UP", "DOWN", "LEFT", "RIGHT", "UPPER_LEFT", "BOTTOM_LEFT", "UPPER_RIGHT", "BOTTOM_RIGHT", "ZOOM_IN", "ZOOM_OUT", "STOP") and a duration for the operation (in milliseconds)
-
-Those services can be invoked on the camera entity.
-To test this capability, in Home Assistant go to "Developer Tools", click on "Services", select one of the services above, select the target entity, provide the required information and click on "Call Service". If something will go wrong, have a look at the logs.
-
-Presets are instead not apparently supported by the Imou APIs but could be implemented by combining HA scripts and calls to the `imou_life.ptz_location` service.
-
-## Limitations / Known Issues
-
-- The Imou API does not provide a stream of events, for this reason the integration periodically polls the devices to sync the configuration. So if you change anything from the Imou Life App, it could take a few minutes to be updated in HA. Use the "Refresh Data" button to refresh data for all the devices' sensors
-- Imou limits up to 5 the number of devices which can be controlled through a developer account (e.g. the method used by this integration). Additional devices are added successfully but they will throw a "APIError: FL1001: Insufficient remaining available licenses" error message whenever you try to interact. As a workaround, create another Imou account associated to a different e-mail address, take note of the new AppId and AppSecret, and bind the device there. Alternatively, you can also keep the device associated with the primary account, share it with the newly account and add it to HA through the integration
-- For every new device to be added, AppId and AppSecret are requested
-- Advanced options can be changed only after having added the device
-- Due to malformed requests sent by the Imou API server, in order for push notifications to work, Home Assistant must be behind a reverse proxy
-
-## Troubleshooting
-
-If anything fails, you should find the error message and the full stack trace on your Home Assistant logs. This can be helpful for either troubleshoot the issue or reporting it.
-
-### Device Diagnostics
-
-Diagnostics information is provided by visiting the device page in Home Assistant and clicking on "Download Diagnostics".
-
-### Debugging
-
-To gain more insights on what the component is doing or why is failing, you can enable debug logging:
-
-```
-logger:
-  default: info
-  logs:
-    custom_components.imou_life: debug
+### Option 2: Manual Refresh
+- **Update Frequency**: On-demand via button or automation
+- **Setup**: Create automation to press the "Refresh Alarm" button
+- **Example Automation**:
+```yaml
+alias: Imou - Refresh Alarm
+description: "Refresh motion alarm sensor every 30 seconds"
+trigger:
+  - platform: time_pattern
+    seconds: "30"
+action:
+  - service: button.press
+    data: {}
+    target:
+      entity_id: button.your_device_refreshalarm  # Replace with your entity
+mode: single
 ```
 
-Since this integration depends on the library `imouapi` for interacting with the end device, you may want to enable debug level logging to the library itself:
+**Note**: Imou API is limited to 20,000 calls per day.
 
+### Option 3: Push Notifications (Real-time)
+- **Update Frequency**: Real-time when motion is detected
+- **Pros**: Immediate updates, no polling required
+- **Cons**: Requires internet exposure and reverse proxy
+- **Best For**: Security applications, real-time monitoring
+
+## 🎥 PTZ Controls
+
+### Overview
+If your device supports PTZ (Pan-Tilt-Zoom), the integration provides two services for camera control.
+
+### Available Services
+
+#### `imou_life.ptz_location`
+Moves the camera to specific coordinates.
+
+**Parameters**:
+- **horizontal**: Pan position (-1.0 to 1.0)
+- **vertical**: Tilt position (-1.0 to 1.0)
+- **zoom**: Zoom level (0.0 to 1.0)
+
+**Example**:
+```yaml
+service: imou_life.ptz_location
+data:
+  horizontal: 0.5
+  vertical: -0.3
+  zoom: 0.8
+target:
+  entity_id: camera.your_device
 ```
+
+#### `imou_life.ptz_move`
+Moves the camera in specific directions.
+
+**Parameters**:
+- **operation**: Movement direction
+  - Basic: "UP", "DOWN", "LEFT", "RIGHT"
+  - Diagonal: "UPPER_LEFT", "BOTTOM_LEFT", "UPPER_RIGHT", "BOTTOM_RIGHT"
+  - Zoom: "ZOOM_IN", "ZOOM_OUT"
+  - Control: "STOP"
+- **duration**: Movement duration in milliseconds
+
+**Example**:
+```yaml
+service: imou_life.ptz_move
+data:
+  operation: "UP"
+  duration: 2000
+target:
+  entity_id: camera.your_device
+```
+
+### Testing PTZ Controls
+1. **Go to Developer Tools** → **Services**
+2. **Select the PTZ service** you want to test
+3. **Choose your camera entity** as the target
+4. **Fill in the parameters**
+5. **Click "Call Service"**
+
+### Creating PTZ Presets
+Since the Imou API doesn't support presets, you can create them using Home Assistant scripts:
+
+```yaml
+# Example: Home position preset
+alias: "PTZ - Home Position"
+sequence:
+  - service: imou_life.ptz_location
+    data:
+      horizontal: 0
+      vertical: 0
+      zoom: 0.5
+    target:
+      entity_id: camera.your_device
+```
+
+## 🔧 Troubleshooting
+
+### Common Issues and Solutions
+
+#### API Authentication Errors
+**Symptoms**: "Invalid credentials" or "Authentication failed"
+**Solutions**:
+1. Verify your App ID and App Secret are correct
+2. Check that your Imou developer account is active
+3. Ensure the credentials haven't expired
+
+#### Device Not Found
+**Symptoms**: "Device not found" or "Device ID invalid"
+**Solutions**:
+1. Verify the device is registered in your Imou Life account
+2. Check that the device is online in the Imou app
+3. Ensure the device ID is entered correctly
+
+#### Push Notifications Not Working
+**Symptoms**: No real-time updates, webhook errors
+**Solutions**:
+1. Verify Home Assistant is exposed to the internet
+2. Check reverse proxy configuration
+3. Ensure the callback URL is correct and accessible
+4. Verify the webhook automation is active
+
+#### Motion Detection Delays
+**Symptoms**: Motion sensor updates slowly or not at all
+**Solutions**:
+1. Check your polling interval setting
+2. Verify the device supports motion detection
+3. Consider using push notifications for real-time updates
+
+### Debug Logging
+
+Enable debug logging to troubleshoot issues:
+
+```yaml
 logger:
   default: info
   logs:
@@ -357,17 +408,71 @@ logger:
     imouapi: debug
 ```
 
-## Bugs or feature requests
+### Device Diagnostics
 
-Bugs and feature requests can be reported through [Github Issues](https://github.com/maximunited/imou_life/issues).
-When reporting bugs, ensure to include also diagnostics and debug logs. Please review those logs to redact any potential sensitive information before submitting the request.
+1. **Go to your device page** in Home Assistant
+2. **Click "Download Diagnostics"**
+3. **Review the information** for errors or configuration issues
+4. **Include diagnostics** when reporting issues
 
-## Contributing
+### Getting Help
 
-Any contribution is more than welcome. Github is used to host the code, track issues and feature requests, as well as submitting pull requests.
-Detailed information on how the code is structured, how to setup a development environment and how to test your code before submitting pull requests is
-detailed [here](https://github.com/maximunited/imou_life/wiki/How-to-contribute).
+1. **Check the logs** for error messages
+2. **Review this documentation** for configuration details
+3. **Search existing issues** on GitHub
+4. **Create a new issue** with:
+   - Detailed error description
+   - Device model and firmware
+   - Home Assistant version
+   - Debug logs and diagnostics
+   - Steps to reproduce the issue
 
-## Roadmap
+## ⚠️ Limitations and Known Issues
 
-A high level roadmap of this integration can be found [here](https://github.com/users/maximunited/projects/1)
+### API Limitations
+- **Device Limit**: Imou limits developer accounts to 5 devices
+- **API Calls**: Limited to 20,000 calls per day
+- **Push Notifications**: Limited to 10 configuration changes per day
+
+### Technical Limitations
+- **Event Streaming**: Imou API doesn't provide real-time event streams
+- **Polling Required**: Integration must poll devices for status updates
+- **Request Formatting**: Imou API sends malformed HTTP requests (requires reverse proxy)
+
+### Known Issues
+- **Configuration Sync**: Changes in Imou Life app may take several minutes to appear in Home Assistant
+- **Device Sharing**: Some devices may not work properly when shared between accounts
+- **Firmware Compatibility**: Newer device firmware may not be fully compatible
+
+### Workarounds
+
+#### Multiple Device Accounts
+If you need to control more than 5 devices:
+1. **Create additional Imou accounts** with different email addresses
+2. **Get new App ID and App Secret** for each account
+3. **Add devices** through different integration instances
+4. **Alternative**: Share devices between accounts and add through the primary account
+
+#### Real-time Updates
+For real-time motion detection:
+1. **Use push notifications** instead of polling
+2. **Set up proper reverse proxy** (NGINX recommended)
+3. **Configure webhook automation** for immediate response
+
+## 📚 Additional Resources
+
+- **[Development Guide](DEVELOPMENT.md)**: Contributing and development setup
+- **[Performance Guide](PERFORMANCE_TROUBLESHOOTING.md)**: Optimization tips
+- **[HACS Guide](HACS_ENHANCEMENTS.md)**: HACS-specific features
+- **[Changelog](CHANGELOG.md)**: Version history and changes
+- **[Project Wiki](https://github.com/maximunited/imou_life/wiki)**: Additional documentation and examples
+
+## 🤝 Support and Contributing
+
+- **Issues**: [GitHub Issues](https://github.com/maximunited/imou_life/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/maximunited/imou_life/discussions)
+- **Contributing**: See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines
+
+---
+
+**Note**: This integration is based on reverse-engineered Imou APIs and may not work with all device models or firmware versions. For official support, consider using the [official Imou Home Assistant integration](https://github.com/Imou-OpenPlatform/Imou-Home-Assistant).

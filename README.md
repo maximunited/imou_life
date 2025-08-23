@@ -3,7 +3,6 @@
 
 [![HACS](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/custom-components/hacs)
 [![Quality Scale](https://img.shields.io/badge/Quality%20Scale-Platinum-brightgreen.svg)](https://github.com/custom-components/hacs#quality-scale)
-[![Coverage Status](https://coveralls.io/repos/github/maximunited/imou_life/badge.svg?branch=master)](https://coveralls.io/github/maximunited/imou_life?branch=master)
 [![Maintainer](https://img.shields.io/badge/maintainer-@maximunited-blue.svg)](https://github.com/maximunited)
 
 A Home Assistant integration for Imou Life cameras and devices, providing comprehensive monitoring and control capabilities.
@@ -16,179 +15,148 @@ A Home Assistant integration for Imou Life cameras and devices, providing compre
 - **Automation Ready**: Full Home Assistant automation support
 - **HACS Compatible**: Easy installation through HACS
 
-## 📁 Project Structure
+## 📋 Requirements
 
+- **Home Assistant**: 2023.8.0 or later
+- **Imou Account**: Valid Imou Life account with registered devices
+- **Developer Account**: App ID and App Secret from [Imou Open Platform](https://open.imoulife.com)
+
+## 🔑 Getting Your Imou API Credentials
+
+Before installing the integration, you need to obtain your Imou API credentials:
+
+1. **Register on Imou Life** if you haven't already
+2. **Create a Developer Account** at [https://open.imoulife.com](https://open.imoulife.com)
+3. **Access the Imou Console** at [https://open.imoulife.com/consoleNew/myApp/appInfo](https://open.imoulife.com/consoleNew/myApp/appInfo)
+4. **Go to "My App" → "App Information"** and click Edit
+5. **Fill in the required information** and copy your **App ID** and **App Secret**
+
+> **Note**: These credentials are required for the integration to communicate with your Imou devices.
+
+## 📥 Installation
+
+### Option 1: HACS Installation (Recommended)
+
+1. **Install HACS** if you haven't already ([HACS Installation Guide](https://hacs.xyz/docs/installation/installation/))
+2. **Add this repository** to HACS:
+   - Go to HACS → Integrations → Explore & Download Repositories
+   - Search for "Imou Life"
+   - Click "Download this repository with HACS"
+3. **Restart Home Assistant**
+4. **Add the integration** via Settings → Devices & Services → Add Integration
+
+### Option 2: Manual Installation
+
+1. **Download the latest release** from [GitHub Releases](https://github.com/maximunited/imou_life/releases)
+2. **Extract the files** to your `custom_components/imou_life/` directory
+3. **Restart Home Assistant**
+4. **Add the integration** via Settings → Devices & Services → Add Integration
+
+## ⚙️ Configuration
+
+### Initial Setup
+
+1. **Search for "Imou Life"** in the Add Integration screen
+2. **Enter your credentials**:
+   - **App ID**: Your Imou developer App ID
+   - **App Secret**: Your Imou developer App Secret
+3. **Choose discovery method**:
+   - **Auto-discover devices**: Automatically finds all devices in your Imou account
+   - **Manual device entry**: Enter a specific Device ID
+
+### Device Configuration
+
+Once added, each device will create several entities:
+
+- **Switches**: Enable/disable push notifications and device features
+- **Sensors**: Storage usage, callback URL, device status
+- **Binary Sensors**: Online status, motion detection
+- **Select**: Night vision mode selection
+- **Buttons**: Restart device, refresh data, refresh motion alarm
+- **Camera**: Live streaming and snapshots
+
+### Advanced Configuration
+
+After adding a device, you can configure advanced options:
+
+- **Polling Interval**: How often to refresh device data (default: 15 minutes)
+- **API Base URL**: Imou API endpoint (default: https://openapi.easy4ip.com/openapi)
+- **API Timeout**: API call timeout in seconds (default: 10 seconds)
+- **Callback URL**: For push notifications (requires internet exposure)
+
+## 🔔 Push Notifications Setup
+
+For real-time motion detection updates:
+
+1. **Expose Home Assistant** to the internet (required)
+2. **Set up a reverse proxy** (NGINX recommended)
+3. **Configure callback URL** in the integration settings
+4. **Enable push notifications** on one device (applies to all devices)
+5. **Create the automation** for handling webhook events
+
+> **Important**: Push notifications require Home Assistant to be exposed to the internet and behind a reverse proxy due to API limitations.
+
+## 🎥 PTZ Controls
+
+If your device supports PTZ (Pan-Tilt-Zoom), the integration provides:
+
+- **`imou_life.ptz_location`**: Move to specific coordinates
+- **`imou_life.ptz_move`**: Move in specific directions with duration
+
+These services can be called from automations or manually via Developer Tools.
+
+## 🚨 Motion Detection
+
+The integration creates a "Motion Alarm" binary sensor that can be used in automations. You have three update options:
+
+1. **Default**: Updates every 15 minutes (no internet required)
+2. **Manual refresh**: Use the "Refresh Alarm" button or automation
+3. **Push notifications**: Real-time updates (requires internet exposure)
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+- **API Errors**: Verify your App ID and App Secret are correct
+- **Device Not Found**: Ensure the device is registered in your Imou account
+- **Push Notifications**: Check that Home Assistant is exposed to the internet and behind a reverse proxy
+
+### Debug Logging
+
+Enable debug logging for troubleshooting:
+
+```yaml
+logger:
+  default: info
+  logs:
+    custom_components.imou_life: debug
+    imouapi: debug
 ```
-imou_life/
-├── 📁 custom_components/imou_life/    # Home Assistant integration
-├── 📁 tools/                          # Development and utility tools
-│   ├── 📁 scripts/                    # PowerShell/Batch scripts
-│   ├── 📁 docker/                     # Docker testing files
-│   └── 📁 validation/                 # Setup validation tools
-├── 📁 tests/                          # Test suite
-│   ├── 📁 unit/                       # Unit tests
-│   ├── 📁 integration/                # Integration tests
-│   └── 📁 fixtures/                   # Test data and fixtures
-├── 📁 docs/                           # Documentation
-├── 📁 scripts/                        # Build and deployment scripts
-└── 📁 config/                         # Configuration files
-```
 
-## 🛠️ Development
+### Device Diagnostics
 
-### Prerequisites
-
-- Python 3.9+
-- Home Assistant 2023.8.0+
-- Git
-
-### Quick Start
-
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/maximunited/imou_life.git
-   cd imou_life
-   ```
-
-2. **Set up development environment**:
-   ```bash
-   # Windows
-   .\tools\scripts\activate_venv.bat
-
-   # PowerShell
-   .\tools\scripts\activate_venv.ps1
-
-   # Linux/macOS
-   source venv/bin/activate
-   ```
-
-3. **Install dependencies**:
-   ```bash
-   pip install -r config/requirements_dev.txt
-   pip install -r config/requirements_test.txt
-   ```
-
-### Automated Version Management
-
-Use the `git bump` command for automatic version management:
-
-```bash
-# Auto-increment patch version
-git bump
-
-# Specific version
-git bump 1.0.30
-
-# With custom message
-git bump 1.0.30 "Added new feature"
-```
-
-The script automatically:
-- Updates `manifest.json`
-- Generates changelog entries
-- Commits changes
-- Creates and pushes git tags
-- Triggers GitHub Actions workflows
-
-### Testing
-
-```bash
-# Run all tests
-python -m pytest tests/
-
-# Run with coverage
-python -m pytest tests/ --cov=custom_components/imou_life
-
-# Run specific test categories
-python -m pytest tests/unit/
-python -m pytest tests/integration/
-```
-
-### Docker Testing
-
-```bash
-# Run tests in Docker
-.\tools\scripts\run_docker_tests.ps1
-
-# Or manually
-docker-compose -f tools/docker/docker-compose.test.yml up --build
-```
-
-## 📊 Code Coverage
-
-This project maintains comprehensive test coverage for all custom components:
-
-- **Integration Module** (`__init__.py`) - Setup and coordinator logic
-- **Configuration Flow** (`config_flow.py`) - User setup wizard
-- **Camera Platform** (`camera.py`) - Video streaming and snapshots
-- **Switch Platform** (`switch.py`) - Device controls and toggles
-- **Sensor Platform** (`sensor.py`) - Status monitoring
-- **Binary Sensor Platform** (`binary_sensor.py`) - Motion detection
-- **Select Platform** (`select.py`) - Dropdown controls
-- **Button Platform** (`button.py`) - Action triggers
-- **Siren Platform** (`siren.py`) - Alarm controls
-
-Coverage reports are automatically generated and uploaded to [Coveralls](https://coveralls.io/github/maximunited/imou_life) on every test run.
+Download diagnostics from the device page in Home Assistant for detailed information.
 
 ## 📚 Documentation
 
-- **[Installation Guide](docs/README.md)** - Complete setup instructions
-- **[Development Guide](docs/DEVELOPMENT.md)** - Contributing guidelines
+- **[Complete Installation Guide](docs/INSTALLATION.md)** - Detailed setup and configuration
+- **[Development Guide](docs/DEVELOPMENT.md)** - Contributing and development setup
 - **[Performance Guide](docs/PERFORMANCE_TROUBLESHOOTING.md)** - Optimization tips
 - **[HACS Guide](docs/HACS_ENHANCEMENTS.md)** - HACS-specific features
 - **[Changelog](docs/CHANGELOG.md)** - Version history and changes
 
-## 🔧 Configuration
+## 🤝 Support
 
-### Requirements
+- **Issues**: [GitHub Issues](https://github.com/maximunited/imou_life/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/maximunited/imou_life/discussions)
+- **Wiki**: [Project Wiki](https://github.com/maximunited/imou_life/wiki)
 
-- **Home Assistant**: 2023.8.0 or later
-- **Python Dependencies**: See `config/requirements.txt`
-- **Development Dependencies**: See `config/requirements_dev.txt`
-- **Test Dependencies**: See `config/requirements_test.txt`
+## ⚠️ Important Notes
 
-### Configuration Files
-
-- **`.coveragerc`**: Coverage reporting configuration
-- **`setup.cfg`**: Python package configuration
-- **`pyproject.toml`**: Project metadata and build settings
-- **`.pre-commit-config.yaml`**: Pre-commit hooks configuration
-
-## 🚀 Deployment
-
-### HACS Installation
-
-1. Add this repository to HACS
-2. Install the integration
-3. Restart Home Assistant
-4. Add via Settings > Devices & Services
-
-### Manual Installation
-
-1. Download the latest release
-2. Extract to `custom_components/imou_life/`
-3. Restart Home Assistant
-4. Add via Settings > Devices & Services
-
-## 🤝 Contributing
-
-We welcome contributions! Please see our [Contributing Guide](docs/CONTRIBUTING.md) for details.
-
-### Development Workflow
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Ensure all tests pass
-6. Submit a pull request
-
-### Code Quality
-
-- **Linting**: Pre-commit hooks ensure code quality
-- **Testing**: Comprehensive test suite with coverage reporting
-- **Documentation**: Clear docstrings and comprehensive guides
-- **Performance**: Optimized for Home Assistant environments
+- **Unofficial Integration**: This is not supported by Imou
+- **API Limitations**: Imou limits developer accounts to 5 devices
+- **Internet Required**: Push notifications require Home Assistant to be internet-accessible
+- **Reverse Proxy**: Required for push notifications due to API request formatting
 
 ## 📄 License
 
@@ -199,12 +167,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Original integration by [@user2684](https://github.com/user2684)
 - Enhanced and maintained by [@maximunited](https://github.com/maximunited)
 - Community contributors and testers
-
-## 📞 Support
-
-- **Issues**: [GitHub Issues](https://github.com/maximunited/imou_life/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/maximunited/imou_life/discussions)
-- **Documentation**: [Project Wiki](https://github.com/maximunited/imou_life/wiki)
 
 ---
 
