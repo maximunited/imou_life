@@ -1,0 +1,30 @@
+# See https://pre-commit.ci for more information
+# See https://pre-commit.ci/api for more information about these settings
+repos:
+  # Exclude local hooks that can't run in pre-commit.ci
+  - repo: local
+    hooks:
+      - id: validate-manifest
+        exclude: ^.*$  # Exclude this hook from pre-commit.ci
+
+ci:
+  # Run pre-commit.ci on all branches
+  branches: [master, main]
+
+  # Skip certain hooks that might not work well in CI
+  skip: [validate-manifest]
+
+  # Auto-update pre-commit hooks monthly
+  autoupdate_schedule: monthly
+
+  # Auto-update commit message
+  autoupdate_commit_msg: 'chore: pre-commit autoupdate'
+
+  # Auto-fix pull requests
+  autofix_commit_msg: |
+    style: auto fixes from pre-commit.ci
+
+    for more information, see https://pre-commit.ci
+
+  # Don't run on draft PRs
+  skip_draft: true
