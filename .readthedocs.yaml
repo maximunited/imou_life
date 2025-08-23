@@ -28,8 +28,5 @@ build:
   tools:
     python: "3.13"
 
-# Requirements file
-requirements_file: config/requirements.txt
-
 # Documentation directory
 docs_dir: docs
