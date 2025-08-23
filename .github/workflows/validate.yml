@@ -35,7 +35,19 @@ jobs:
         python -c "import homeassistant; print('Home Assistant OK')"
     - name: Run tests with coverage
       run: |
-        pytest --cov=custom_components.imou_life --cov-config=config/.coveragerc --cov-report=lcov --cov-report=term-missing tests/unit/
+        # Debug: Show environment info
+        echo "=== Environment Debug Info ==="
+        python --version
+        pip list | grep -E "(homeassistant|pytest|coverage)"
+        echo "=== Current Directory ==="
+        pwd
+        ls -la
+        echo "=== Test Directory ==="
+        ls -la tests/unit/
+        echo "=== Component Directory ==="
+        ls -la custom_components/imou_life/
+        echo "=== Running Tests ==="
+        pytest --cov=custom_components.imou_life --cov-config=config/.coveragerc --cov-report=lcov --cov-report=term-missing tests/unit/ -v --tb=long
     - name: Upload coverage to Coveralls
       uses: coverallsapp/github-action@v2
       with:
