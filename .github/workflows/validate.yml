@@ -2,9 +2,8 @@ name: Validate Integration
 
 on:
   push:
-    branches: [ main, master, develop, refactor/fix-scrutinizer-issues ]
-  pull_request:
-    branches: [ main, master ]
+    branches: [ main, master, develop ]  # Only run on main branches
+  pull_request:  # Runs on ALL PRs from ANY branch
 
 jobs:
   validate:

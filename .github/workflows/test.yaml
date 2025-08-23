@@ -2,11 +2,8 @@ name: Test
 
 on:
   push:
-    branches:
-      - main
-      - master
-      - refactor/fix-scrutinizer-issues
-  pull_request:
+    branches: [ main, master ]  # Only run on main/master pushes
+  pull_request:  # Runs on ALL PRs from ANY branch
 
 env:
   DEFAULT_PYTHON: 3.13
