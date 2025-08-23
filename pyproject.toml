@@ -46,7 +46,7 @@ docs = [
 
 [tool.setuptools]
 packages = ["custom_components.imou_life"]
-exclude-package-data = {"" = ["config/*", "docs/*", "tests/*", "tools/*", "venv/*", ".git/*"]}
+exclude-package-data = {"*" = ["config/*", "docs/*", "tests/*", "tools/*", "venv/*", ".git/*"]}
 
 [tool.pytest.ini_options]
 addopts = [
