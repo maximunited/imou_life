@@ -1,0 +1,14 @@
+# Global owners
+* @maximunited
+
+# Integration specific
+custom_components/imou_life/ @maximunited
+
+# Documentation
+docs/ @maximunited
+
+# Tests
+tests/ @maximunited
+
+# Tools and scripts
+tools/ @maximunited

@@ -1,0 +1,25 @@
+rules:
+  # Bronze Tier Requirements
+  config_flow: done
+  tests: done
+  codeowners: done
+
+  # Silver Tier Requirements
+  error_recovery: done
+  offline_handling: done
+  logging: done
+  troubleshooting_docs: done
+
+  # Gold Tier Requirements
+  device_discovery: done
+  entity_naming: done
+  translations: done
+  comprehensive_docs: done
+  test_coverage: done
+  firmware_updates: exempt
+  # exempt: This integration doesn't support firmware updates through Home Assistant
+
+  # Platinum Tier Requirements
+  type_annotations: done
+  async_code: done
+  performance: done

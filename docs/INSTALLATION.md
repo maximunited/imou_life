@@ -463,6 +463,7 @@ For real-time motion detection:
 ## 📚 Additional Resources
 
 - **[Development Guide](DEVELOPMENT.md)**: Contributing and development setup
+- **[Quality Scale](QUALITY_SCALE.md)**: Integration quality assessment and standards
 - **[Performance Guide](PERFORMANCE_TROUBLESHOOTING.md)**: Optimization tips
 - **[HACS Guide](HACS_ENHANCEMENTS.md)**: HACS-specific features
 - **[Changelog](CHANGELOG.md)**: Version history and changes

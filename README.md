@@ -7,6 +7,7 @@
 
 [![Release](https://img.shields.io/badge/release-1.1.0-blue.svg)](https://github.com/maximunited/imou_life/releases/tag/v1.1.0)
 [![Pre-release](https://img.shields.io/badge/pre--release-1.1.0-orange.svg)](https://github.com/maximunited/imou_life/releases/tag/v1.1.0)
+[![Quality Scale](https://img.shields.io/badge/quality%20scale-gold-brightgreen.svg)](https://developers.home-assistant.io/docs/core/integration-quality-scale/)
 
 A Home Assistant integration for Imou Life cameras and devices, providing comprehensive monitoring and control capabilities.
 

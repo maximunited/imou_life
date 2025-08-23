@@ -189,9 +189,52 @@ pre-commit run black --all-files
 - **Import Style**: isort configuration
 - **Type Hints**: mypy compliance
 
-## 🤖 Automated Workflows
+## 🏆 Quality Scale Compliance
 
-### GitHub Actions
+This integration follows the [Home Assistant Integration Quality Scale](https://developers.home-assistant.io/docs/core/integration-quality-scale/) and currently meets **Gold tier** requirements.
+
+### Quality Tier Status
+
+- **🥉 Bronze**: ✅ All requirements met
+- **🥈 Silver**: ✅ All requirements met
+- **🥇 Gold**: ✅ All requirements met
+- **🏆 Platinum**: 🔄 Partially met (type annotations, async code, performance)
+
+### Quality Requirements Met
+
+#### Bronze Tier
+- ✅ UI-based configuration flow
+- ✅ Automated testing with pytest
+- ✅ Basic coding standards compliance
+- ✅ User documentation
+
+#### Silver Tier
+- ✅ Stable user experience
+- ✅ Active code ownership (CODEOWNERS)
+- ✅ Error recovery and offline handling
+- ✅ Comprehensive troubleshooting docs
+
+#### Gold Tier
+- ✅ Automatic device discovery
+- ✅ Proper entity naming and categorization
+- ✅ Translation support
+- ✅ Extensive end-user documentation
+- ✅ Full test coverage (>70%)
+
+#### Platinum Tier
+- ✅ Type annotations throughout codebase
+- ✅ Fully asynchronous implementation
+- ✅ Performance optimization
+- 🔄 Further performance improvements possible
+
+### Quality Maintenance
+
+- **Continuous Testing**: Maintain >70% test coverage
+- **Code Quality**: Run pre-commit hooks on all changes
+- **Documentation**: Keep docs updated with new features
+- **Performance**: Monitor and optimize network/CPU usage
+
+## 🤖 Automated Workflows
 
 The project uses GitHub Actions for continuous integration and deployment:
 
@@ -421,6 +464,7 @@ docker run --rm imou_life_test
 
 ## 📚 Additional Resources
 
+- **[Quality Scale](QUALITY_SCALE.md)**: Integration quality assessment and standards
 - **[Performance Guide](PERFORMANCE_TROUBLESHOOTING.md)**: Optimization tips
 - **[HACS Guide](HACS_ENHANCEMENTS.md)**: HACS-specific features
 - **[Contributing Guide](CONTRIBUTING.md)**: Detailed contribution guidelines
