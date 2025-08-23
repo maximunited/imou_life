@@ -6,11 +6,11 @@
 # -- Project information -----------------------------------------------------
 
 project = "Imou Life"
-copyright = "2024, Imou Life Contributors"
+copyright = "2025, Imou Life Contributors"
 author = "Imou Life Contributors"
 
 # The full version, including alpha/beta/rc tags
-release = "1.0.0"
+release = "1.1.0"
 
 # -- General configuration ---------------------------------------------------
 
@@ -19,6 +19,13 @@ release = "1.0.0"
 # ones.
 extensions = [
     "myst_parser",  # For Markdown support
+    "sphinx.ext.napoleon",  # For Google style docstrings
+    "sphinx.ext.autodoc",  # For auto documentation
+    "sphinx.ext.viewcode",  # For source code viewing
+    "sphinx.ext.intersphinx",  # For cross-referencing documentation
+    "sphinx.ext.coverage",  # For code coverage
+    "sphinx.ext.doctest",  # For testing docstrings
+    "sphinx.ext.todo",  # For todo items
 ]
 
 # The suffix of source filenames.

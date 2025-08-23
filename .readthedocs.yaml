@@ -11,7 +11,6 @@ sphinx:
 # Set the version of Python and requirements
 # Project supports Python >=3.9, and 3.13 is fully supported in CI
 python:
-  version: "3.13"
   install:
     - method: pip
       path: .
