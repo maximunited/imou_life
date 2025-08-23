@@ -31,7 +31,46 @@ class MockConfigEntry(ConfigEntry):
         except TypeError as e:
             # If that fails, try to identify which parameters are actually required
             error_str = str(e)
-            if "missing" in error_str:
+            if "unexpected keyword argument" in error_str:
+                # Extract the unexpected parameter name from the error
+                import re
+
+                unexpected_match = re.search(
+                    r"unexpected keyword argument '([^']+)'",
+                    error_str,
+                )
+                if unexpected_match:
+                    unexpected_param = unexpected_match.group(1)
+                    # Remove the unexpected parameter and try again
+                    if unexpected_param in all_params:
+                        del all_params[unexpected_param]
+                        try:
+                            super().__init__(**all_params)
+                        except TypeError:
+                            # If still failing, try with minimal parameters
+                            super().__init__(
+                                entry_id=entry_id,
+                                domain=domain,
+                                data=data,
+                                version=version,
+                            )
+                    else:
+                        # Fallback: try with minimal parameters
+                        super().__init__(
+                            entry_id=entry_id,
+                            domain=domain,
+                            data=data,
+                            version=version,
+                        )
+                else:
+                    # Fallback: try with minimal parameters
+                    super().__init__(
+                        entry_id=entry_id,
+                        domain=domain,
+                        data=data,
+                        version=version,
+                    )
+            elif "missing" in error_str:
                 # Extract missing parameter names from the error
                 import re
 
