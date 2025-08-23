@@ -33,6 +33,12 @@ jobs:
     - name: Verify dependencies
       run: |
         python -c "import homeassistant; print('Home Assistant OK')"
+    - name: Run minimal test first
+      run: |
+        echo "=== Testing Basic Pytest Setup ==="
+        python tests/unit/test_minimal.py
+        echo "=== Basic test completed ==="
+
     - name: Run tests with coverage
       run: |
         # Debug: Show environment info
