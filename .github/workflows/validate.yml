@@ -2,16 +2,15 @@ name: Validate Integration
 
 on:
   push:
-    branches: [ main, master, develop ]
-  pull_request:
-    branches: [ main, master ]
+    branches: [ main, master, develop ]  # Only run on main branches
+  pull_request:  # Runs on ALL PRs from ANY branch
 
 jobs:
   validate:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.11, 3.12]
+        python-version: [3.11, 3.12, 3.13]
       fail-fast: false
 
     steps:

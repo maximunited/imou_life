@@ -1,12 +1,17 @@
 """Global fixtures for imou_life integration."""
 
 # Mock turbojpeg before any other imports to prevent import errors
+
 import sys
 from unittest.mock import MagicMock
 
 # Create a mock turbojpeg module
 mock_turbojpeg = MagicMock()
 sys.modules["turbojpeg"] = mock_turbojpeg
+
+# Also mock PyTurboJPEG to prevent import issues
+mock_pyturbojpeg = MagicMock()
+sys.modules["PyTurboJPEG"] = mock_pyturbojpeg
 
 # Mock camera img_util to prevent import issues
 mock_img_util = MagicMock()
@@ -49,8 +54,10 @@ def mock_get_sensors_by_platform(platform):
     """Provide mock sensors by platform."""
     if platform == "switch":
         return [ImouSwitch(None, "device_id", "device_name", "motionDetect")]
+
     elif platform == "sensor":
         return [ImouSensor(None, "device_id", "device_name", "lastAlarm")]
+
     elif platform == "binary_sensor":
         return [ImouBinarySensor(None, "device_id", "device_name", "online")]
 
