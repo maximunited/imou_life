@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - master
+      - refactor/fix-scrutinizer-issues
   pull_request:
 
 env:
