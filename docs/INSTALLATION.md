@@ -25,7 +25,8 @@
 
 Before installing the integration, ensure you have:
 
-- **Home Assistant**: Version 2023.8.0 or later
+- **Home Assistant**: Version 2024.2.0 or later
+- **Python**: 3.11, 3.12, or 3.13
 - **Imou Life Account**: Valid account with registered devices
 - **Internet Access**: Required for API communication and push notifications
 - **Reverse Proxy**: Required for push notifications (NGINX recommended)

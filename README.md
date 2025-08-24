@@ -22,7 +22,7 @@ A Home Assistant integration for Imou Life cameras and devices, providing compre
 ## 📋 Requirements
 
 ### System Requirements
-- **Home Assistant**: 2023.8.0 or later (including latest 2025.x versions)
+- **Home Assistant**: 2024.2.0 or later (including latest 2025.x versions)
 - **Python**: 3.11, 3.12, 3.13 (fully compatible)
 - **Operating System**: Any platform supported by Home Assistant
 
@@ -31,7 +31,8 @@ A Home Assistant integration for Imou Life cameras and devices, providing compre
 - **Developer Account**: App ID and App Secret from [Imou Open Platform](https://open.imoulife.com)
 
 ### Version Compatibility
-- **Latest Home Assistant**: ✅ Fully supported (tested with 2025.8.2+)
+- **Home Assistant 2024.2.0+**: ✅ Fully supported (Python 3.11-3.13)
+- **Home Assistant 2024.12.0+**: ✅ Python 3.13 support added
 - **Python 3.11-3.13**: ✅ All versions supported
 - **Cross-platform**: ✅ Windows, macOS, Linux, Docker, etc.
 
@@ -167,14 +168,24 @@ Download diagnostics from the device page in Home Assistant for detailed informa
 
 ## 🔄 Compatibility & Testing
 
+### Python & Home Assistant Version Support
+
+| Python Version | Home Assistant Support | Integration Status |
+|----------------|------------------------|-------------------|
+| **3.11** | 2023.3+ | ✅ **Fully Supported** (2024.2.0+) |
+| **3.12** | 2024.2+ | ✅ **Fully Supported** (2024.2.0+) |
+| **3.13** | 2024.12+ | ✅ **Fully Supported** (2024.2.0+) |
+
+**Note**: Our integration requires Home Assistant 2024.2.0+ which automatically provides Python 3.11-3.13 compatibility.
+
 ### Tested Environments
-- **Home Assistant**: 2023.8.0 → 2025.8.2+ (latest)
+- **Home Assistant**: 2024.2.0 → 2025.8.3+ (latest)
 - **Python**: 3.11, 3.12, 3.13
 - **Platforms**: Windows, macOS, Linux, Docker, Home Assistant OS
 - **Architectures**: x86_64, ARM64, ARM32
 
 ### CI/CD Testing
-- **GitHub Actions**: Automated testing on Python 3.11, 3.12
+- **GitHub Actions**: Automated testing on Python 3.11, 3.12, 3.13
 - **Coverage**: Maintains >60% test coverage across all versions
 - **Quality**: Scrutinizer CI integration for code quality monitoring
 

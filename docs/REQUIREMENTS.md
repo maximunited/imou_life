@@ -13,11 +13,12 @@ This document outlines all the dependencies required for the Imou Life integrati
 - **imouapi==1.0.15** - Core Imou API client library
 
 ### Testing Dependencies (requirements_test.txt)
-- **pytest-homeassistant-custom-component==0.13.271** - Home Assistant testing framework
+- **homeassistant>=2024.2.0** - Home Assistant core for testing (Python 3.11-3.13 compatible)
 - **pytest>=8.0.0** - Testing framework
-- **pytest-asyncio>=0.21.0** - Async testing support
+- **pytest-asyncio>=0.24.0** - Async testing support
 - **pytest-cov>=6.0.0** - Coverage testing
-- **coverage>=7.0.0** - Code coverage tool
+- **coverage>=7.4.0** - Code coverage tool
+- **imouapi==1.0.15** - Core Imou API client library
 
 ## Linting and Code Quality
 
@@ -53,7 +54,12 @@ The GitHub Actions workflow automatically installs Python packages.
 
 ## Version Constraints
 
-All dependencies are pinned to specific versions to ensure reproducible builds:
+### Python Version Support
+- **Python 3.11**: Home Assistant 2023.3+ (our requirement: 2024.2.0+)
+- **Python 3.12**: Home Assistant 2024.2+ (our requirement: 2024.2.0+)
+- **Python 3.13**: Home Assistant 2024.12+ (our requirement: 2024.2.0+)
+
+### Development Dependencies
 - **pip**: 25.2.0
 - **pre-commit**: 4.3.0
 - **black**: 25.1.0
@@ -73,7 +79,7 @@ Due to compatibility issues with the `turbojpeg` package across different Python
 ### Platform-Specific Testing
 - **Linux/macOS**: Full test suite available
 - **Windows**: Limited pytest functionality due to platform dependencies
-- **CI/CD**: Full testing on Linux runners
+- **CI/CD**: Full testing on Linux runners with Python 3.11, 3.12, and 3.13
 
 ## Troubleshooting
 
@@ -89,7 +95,7 @@ If you get import errors:
 
 1. **Ensure virtual environment is activated**
 2. **Install requirements**: `pip install -r config/requirements_dev.txt`
-3. **Check Python version**: Use Python 3.9+ (3.13 recommended)
+3. **Check Python version**: Use Python 3.11+ (3.11, 3.12, or 3.13 supported)
 
 ### Platform-Specific Testing
 - **Linux/macOS**: Full test suite available

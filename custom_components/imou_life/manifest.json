@@ -16,5 +16,6 @@
     "requirements":  [
                          "imouapi==1.0.15"
                      ],
+    "homeassistant": ">=2024.2.0",
     "version":  "1.1.1"
 }

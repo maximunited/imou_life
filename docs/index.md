@@ -19,6 +19,7 @@ Welcome to the Imou Life documentation. This integration provides comprehensive 
 - [FAQ](FAQ.md) - Frequently asked questions
 - [Performance Troubleshooting](PERFORMANCE_TROUBLESHOOTING.md) - Performance optimization
 - [Requirements](REQUIREMENTS.md) - System requirements
+- [Version Compatibility](VERSION_COMPATIBILITY.md) - Python and Home Assistant version support
 
 ## Additional Information
 
