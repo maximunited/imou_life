@@ -67,3 +67,164 @@ ptz_move:
           min: 100
           max: 10000
           step: 100
+
+# Battery Optimization Services
+optimize_battery:
+  name: "Optimize Battery"
+  description: "Optimize device battery settings for maximum battery life"
+  target:
+    entity:
+      integration: imou_life
+  fields:
+    power_mode:
+      name: "Power Mode"
+      description: "Set the power mode for the device"
+      selector:
+        select:
+          options:
+            - "performance"
+            - "balanced"
+            - "power_saving"
+            - "ultra_power_saving"
+          mode: dropdown
+    motion_sensitivity:
+      name: "Motion Sensitivity"
+      description: "Set motion detection sensitivity"
+      selector:
+        select:
+          options:
+            - "low"
+            - "medium"
+            - "high"
+            - "ultra_high"
+          mode: dropdown
+    recording_quality:
+      name: "Recording Quality"
+      description: "Set recording quality (affects battery life)"
+      selector:
+        select:
+          options:
+            - "low"
+            - "standard"
+            - "high"
+            - "ultra_high"
+          mode: dropdown
+    led_indicators:
+      name: "LED Indicators"
+      description: "Enable or disable LED indicators"
+      selector:
+        boolean:
+          mode: toggle
+
+set_power_mode:
+  name: "Set Power Mode"
+  description: "Set the power mode for the device"
+  target:
+    entity:
+      integration: imou_life
+  fields:
+    power_mode:
+      name: "Power Mode"
+      description: "The power mode to set"
+      required: true
+      selector:
+        select:
+          options:
+            - "performance"
+            - "balanced"
+            - "power_saving"
+            - "ultra_power_saving"
+          mode: dropdown
+
+set_sleep_schedule:
+  name: "Set Sleep Schedule"
+  description: "Configure when the device should enter sleep mode"
+  target:
+    entity:
+      integration: imou_life
+  fields:
+    sleep_schedule:
+      name: "Sleep Schedule"
+      description: "The sleep schedule to use"
+      required: true
+      selector:
+        select:
+          options:
+            - "never"
+            - "night_only"
+            - "custom"
+            - "battery_based"
+          mode: dropdown
+    start_time:
+      name: "Start Time"
+      description: "When to start sleep mode (for custom schedule)"
+      selector:
+        time:
+          mode: selector
+    end_time:
+      name: "End Time"
+      description: "When to end sleep mode (for custom schedule)"
+      selector:
+        time:
+          mode: selector
+
+set_motion_sensitivity:
+  name: "Set Motion Sensitivity"
+  description: "Set the motion detection sensitivity level"
+  target:
+    entity:
+      integration: imou_life
+  fields:
+    sensitivity:
+      name: "Sensitivity Level"
+      description: "The sensitivity level to set"
+      required: true
+      selector:
+        select:
+          options:
+            - "low"
+            - "medium"
+            - "high"
+            - "ultra_high"
+          mode: dropdown
+
+set_recording_quality:
+  name: "Set Recording Quality"
+  description: "Set the recording quality (affects battery life)"
+  target:
+    entity:
+      integration: imou_life
+  fields:
+    quality:
+      name: "Recording Quality"
+      description: "The recording quality to set"
+      required: true
+      selector:
+        select:
+          options:
+            - "low"
+            - "standard"
+            - "high"
+            - "ultra_high"
+          mode: dropdown
+
+enter_sleep_mode:
+  name: "Enter Sleep Mode"
+  description: "Manually put the device into sleep mode"
+  target:
+    entity:
+      integration: imou_life
+
+exit_sleep_mode:
+  name: "Exit Sleep Mode"
+  description: "Wake up the device from sleep mode"
+  target:
+    entity:
+      integration: imou_life
+
+reset_power_settings:
+  name: "Reset Power Settings"
+  description: "Reset all power and battery optimization settings to defaults"
+  target:
+    entity:
+      integration: imou_life

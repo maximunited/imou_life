@@ -19,12 +19,28 @@ from .const import (
     CONF_DISCOVERED_DEVICE,
     CONF_ENABLE_DISCOVER,
     DEFAULT_API_URL,
+    DEFAULT_AUTO_SLEEP,
+    DEFAULT_BATTERY_OPTIMIZATION,
+    DEFAULT_BATTERY_THRESHOLD,
+    DEFAULT_LED_INDICATORS,
+    DEFAULT_MOTION_SENSITIVITY,
+    DEFAULT_POWER_SAVING_MODE,
+    DEFAULT_RECORDING_QUALITY,
     DEFAULT_SCAN_INTERVAL,
+    MOTION_SENSITIVITY_LEVELS,
     OPTION_API_TIMEOUT,
+    OPTION_AUTO_SLEEP,
+    OPTION_BATTERY_OPTIMIZATION,
+    OPTION_BATTERY_THRESHOLD,
     OPTION_CALLBACK_URL,
     OPTION_CAMERA_WAIT_BEFORE_DOWNLOAD,
+    OPTION_LED_INDICATORS,
+    OPTION_MOTION_SENSITIVITY,
+    OPTION_POWER_SAVING_MODE,
+    OPTION_RECORDING_QUALITY,
     OPTION_SCAN_INTERVAL,
     OPTION_WAIT_AFTER_WAKE_UP,
+    RECORDING_QUALITY_OPTIONS,
 )
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -234,6 +250,46 @@ class ImouOptionsFlowHandler(config_entries.OptionsFlow):
                             OPTION_WAIT_AFTER_WAKE_UP, vol.UNDEFINED
                         ),
                     ): vol.Coerce(float),
+                    vol.Optional(
+                        OPTION_BATTERY_OPTIMIZATION,
+                        default=self.options.get(
+                            OPTION_BATTERY_OPTIMIZATION, DEFAULT_BATTERY_OPTIMIZATION
+                        ),
+                    ): bool,
+                    vol.Optional(
+                        OPTION_POWER_SAVING_MODE,
+                        default=self.options.get(
+                            OPTION_POWER_SAVING_MODE, DEFAULT_POWER_SAVING_MODE
+                        ),
+                    ): bool,
+                    vol.Optional(
+                        OPTION_MOTION_SENSITIVITY,
+                        default=self.options.get(
+                            OPTION_MOTION_SENSITIVITY, DEFAULT_MOTION_SENSITIVITY
+                        ),
+                    ): vol.In(MOTION_SENSITIVITY_LEVELS),
+                    vol.Optional(
+                        OPTION_RECORDING_QUALITY,
+                        default=self.options.get(
+                            OPTION_RECORDING_QUALITY, DEFAULT_RECORDING_QUALITY
+                        ),
+                    ): vol.In(RECORDING_QUALITY_OPTIONS),
+                    vol.Optional(
+                        OPTION_LED_INDICATORS,
+                        default=self.options.get(
+                            OPTION_LED_INDICATORS, DEFAULT_LED_INDICATORS
+                        ),
+                    ): bool,
+                    vol.Optional(
+                        OPTION_AUTO_SLEEP,
+                        default=self.options.get(OPTION_AUTO_SLEEP, DEFAULT_AUTO_SLEEP),
+                    ): bool,
+                    vol.Optional(
+                        OPTION_BATTERY_THRESHOLD,
+                        default=self.options.get(
+                            OPTION_BATTERY_THRESHOLD, DEFAULT_BATTERY_THRESHOLD
+                        ),
+                    ): vol.Range(min=5, max=50),
                 }
             ),
         )
