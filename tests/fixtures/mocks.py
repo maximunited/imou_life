@@ -50,6 +50,9 @@ class MockConfigEntry(ConfigEntry):
                     "domain": domain,
                     "data": data,
                     "version": version,
+                    "minor_version": kwargs.get("minor_version", 1),
+                    "title": kwargs.get("title", "Test Entry"),
+                    "source": kwargs.get("source", "user"),
                 }
                 super().__init__(**params)
 
