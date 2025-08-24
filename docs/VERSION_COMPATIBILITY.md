@@ -147,6 +147,6 @@ If you encounter compatibility issues:
 
 ---
 
-**Last Updated**: August 2025  
-**Integration Version**: 1.1.1  
+**Last Updated**: August 2025
+**Integration Version**: 1.1.1
 **Maintainer**: [@maximunited](https://github.com/maximunited)
