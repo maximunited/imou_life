@@ -24,71 +24,30 @@ jobs:
         python -m pip install --upgrade pip setuptools wheel
         # Install dev dependencies first
         pip install -r config/requirements_dev.txt
-        # Install test dependencies with conditional Home Assistant installation
-        if [ "${{ matrix.python-version }}" = "3.13" ]; then
-          # For Python 3.13, install without Home Assistant (not supported yet)
-          pip install -r config/requirements_test.txt --no-deps
-          pip install aiohttp>=3.8.0 coverage>=7.4.0 imouapi==1.0.15 numpy>=1.24.0 pytest>=8.0.0 pytest-asyncio>=0.24.0 pytest-cov>=6.0.0 pytest-mock>=3.12.0 httpx>=0.24.0
-        else
-          # For Python 3.11 and 3.12, install with Home Assistant
-          pip install -r config/requirements_test.txt
-        fi
+        # Install test dependencies - all Python versions now support Home Assistant
+        pip install -r config/requirements_test.txt
     - name: Run pre-commit hooks
       run: |
         pre-commit run --all-files
     - name: Verify component structure
       run: |
-        if [ "${{ matrix.python-version }}" = "3.13" ]; then
-          echo "Python 3.13 - skipping component import (Home Assistant not available)"
-          # Just verify the files exist
-          ls -la custom_components/imou_life/
-          echo "Component files verified"
-        else
-          python -c "import custom_components.imou_life; print('Component structure OK')"
-        fi
+        python -c "import custom_components.imou_life; print('Component structure OK')"
     - name: Verify dependencies
       run: |
-        if [ "${{ matrix.python-version }}" = "3.13" ]; then
-          echo "Python 3.13 - skipping Home Assistant import (not supported yet)"
-        else
-          python -c "import homeassistant; print('Home Assistant OK')" || echo "Home Assistant import failed, but continuing with tests"
-        fi
+        python -c "import homeassistant; print('Home Assistant OK')" || echo "Home Assistant import failed, but continuing with tests"
     - name: Run comprehensive tests with coverage
       run: |
-        # Run tests with better error handling and output
-        if [ "${{ matrix.python-version }}" = "3.13" ]; then
-          echo "Python 3.13 - running basic tests without Home Assistant"
-          # Run only basic tests that don't require Home Assistant
-          python -m pytest \
-            --asyncio-mode=auto \
-            --durations=10 \
-            --cov=custom_components.imou_life \
-            --cov-config=config/.coveragerc \
-            --cov-report=lcov:coverage.lcov \
-            --cov-report=term-missing \
-            --tb=short \
-            -v \
-            tests/unit/test_const.py tests/unit/test_entity.py tests/unit/test_coordinator.py || echo "Some tests failed, but continuing with validation"
-          # Ensure coverage.lcov exists and has content for Python 3.13
-          if [ ! -f coverage.lcov ] || [ ! -s coverage.lcov ]; then
-            echo "Creating minimal coverage report for Python 3.13"
-            echo "TN:" > coverage.lcov
-            echo "SF:custom_components/imou_life/__init__.py" >> coverage.lcov
-            echo "end_of_record" >> coverage.lcov
-          fi
-        else
-          # Run full test suite for Python 3.11 and 3.12
-          python -m pytest \
-            --asyncio-mode=auto \
-            --durations=10 \
-            --cov=custom_components.imou_life \
-            --cov-config=config/.coveragerc \
-            --cov-report=lcov:coverage.lcov \
-            --cov-report=term-missing \
-            --tb=short \
-            -v \
-            tests/ || echo "Some tests failed, but continuing with validation"
-        fi
+        # Run full test suite for all Python versions (including 3.13)
+        python -m pytest \
+          --asyncio-mode=auto \
+          --durations=10 \
+          --cov=custom_components.imou_life \
+          --cov-config=config/.coveragerc \
+          --cov-report=lcov:coverage.lcov \
+          --cov-report=term-missing \
+          --tb=short \
+          -v \
+          tests/ || echo "Some tests failed, but continuing with validation"
     - name: Verify coverage file
       run: |
         echo "Current working directory: $(pwd)"
@@ -113,20 +72,6 @@ jobs:
           echo "end_of_record" >> coverage.lcov
         fi
     - name: Upload coverage to Coveralls
-      run: |
-        if [ "${{ matrix.python-version }}" = "3.13" ]; then
-          echo "Python 3.13 - skipping Coveralls upload (not fully supported yet)"
-          echo "Coverage file generated successfully for local validation"
-          # Create a success marker to indicate coverage was generated
-          echo "coverage_generated=true" >> $GITHUB_OUTPUT
-        else
-          echo "Python ${{ matrix.python-version }} - uploading to Coveralls"
-          # For Python 3.11 and 3.12, use the standard Coveralls action
-          echo "coverage_generated=true" >> $GITHUB_OUTPUT
-        fi
-      id: coverage_step
-    - name: Upload coverage to Coveralls (Python 3.11/3.12 only)
-      if: matrix.python-version != '3.13'
       uses: coverallsapp/github-action@v2
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
