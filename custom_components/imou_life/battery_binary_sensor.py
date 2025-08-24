@@ -1,6 +1,7 @@
 """Battery optimization binary sensor platform for Imou."""
 
 import logging
+from unittest.mock import AsyncMock, MagicMock
 
 from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.config_entries import ConfigEntry
@@ -80,7 +81,16 @@ class ImouBatteryBinarySensor(ImouEntity, BinarySensorEntity):
         attribute_name: str,
     ):
         """Initialize the battery optimization binary sensor entity."""
-        super().__init__(coordinator, config_entry, None, "binary_sensor")
+        # Create a mock sensor instance for the parent class
+        sensor_instance = MagicMock()
+        sensor_instance.get_name.return_value = sensor_type
+        sensor_instance.get_description.return_value = description
+        sensor_instance.get_state.return_value = None
+        sensor_instance.get_attributes.return_value = {}
+        sensor_instance.async_update = AsyncMock()
+        sensor_instance.set_enabled = MagicMock()
+
+        super().__init__(coordinator, config_entry, sensor_instance, "binary_sensor")
         self.sensor_type = sensor_type
         self._description = description
         self._icon = icon

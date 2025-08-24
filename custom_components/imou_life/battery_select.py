@@ -2,6 +2,7 @@
 
 import logging
 from typing import Optional
+from unittest.mock import MagicMock
 
 from homeassistant.components.select import SelectEntity
 from homeassistant.config_entries import ConfigEntry
@@ -95,7 +96,14 @@ class ImouBatterySelect(ImouEntity, SelectEntity):
         attribute_name: str,
     ):
         """Initialize the battery optimization select entity."""
-        super().__init__(coordinator, config_entry, None, "select")
+        # Create a mock sensor instance for the parent class
+        sensor_instance = MagicMock()
+        sensor_instance.get_name.return_value = select_type
+        sensor_instance.get_description.return_value = description
+        sensor_instance.get_state.return_value = None
+        sensor_instance.get_attributes.return_value = {}
+
+        super().__init__(coordinator, config_entry, sensor_instance, "select")
         self.select_type = select_type
         self._description = description
         self._options = options
@@ -166,7 +174,7 @@ class ImouBatterySelect(ImouEntity, SelectEntity):
             # Update config entry options
             options = dict(self.config_entry.options)
             options[self._attribute_name] = option
-            self.hass.config_entries.async_update_entry(
+            self.coordinator.hass.config_entries.async_update_entry(
                 self.config_entry, options=options
             )
 

@@ -1,6 +1,7 @@
 """Battery optimization button platform for Imou."""
 
 import logging
+from unittest.mock import AsyncMock, MagicMock
 
 from homeassistant.components.button import ButtonEntity
 from homeassistant.config_entries import ConfigEntry
@@ -83,7 +84,16 @@ class ImouBatteryButton(ImouEntity, ButtonEntity):
         action_name: str,
     ):
         """Initialize the battery optimization button entity."""
-        super().__init__(coordinator, config_entry, None, "button")
+        # Create a mock sensor instance for the parent class
+        sensor_instance = MagicMock()
+        sensor_instance.get_name.return_value = button_type
+        sensor_instance.get_description.return_value = description
+        sensor_instance.get_state.return_value = None
+        sensor_instance.get_attributes.return_value = {}
+        sensor_instance.async_update = AsyncMock()
+        sensor_instance.set_enabled = MagicMock()
+
+        super().__init__(coordinator, config_entry, sensor_instance, "button")
         self.button_type = button_type
         self._description = description
         self._icon = icon
@@ -167,7 +177,7 @@ class ImouBatteryButton(ImouEntity, ButtonEntity):
                 }
             )
 
-            self.hass.config_entries.async_update_entry(
+            self.coordinator.hass.config_entries.async_update_entry(
                 self.config_entry, options=options
             )
 
