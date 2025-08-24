@@ -21,11 +21,19 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
+        echo "Python version: $(python --version)"
+        echo "Pip version: $(pip --version)"
+        echo "Current working directory: $(pwd)"
+        echo "Listing requirements files:"
+        ls -la config/requirements*.txt
+        echo "Installing pip upgrades..."
         python -m pip install --upgrade pip setuptools wheel
-        # Install dev dependencies first
+        echo "Installing dev dependencies..."
         pip install -r config/requirements_dev.txt
-        # Install test dependencies - all Python versions now support Home Assistant
+        echo "Installing test dependencies..."
         pip install -r config/requirements_test.txt
+        echo "Verifying Home Assistant installation..."
+        python -c "import homeassistant; print(f'Home Assistant {homeassistant.__version__} installed successfully')"
     - name: Run pre-commit hooks
       run: |
         pre-commit run --all-files
