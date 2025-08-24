@@ -12,7 +12,7 @@ class MockConfigEntry(ConfigEntry):
         """Initialize mock config entry."""
         # Try different parameter combinations for different Home Assistant versions
         try:
-            # Try with discovery_keys (newer versions)
+            # Try with all parameters (newer versions)
             params = {
                 "entry_id": entry_id,
                 "domain": domain,
@@ -29,32 +29,45 @@ class MockConfigEntry(ConfigEntry):
             super().__init__(**params)
         except TypeError:
             try:
-                # Try without discovery_keys (older versions)
+                # Try with required parameters for Python 3.12+
                 params = {
                     "entry_id": entry_id,
                     "domain": domain,
                     "data": data,
                     "version": version,
-                    "minor_version": kwargs.get("minor_version", 1),
+                    "discovery_keys": kwargs.get("discovery_keys", []),
                     "options": kwargs.get("options", {}),
-                    "source": kwargs.get("source", "user"),
-                    "subentries_data": kwargs.get("subentries_data", {}),
-                    "title": kwargs.get("title", "Test Entry"),
                     "unique_id": kwargs.get("unique_id", "test_unique_id"),
                 }
                 super().__init__(**params)
             except TypeError:
-                # Try with minimal parameters
-                params = {
-                    "entry_id": entry_id,
-                    "domain": domain,
-                    "data": data,
-                    "version": version,
-                    "minor_version": kwargs.get("minor_version", 1),
-                    "title": kwargs.get("title", "Test Entry"),
-                    "source": kwargs.get("source", "user"),
-                }
-                super().__init__(**params)
+                try:
+                    # Try without discovery_keys (older versions)
+                    params = {
+                        "entry_id": entry_id,
+                        "domain": domain,
+                        "data": data,
+                        "version": version,
+                        "minor_version": kwargs.get("minor_version", 1),
+                        "options": kwargs.get("options", {}),
+                        "source": kwargs.get("source", "user"),
+                        "subentries_data": kwargs.get("subentries_data", {}),
+                        "title": kwargs.get("title", "Test Entry"),
+                        "unique_id": kwargs.get("unique_id", "test_unique_id"),
+                    }
+                    super().__init__(**params)
+                except TypeError:
+                    # Try with minimal parameters
+                    params = {
+                        "entry_id": entry_id,
+                        "domain": domain,
+                        "data": data,
+                        "version": version,
+                        "minor_version": kwargs.get("minor_version", 1),
+                        "title": kwargs.get("title", "Test Entry"),
+                        "source": kwargs.get("source", "user"),
+                    }
+                    super().__init__(**params)
 
         self._hass = None
         self._options = kwargs.get("options", {})
