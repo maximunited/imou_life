@@ -113,8 +113,7 @@ optimize_battery:
       name: "LED Indicators"
       description: "Enable or disable LED indicators"
       selector:
-        boolean:
-          mode: toggle
+        boolean
 
 set_power_mode:
   name: "Set Power Mode"
@@ -159,14 +158,12 @@ set_sleep_schedule:
       name: "Start Time"
       description: "When to start sleep mode (for custom schedule)"
       selector:
-        time:
-          mode: selector
+        time
     end_time:
       name: "End Time"
       description: "When to end sleep mode (for custom schedule)"
       selector:
-        time:
-          mode: selector
+        time
 
 set_motion_sensitivity:
   name: "Set Motion Sensitivity"
