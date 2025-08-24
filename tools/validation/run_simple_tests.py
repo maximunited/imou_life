@@ -16,9 +16,9 @@ sys.path.insert(0, str(project_root))
 
 def run_test_module(module_name):
     """Run a test module and return results."""
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"Running {module_name}")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
 
     try:
         # Import the module
@@ -80,9 +80,9 @@ def main():
             failed += 1
 
     # Summary
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print("TEST SUMMARY")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
     print(f"✅ Passed: {passed}")
     print(f"❌ Failed: {failed}")
     print(f"📊 Total: {len(test_modules)}")
