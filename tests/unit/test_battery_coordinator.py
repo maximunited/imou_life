@@ -50,48 +50,54 @@ class TestBatteryOptimizationCoordinator:
             scan_interval=timedelta(seconds=300),
         )
 
+    def _create_coordinator_with_options(self, mock_hass, mock_device, options):
+        """Helper method to create coordinator with specific options."""
+        config_entry = MagicMock()
+        config_entry.options = options
+        return BatteryOptimizationCoordinator(
+            mock_hass, mock_device, config_entry, scan_interval=timedelta(seconds=300)
+        )
+
+    def _assert_coordinator_defaults(self, coordinator):
+        """Helper method to assert default coordinator values."""
+        assert coordinator._power_mode == "balanced"
+        assert coordinator._motion_sensitivity == "medium"
+        assert coordinator._recording_quality == "standard"
+        assert coordinator._led_indicators is True
+        assert coordinator._auto_sleep is False
+        assert coordinator._battery_threshold == 20
+
+    def _patch_coordinator_methods(self, coordinator, methods_to_patch):
+        """Helper method to patch multiple coordinator methods."""
+        patches = {}
+        for method_name in methods_to_patch:
+            patches[method_name] = patch.object(coordinator, method_name)
+        return patches
+
     def test_coordinator_initialization(
         self, coordinator, mock_device, mock_config_entry
     ):
         """Test coordinator initialization."""
         assert coordinator.device == mock_device
         assert coordinator.config_entry == mock_config_entry
-        assert coordinator._power_mode == "balanced"
-        assert coordinator._motion_sensitivity == "medium"
-        assert coordinator._recording_quality == "standard"
-        assert coordinator._led_indicators is True
-        assert coordinator._auto_sleep is False
-        assert coordinator._battery_threshold == 20
+        self._assert_coordinator_defaults(coordinator)
         assert coordinator._sleep_schedule == "never"
         assert coordinator._battery_optimization_active is False
 
     def test_coordinator_default_values(self, mock_hass, mock_device):
         """Test coordinator with default values."""
-        config_entry = MagicMock()
-        config_entry.options = {}
-
-        coordinator = BatteryOptimizationCoordinator(
-            mock_hass, mock_device, config_entry, scan_interval=timedelta(seconds=300)
-        )
-
-        assert coordinator._power_mode == "balanced"
-        assert coordinator._motion_sensitivity == "medium"
-        assert coordinator._recording_quality == "standard"
-        assert coordinator._led_indicators is True
-        assert coordinator._auto_sleep is False
-        assert coordinator._battery_threshold == 20
+        coordinator = self._create_coordinator_with_options(mock_hass, mock_device, {})
+        self._assert_coordinator_defaults(coordinator)
 
     def test_load_settings_custom_sleep_schedule(self, mock_hass, mock_device):
         """Test loading custom sleep schedule settings."""
-        config_entry = MagicMock()
-        config_entry.options = {
+        options = {
             "sleep_schedule": "custom",
             "sleep_start_time": "23:00",
             "sleep_end_time": "07:00",
         }
-
-        coordinator = BatteryOptimizationCoordinator(
-            mock_hass, mock_device, config_entry, scan_interval=timedelta(seconds=300)
+        coordinator = self._create_coordinator_with_options(
+            mock_hass, mock_device, options
         )
 
         assert coordinator._sleep_schedule == "custom"
@@ -100,15 +106,13 @@ class TestBatteryOptimizationCoordinator:
 
     def test_load_settings_invalid_sleep_times(self, mock_hass, mock_device):
         """Test loading invalid sleep schedule times."""
-        config_entry = MagicMock()
-        config_entry.options = {
+        options = {
             "sleep_schedule": "custom",
             "sleep_start_time": "invalid",
             "sleep_end_time": "invalid",
         }
-
-        coordinator = BatteryOptimizationCoordinator(
-            mock_hass, mock_device, config_entry, scan_interval=timedelta(seconds=300)
+        coordinator = self._create_coordinator_with_options(
+            mock_hass, mock_device, options
         )
 
         # Should fall back to defaults
@@ -120,9 +124,10 @@ class TestBatteryOptimizationCoordinator:
         """Test getting battery data successfully."""
         battery_data = await coordinator._get_battery_data()
 
-        assert "level" in battery_data
-        assert "voltage" in battery_data
-        assert "consumption" in battery_data
+        expected_fields = ["level", "voltage", "consumption"]
+        for field in expected_fields:
+            assert field in battery_data
+
         assert battery_data["level"] == 85
         assert battery_data["voltage"] == 3.8
         assert battery_data["consumption"] == 0.5
@@ -130,7 +135,6 @@ class TestBatteryOptimizationCoordinator:
     @pytest.mark.asyncio
     async def test_get_battery_data_exception(self, coordinator):
         """Test getting battery data with exception."""
-        # Mock the method to raise an exception
         with patch.object(
             coordinator, "_get_battery_data", side_effect=Exception("Test error")
         ):
@@ -143,12 +147,10 @@ class TestBatteryOptimizationCoordinator:
         coordinator._battery_threshold = 20
         coordinator._battery_optimization_active = False
 
-        battery_data = {"level": 15}
-
         with patch.object(
             coordinator, "_activate_battery_optimization"
         ) as mock_activate:
-            await coordinator._check_battery_optimization(battery_data)
+            await coordinator._check_battery_optimization({"level": 15})
             mock_activate.assert_called_once()
 
     @pytest.mark.asyncio
@@ -157,12 +159,12 @@ class TestBatteryOptimizationCoordinator:
         coordinator._battery_threshold = 20
         coordinator._battery_optimization_active = True
 
-        battery_data = {"level": 35}  # Above threshold + 10
-
         with patch.object(
             coordinator, "_deactivate_battery_optimization"
         ) as mock_deactivate:
-            await coordinator._check_battery_optimization(battery_data)
+            await coordinator._check_battery_optimization(
+                {"level": 35}
+            )  # Above threshold + 10
             mock_deactivate.assert_called_once()
 
     @pytest.mark.asyncio
@@ -171,15 +173,15 @@ class TestBatteryOptimizationCoordinator:
         coordinator._battery_threshold = 20
         coordinator._battery_optimization_active = True
 
-        battery_data = {"level": 25}  # Between threshold and threshold + 10
-
         with patch.object(
             coordinator, "_activate_battery_optimization"
         ) as mock_activate:
             with patch.object(
                 coordinator, "_deactivate_battery_optimization"
             ) as mock_deactivate:
-                await coordinator._check_battery_optimization(battery_data)
+                await coordinator._check_battery_optimization(
+                    {"level": 25}
+                )  # Between threshold and threshold + 10
                 mock_activate.assert_not_called()
                 mock_deactivate.assert_not_called()
 
@@ -194,64 +196,40 @@ class TestBatteryOptimizationCoordinator:
                 mock_enter.assert_not_called()
                 mock_exit.assert_not_called()
 
-    @pytest.mark.asyncio
-    async def test_check_sleep_schedule_night_only(self, coordinator):
-        """Test sleep schedule check with 'night_only' schedule."""
-        coordinator._sleep_schedule = "night_only"
-        coordinator._sleep_start_time = time(22, 0)
-        coordinator._sleep_end_time = time(6, 0)
+    def _test_sleep_schedule_time_based(self, schedule_type, test_time, should_enter):
+        """Helper method to test time-based sleep schedules."""
 
-        with patch(
-            "custom_components.imou_life.battery_coordinator.dt_util"
-        ) as mock_dt:
-            mock_dt.now.return_value.time.return_value = time(23, 0)  # Night time
+        def test_method(self, coordinator):
+            coordinator._sleep_schedule = schedule_type
+            coordinator._sleep_start_time = time(22, 0)
+            coordinator._sleep_end_time = time(6, 0)
 
-            with patch.object(coordinator, "_enter_sleep_mode") as mock_enter:
-                with patch.object(
-                    coordinator, "_is_sleep_mode_active", return_value=False
-                ):
-                    await coordinator._check_sleep_schedule()
-                    mock_enter.assert_called_once()
+            with patch(
+                "custom_components.imou_life.battery_coordinator.dt_util"
+            ) as mock_dt:
+                mock_dt.now.return_value.time.return_value = test_time
 
-    @pytest.mark.asyncio
-    async def test_check_sleep_schedule_custom_same_day(self, coordinator):
-        """Test sleep schedule check with custom same-day schedule."""
-        coordinator._sleep_schedule = "custom"
-        coordinator._sleep_start_time = time(22, 0)
-        coordinator._sleep_end_time = time(6, 0)
+                with patch.object(coordinator, "_enter_sleep_mode") as mock_enter:
+                    with patch.object(
+                        coordinator, "_is_sleep_mode_active", return_value=False
+                    ):
+                        await coordinator._check_sleep_schedule()
+                        if should_enter:
+                            mock_enter.assert_called_once()
+                        else:
+                            mock_enter.assert_not_called()
 
-        with patch(
-            "custom_components.imou_life.battery_coordinator.dt_util"
-        ) as mock_dt:
-            mock_dt.now.return_value.time.return_value = time(
-                23, 0
-            )  # During sleep time
+        return test_method
 
-            with patch.object(coordinator, "_enter_sleep_mode") as mock_enter:
-                with patch.object(
-                    coordinator, "_is_sleep_mode_active", return_value=False
-                ):
-                    await coordinator._check_sleep_schedule()
-                    mock_enter.assert_called_once()
-
-    @pytest.mark.asyncio
-    async def test_check_sleep_schedule_custom_overnight(self, coordinator):
-        """Test sleep schedule check with custom overnight schedule."""
-        coordinator._sleep_schedule = "custom"
-        coordinator._sleep_start_time = time(22, 0)
-        coordinator._sleep_end_time = time(6, 0)
-
-        with patch(
-            "custom_components.imou_life.battery_coordinator.dt_util"
-        ) as mock_dt:
-            mock_dt.now.return_value.time.return_value = time(2, 0)  # During sleep time
-
-            with patch.object(coordinator, "_enter_sleep_mode") as mock_enter:
-                with patch.object(
-                    coordinator, "_is_sleep_mode_active", return_value=False
-                ):
-                    await coordinator._check_sleep_schedule()
-                    mock_enter.assert_called_once()
+    test_check_sleep_schedule_night_only = _test_sleep_schedule_time_based(
+        "night_only", time(23, 0), True
+    )
+    test_check_sleep_schedule_custom_same_day = _test_sleep_schedule_time_based(
+        "custom", time(23, 0), True
+    )
+    test_check_sleep_schedule_custom_overnight = _test_sleep_schedule_time_based(
+        "custom", time(2, 0), True
+    )
 
     @pytest.mark.asyncio
     async def test_check_sleep_schedule_battery_based(self, coordinator):
@@ -275,17 +253,21 @@ class TestBatteryOptimizationCoordinator:
         coordinator._led_indicators = True
         coordinator._power_mode = "balanced"
 
-        with patch.object(coordinator, "_set_motion_sensitivity") as mock_sensitivity:
-            with patch.object(coordinator, "_set_recording_quality") as mock_quality:
-                with patch.object(coordinator, "_set_led_indicators") as mock_led:
-                    with patch.object(coordinator, "_set_power_mode") as mock_power:
-                        await coordinator._activate_battery_optimization()
+        methods_to_patch = [
+            "_set_motion_sensitivity",
+            "_set_recording_quality",
+            "_set_led_indicators",
+            "_set_power_mode",
+        ]
 
-                        mock_sensitivity.assert_called_once_with("low")
-                        mock_quality.assert_called_once_with("low")
-                        mock_led.assert_called_once_with(False)
-                        mock_power.assert_called_once_with("power_saving")
-                        assert coordinator._battery_optimization_active is True
+        with self._patch_coordinator_methods(coordinator, methods_to_patch) as patches:
+            await coordinator._activate_battery_optimization()
+
+            patches["_set_motion_sensitivity"].assert_called_once_with("low")
+            patches["_set_recording_quality"].assert_called_once_with("low")
+            patches["_set_led_indicators"].assert_called_once_with(False)
+            patches["_set_power_mode"].assert_called_once_with("power_saving")
+            assert coordinator._battery_optimization_active is True
 
     @pytest.mark.asyncio
     async def test_deactivate_battery_optimization(self, coordinator):
@@ -296,117 +278,130 @@ class TestBatteryOptimizationCoordinator:
         coordinator._led_indicators = False
         coordinator._power_mode = "power_saving"
 
-        with patch.object(coordinator, "_set_motion_sensitivity") as mock_sensitivity:
-            with patch.object(coordinator, "_set_recording_quality") as mock_quality:
-                with patch.object(coordinator, "_set_led_indicators") as mock_led:
-                    with patch.object(coordinator, "_set_power_mode") as mock_power:
-                        await coordinator._deactivate_battery_optimization()
+        methods_to_patch = [
+            "_set_motion_sensitivity",
+            "_set_recording_quality",
+            "_set_led_indicators",
+            "_set_power_mode",
+        ]
 
-                        mock_sensitivity.assert_called_once_with("low")
-                        mock_quality.assert_called_once_with("low")
-                        mock_led.assert_called_once_with(False)
-                        mock_power.assert_called_once_with("power_saving")
-                        assert coordinator._battery_optimization_active is False
+        with self._patch_coordinator_methods(coordinator, methods_to_patch) as patches:
+            await coordinator._deactivate_battery_optimization()
 
-    @pytest.mark.asyncio
-    async def test_set_motion_sensitivity_valid(self, coordinator):
-        """Test setting valid motion sensitivity."""
-        with patch.object(coordinator, "device"):
-            await coordinator._set_motion_sensitivity("low")
-            # Note: This would call the actual device API in real implementation
+            patches["_set_motion_sensitivity"].assert_called_once_with("low")
+            patches["_set_recording_quality"].assert_called_once_with("low")
+            patches["_set_led_indicators"].assert_called_once_with(False)
+            patches["_set_power_mode"].assert_called_once_with("power_saving")
+            assert coordinator._battery_optimization_active is False
 
-    @pytest.mark.asyncio
-    async def test_set_motion_sensitivity_invalid(self, coordinator):
-        """Test setting invalid motion sensitivity."""
-        with pytest.raises(ValueError, match="Invalid motion sensitivity: invalid"):
-            await coordinator._set_motion_sensitivity("invalid")
+    def _test_setting_valid_value(self, method_name, valid_value):
+        """Helper method to test setting valid values."""
 
-    @pytest.mark.asyncio
-    async def test_set_recording_quality_valid(self, coordinator):
-        """Test setting valid recording quality."""
-        with patch.object(coordinator, "device"):
-            await coordinator._set_recording_quality("low")
-            # Note: This would call the actual device API in real implementation
+        def test_method(self, coordinator):
+            with patch.object(coordinator, "device"):
+                getattr(coordinator, method_name)(valid_value)
+                # Note: This would call the actual device API in real implementation
 
-    @pytest.mark.asyncio
-    async def test_set_recording_quality_invalid(self, coordinator):
-        """Test setting invalid recording quality."""
-        with pytest.raises(ValueError, match="Invalid recording quality: invalid"):
-            await coordinator._set_recording_quality("invalid")
+        return test_method
 
-    @pytest.mark.asyncio
-    async def test_set_power_mode_valid(self, coordinator):
-        """Test setting valid power mode."""
-        with patch.object(coordinator, "device"):
-            await coordinator._set_power_mode("power_saving")
-            # Note: This would call the actual device API in real implementation
+    def _test_setting_invalid_value(self, method_name, invalid_value, expected_error):
+        """Helper method to test setting invalid values."""
 
-    @pytest.mark.asyncio
-    async def test_set_power_mode_invalid(self, coordinator):
-        """Test setting invalid power mode."""
-        with pytest.raises(ValueError, match="Invalid power mode: invalid"):
-            await coordinator._set_power_mode("invalid")
+        def test_method(self, coordinator):
+            with pytest.raises(ValueError, match=expected_error):
+                getattr(coordinator, method_name)(invalid_value)
+
+        return test_method
+
+    test_set_motion_sensitivity_valid = _test_setting_valid_value(
+        "_set_motion_sensitivity", "low"
+    )
+    test_set_motion_sensitivity_invalid = _test_setting_invalid_value(
+        "_set_motion_sensitivity", "invalid", "Invalid motion sensitivity: invalid"
+    )
+    test_set_recording_quality_valid = _test_setting_valid_value(
+        "_set_recording_quality", "low"
+    )
+    test_set_recording_quality_invalid = _test_setting_invalid_value(
+        "_set_recording_quality", "invalid", "Invalid recording quality: invalid"
+    )
+    test_set_power_mode_valid = _test_setting_valid_value(
+        "_set_power_mode", "power_saving"
+    )
+    test_set_power_mode_invalid = _test_setting_invalid_value(
+        "_set_power_mode", "invalid", "Invalid power mode: invalid"
+    )
 
     @pytest.mark.asyncio
     async def test_optimize_battery(self, coordinator):
         """Test optimize battery method."""
-        with patch.object(coordinator, "_set_power_mode") as mock_power:
-            with patch.object(
-                coordinator, "_set_motion_sensitivity"
-            ) as mock_sensitivity:
-                with patch.object(
-                    coordinator, "_set_recording_quality"
-                ) as mock_quality:
-                    with patch.object(coordinator, "_set_led_indicators") as mock_led:
-                        await coordinator.optimize_battery(
-                            power_mode="ultra_power_saving",
-                            motion_sensitivity="low",
-                            recording_quality="low",
-                            led_indicators=False,
-                        )
+        methods_to_patch = [
+            "_set_power_mode",
+            "_set_motion_sensitivity",
+            "_set_recording_quality",
+            "_set_led_indicators",
+        ]
 
-                        mock_power.assert_called_once_with("ultra_power_saving")
-                        mock_sensitivity.assert_called_once_with("low")
-                        mock_quality.assert_called_once_with("low")
-                        mock_led.assert_called_once_with(False)
-                        assert coordinator._battery_optimization_active is True
+        with self._patch_coordinator_methods(coordinator, methods_to_patch) as patches:
+            await coordinator.optimize_battery(
+                power_mode="ultra_power_saving",
+                motion_sensitivity="low",
+                recording_quality="low",
+                led_indicators=False,
+            )
 
-    @pytest.mark.asyncio
-    async def test_set_sleep_schedule_valid(self, coordinator):
-        """Test setting valid sleep schedule."""
-        await coordinator.set_sleep_schedule("night_only")
-        assert coordinator._sleep_schedule == "night_only"
+            patches["_set_power_mode"].assert_called_once_with("ultra_power_saving")
+            patches["_set_motion_sensitivity"].assert_called_once_with("low")
+            patches["_set_recording_quality"].assert_called_once_with("low")
+            patches["_set_led_indicators"].assert_called_once_with(False)
+            assert coordinator._battery_optimization_active is True
 
-    @pytest.mark.asyncio
-    async def test_set_sleep_schedule_invalid(self, coordinator):
-        """Test setting invalid sleep schedule."""
-        with pytest.raises(ValueError, match="Invalid sleep schedule: invalid"):
-            await coordinator.set_sleep_schedule("invalid")
+    def _test_set_sleep_schedule(self, schedule_type, start_time=None, end_time=None):
+        """Helper method to test setting sleep schedules."""
 
-    @pytest.mark.asyncio
-    async def test_set_sleep_schedule_with_times(self, coordinator):
-        """Test setting sleep schedule with custom times."""
-        start_time = time(23, 0)
-        end_time = time(7, 0)
+        def test_method(self, coordinator):
+            @pytest.mark.asyncio
+            async def async_test():
+                if start_time and end_time:
+                    await coordinator.set_sleep_schedule(
+                        schedule_type, start_time, end_time
+                    )
+                    assert coordinator._sleep_start_time == start_time
+                    assert coordinator._sleep_end_time == end_time
+                else:
+                    await coordinator.set_sleep_schedule(schedule_type)
 
-        await coordinator.set_sleep_schedule("custom", start_time, end_time)
+                assert coordinator._sleep_schedule == schedule_type
 
-        assert coordinator._sleep_schedule == "custom"
-        assert coordinator._sleep_start_time == start_time
-        assert coordinator._sleep_end_time == end_time
+            return async_test()
+
+        return test_method
+
+    test_set_sleep_schedule_valid = _test_set_sleep_schedule("night_only")
+    test_set_sleep_schedule_invalid = _test_setting_invalid_value(
+        "set_sleep_schedule", "invalid", "Invalid sleep schedule: invalid"
+    )
+    test_set_sleep_schedule_with_times = _test_set_sleep_schedule(
+        "custom", time(23, 0), time(7, 0)
+    )
 
     def test_get_battery_optimization_status(self, coordinator):
         """Test getting battery optimization status."""
         status = coordinator.get_battery_optimization_status()
 
-        assert status["active"] is False
-        assert status["power_mode"] == "balanced"
-        assert status["motion_sensitivity"] == "medium"
-        assert status["recording_quality"] == "standard"
-        assert status["led_indicators"] is True
-        assert status["auto_sleep"] is False
-        assert status["battery_threshold"] == 20
-        assert status["sleep_schedule"] == "never"
+        expected_status = {
+            "active": False,
+            "power_mode": "balanced",
+            "motion_sensitivity": "medium",
+            "recording_quality": "standard",
+            "led_indicators": True,
+            "auto_sleep": False,
+            "battery_threshold": 20,
+            "sleep_schedule": "never",
+        }
+
+        for key, expected_value in expected_status.items():
+            assert status[key] == expected_value
 
     @pytest.mark.asyncio
     async def test_async_update_data_success(self, coordinator):
@@ -416,9 +411,13 @@ class TestBatteryOptimizationCoordinator:
                 with patch.object(coordinator, "_check_sleep_schedule"):
                     data = await coordinator._async_update_data()
 
-                    assert "battery_level" in data
-                    assert "power_mode" in data
-                    assert "battery_optimization_active" in data
+                    expected_fields = [
+                        "battery_level",
+                        "power_mode",
+                        "battery_optimization_active",
+                    ]
+                    for field in expected_fields:
+                        assert field in data
 
     @pytest.mark.asyncio
     async def test_async_update_data_exception(self, coordinator):
