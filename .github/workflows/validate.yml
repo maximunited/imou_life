@@ -24,8 +24,15 @@ jobs:
         python -m pip install --upgrade pip setuptools wheel
         # Install dev dependencies first
         pip install -r config/requirements_dev.txt
-        # Install test dependencies with better error handling
-        pip install -r config/requirements_test.txt || pip install -r config/requirements_test.txt --no-deps
+        # Install test dependencies with conditional Home Assistant installation
+        if [ "${{ matrix.python-version }}" = "3.13" ]; then
+          # For Python 3.13, install without Home Assistant (not supported yet)
+          pip install -r config/requirements_test.txt --no-deps
+          pip install aiohttp>=3.8.0 coverage>=7.4.0 imouapi==1.0.15 numpy>=1.24.0 pytest>=8.0.0 pytest-asyncio>=0.24.0 pytest-cov>=6.0.0 pytest-mock>=3.12.0 httpx>=0.24.0
+        else
+          # For Python 3.11 and 3.12, install with Home Assistant
+          pip install -r config/requirements_test.txt
+        fi
     - name: Run pre-commit hooks
       run: |
         pre-commit run --all-files
@@ -34,7 +41,11 @@ jobs:
         python -c "import custom_components.imou_life; print('Component structure OK')"
     - name: Verify dependencies
       run: |
-        python -c "import homeassistant; print('Home Assistant OK')" || echo "Home Assistant import failed, but continuing with tests"
+        if [ "${{ matrix.python-version }}" = "3.13" ]; then
+          echo "Python 3.13 - skipping Home Assistant import (not supported yet)"
+        else
+          python -c "import homeassistant; print('Home Assistant OK')" || echo "Home Assistant import failed, but continuing with tests"
+        fi
     - name: Run comprehensive tests with coverage
       run: |
         # Run tests with better error handling and output

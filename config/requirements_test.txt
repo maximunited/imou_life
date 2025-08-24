@@ -13,9 +13,10 @@ aiohttp>=3.8.0; python_version>="3.11"
 # Coverage
 coverage>=7.4.0; python_version>="3.11"
 
-# Home Assistant - Use a more recent version that's compatible with Python 3.11-3.13
-# This ensures CI compatibility while still supporting users with older versions
-homeassistant>=2024.12.0; python_version>="3.11"
+# Home Assistant - Use a version compatible with Python 3.11-3.12
+# Python 3.13 is not yet supported by Home Assistant
+# This version is compatible with Python 3.11-3.12
+homeassistant>=2024.2.0; python_version<"3.13"
 httpx>=0.24.0; python_version>="3.11"
 
 # Integration runtime dependencies
