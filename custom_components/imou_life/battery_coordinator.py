@@ -13,7 +13,6 @@ from .const import (
     DEFAULT_BATTERY_THRESHOLD,
     DEFAULT_LED_INDICATORS,
     DEFAULT_MOTION_SENSITIVITY,
-    DEFAULT_POWER_SAVING_MODE,
     DEFAULT_RECORDING_QUALITY,
     MOTION_SENSITIVITY_LEVELS,
     POWER_MODES,
@@ -46,7 +45,7 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
         self.hass = hass
 
         # Battery optimization state
-        self._power_mode = DEFAULT_POWER_SAVING_MODE
+        self._power_mode = "balanced"  # Default power mode
         self._motion_sensitivity = DEFAULT_MOTION_SENSITIVITY
         self._recording_quality = DEFAULT_RECORDING_QUALITY
         self._led_indicators = DEFAULT_LED_INDICATORS
@@ -71,7 +70,7 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
         """Load battery optimization settings from config entry."""
         options = self.config_entry.options
 
-        self._power_mode = options.get("power_mode", DEFAULT_POWER_SAVING_MODE)
+        self._power_mode = options.get("power_mode", "balanced")
         self._motion_sensitivity = options.get(
             "motion_sensitivity", DEFAULT_MOTION_SENSITIVITY
         )
