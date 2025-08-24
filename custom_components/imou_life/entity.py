@@ -79,7 +79,7 @@ class ImouEntity(CoordinatorEntity):
         try:
             await self.sensor_instance.async_update()
         except ImouException as exception:
-            _LOGGER.error(exception.to_string())
+            _LOGGER.error("Imou exception: %s", str(exception))
 
     async def async_will_remove_from_hass(self):
         """Entity removed from HA (when disabled)."""

@@ -69,7 +69,7 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
                 valid = True
             except ImouException as exception:
                 self._errors["base"] = exception.get_title()
-                _LOGGER.error(exception.to_string())
+                _LOGGER.error("Imou exception: %s", str(exception))
             # valid credentials provided
             if valid:
                 # store app id and secret for later steps
@@ -116,7 +116,7 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
             )
         except ImouException as exception:
             self._errors["base"] = exception.get_title()
-            _LOGGER.error(exception.to_string())
+            _LOGGER.error("Imou exception: %s", str(exception))
         return self.async_show_form(
             step_id="discover",
             data_schema=vol.Schema(
@@ -145,7 +145,7 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
                 valid = True
             except ImouException as exception:
                 self._errors["base"] = exception.get_title()
-                _LOGGER.error(exception.to_string())
+                _LOGGER.error("Imou exception: %s", str(exception))
             # valid credentials provided, create the entry
             if valid:
                 # create the entry using common method
@@ -185,7 +185,7 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
     @staticmethod
     @callback
     def async_get_options_flow(config_entry):
-        """Return Option Handerl."""
+        """Return Option Handler."""
         return ImouOptionsFlowHandler()
 
 

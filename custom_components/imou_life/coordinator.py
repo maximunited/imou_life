@@ -34,7 +34,7 @@ class ImouDataUpdateCoordinator(DataUpdateCoordinator):
             update_interval=timedelta(seconds=self.scan_inteval),
         )
         _LOGGER.debug(
-            "Initialized coordinator. Scan internal %d seconds", self.scan_inteval
+            "Initialized coordinator. Scan interval %d seconds", self.scan_inteval
         )
 
     async def _async_update_data(self):
@@ -42,5 +42,5 @@ class ImouDataUpdateCoordinator(DataUpdateCoordinator):
         try:
             return await self.device.async_get_data()
         except ImouException as exception:
-            _LOGGER.error(exception.to_string())
+            _LOGGER.error("Imou exception: %s", str(exception))
             raise UpdateFailed() from exception

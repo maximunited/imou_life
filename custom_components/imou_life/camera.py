@@ -180,7 +180,7 @@ class ImouCamera(Camera):
         try:
             await self._sensor_instance.async_update()
         except imouapi.exceptions.ImouException as exception:
-            _LOGGER.error(exception.to_string())
+            _LOGGER.error("Imou exception: %s", str(exception))
 
     async def async_will_remove_from_hass(self):
         """Entity removed from HA (when disabled)."""

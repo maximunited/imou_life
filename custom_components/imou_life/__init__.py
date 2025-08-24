@@ -160,7 +160,7 @@ async def _initialize_device(device: ImouDevice, entry: ConfigEntry):
         _LOGGER.error("Device initialization timed out after %d seconds", setup_timeout)
         raise ConfigEntryNotReady("Device initialization timed out")
     except ImouException as exception:
-        _LOGGER.error(exception.to_string())
+        _LOGGER.error("Imou exception: %s", str(exception))
         raise ImouException() from exception
 
     # Disable all sensors initially (will be enabled individually by
