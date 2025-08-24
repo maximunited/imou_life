@@ -242,9 +242,9 @@ def main():
     validation_results.append(validate_imports())
 
     # Summary
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print("VALIDATION SUMMARY")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
 
     passed = sum(validation_results)
     total = len(validation_results)

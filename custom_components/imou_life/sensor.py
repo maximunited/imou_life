@@ -18,10 +18,24 @@ class ImouSensor(ImouEntity, DeviceClassMixin):
     """imou sensor class."""
 
     # Device class mapping
-    DEVICE_CLASS_MAPPING = {"lastAlarm": "timestamp"}
+    DEVICE_CLASS_MAPPING = {
+        "lastAlarm": "timestamp",
+        "battery": "battery",
+        "batteryLevel": "battery",
+        "batteryVoltage": "voltage",
+        "powerConsumption": "power",
+    }
 
     # Unit of measurement mapping
-    UNIT_MAPPING = {"storageUsed": "%", "battery": "%"}
+    UNIT_MAPPING = {
+        "storageUsed": "%",
+        "battery": "%",
+        "batteryLevel": "%",
+        "batteryVoltage": "V",
+        "powerConsumption": "W",
+        "sleepMode": "",
+        "powerSavingStatus": "",
+    }
 
     @property
     def device_class(self) -> str:

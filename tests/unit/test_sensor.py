@@ -64,7 +64,7 @@ class TestImouSensor:
 
     def test_sensor_device_class(self, sensor):
         """Test sensor device class."""
-        assert sensor.device_class is None
+        assert sensor.device_class == "battery"
 
     def test_sensor_icon(self, sensor):
         """Test sensor icon."""
@@ -112,3 +112,16 @@ class TestImouSensor:
             mock_coordinator, MOCK_CONFIG_ENTRY, mock_sensor, "sensor.{}"
         )
         assert sensor.unit_of_measurement == "%"
+
+    def test_sensor_no_device_class_mapping(self, mock_coordinator):
+        """Test sensor without device class mapping."""
+        mock_sensor = MagicMock()
+        mock_sensor.get_name.return_value = "unknownSensor"
+        mock_sensor.get_description.return_value = "Unknown Sensor"
+        mock_sensor.get_state.return_value = 42
+        mock_sensor.get_attributes.return_value = {}
+
+        sensor = ImouSensor(
+            mock_coordinator, MOCK_CONFIG_ENTRY, mock_sensor, "sensor.{}"
+        )
+        assert sensor.device_class is None

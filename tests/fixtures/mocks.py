@@ -10,33 +10,67 @@ class MockConfigEntry(ConfigEntry):
 
     def __init__(self, domain, data, entry_id="test", version=1, **kwargs):
         """Initialize mock config entry."""
-        # Include all required parameters for Home Assistant 2025.8.2+
-        params = {
-            "entry_id": entry_id,
-            "domain": domain,
-            "data": data,
-            "version": version,
-            "discovery_keys": kwargs.get("discovery_keys", []),
-            "subentries_data": kwargs.get("subentries_data", {}),
-            "unique_id": kwargs.get("unique_id", "test_unique_id"),
-        }
-
-        # Add optional parameters
-        optional_params = ["minor_version", "title", "source", "options"]
-        for param in optional_params:
-            if param in kwargs:
-                params[param] = kwargs[param]
-            elif param == "minor_version":
-                params[param] = 1
-            elif param == "title":
-                params[param] = "Test Entry"
-            elif param == "source":
-                params[param] = "user"
-            elif param == "options":
-                params[param] = {}
-
-        # Initialize the parent class with all required parameters
-        super().__init__(**params)
+        # Try different parameter combinations for different Home Assistant versions
+        try:
+            # Try with all parameters (newer versions)
+            params = {
+                "entry_id": entry_id,
+                "domain": domain,
+                "data": data,
+                "version": version,
+                "discovery_keys": kwargs.get("discovery_keys", []),
+                "minor_version": kwargs.get("minor_version", 1),
+                "options": kwargs.get("options", {}),
+                "source": kwargs.get("source", "user"),
+                "subentries_data": kwargs.get("subentries_data", {}),
+                "title": kwargs.get("title", "Test Entry"),
+                "unique_id": kwargs.get("unique_id", "test_unique_id"),
+            }
+            super().__init__(**params)
+        except TypeError:
+            try:
+                # Try with required parameters for Python 3.12+
+                params = {
+                    "entry_id": entry_id,
+                    "domain": domain,
+                    "data": data,
+                    "version": version,
+                    "discovery_keys": kwargs.get("discovery_keys", []),
+                    "options": kwargs.get("options", {}),
+                    "unique_id": kwargs.get("unique_id", "test_unique_id"),
+                    "minor_version": kwargs.get("minor_version", 1),
+                    "title": kwargs.get("title", "Test Entry"),
+                    "source": kwargs.get("source", "user"),
+                }
+                super().__init__(**params)
+            except TypeError:
+                try:
+                    # Try without discovery_keys (older versions)
+                    params = {
+                        "entry_id": entry_id,
+                        "domain": domain,
+                        "data": data,
+                        "version": version,
+                        "minor_version": kwargs.get("minor_version", 1),
+                        "options": kwargs.get("options", {}),
+                        "source": kwargs.get("source", "user"),
+                        "subentries_data": kwargs.get("subentries_data", {}),
+                        "title": kwargs.get("title", "Test Entry"),
+                        "unique_id": kwargs.get("unique_id", "test_unique_id"),
+                    }
+                    super().__init__(**params)
+                except TypeError:
+                    # Try with minimal parameters (Python 3.11 and older)
+                    params = {
+                        "entry_id": entry_id,
+                        "domain": domain,
+                        "data": data,
+                        "version": version,
+                        "minor_version": kwargs.get("minor_version", 1),
+                        "title": kwargs.get("title", "Test Entry"),
+                        "source": kwargs.get("source", "user"),
+                    }
+                    super().__init__(**params)
 
         self._hass = None
         self._options = kwargs.get("options", {})
