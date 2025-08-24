@@ -15,7 +15,7 @@ coverage>=7.4.0; python_version>="3.11"
 
 # Home Assistant - Use a version range compatible with all Python versions
 # Python 3.11: 2023.3+ (minimum supported)
-# Python 3.12: 2024.2+ (minimum supported)  
+# Python 3.12: 2024.2+ (minimum supported)
 # Python 3.13: 2025.1.0+ (minimum supported)
 # Using 2024.2+ as it's compatible with Python 3.11-3.13
 homeassistant>=2024.2.0; python_version>="3.11"
