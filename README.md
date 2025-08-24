@@ -3,11 +3,11 @@
 
 [![Home Assistant](https://img.shields.io/badge/home%20assistant-%2341BDF5.svg?logo=home-assistant&logoColor=white)](https://www.home-assistant.io/)
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
-[![Buy Me a Coffee](https://img.shields.io/badge/buy%20me%20a%20coffee-%23FFDD00.svg?logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/maxim_united)
-
+[![Imou Life](https://img.shields.io/badge/imou%20life-%23FF8C00.svg?logo=imou&logoColor=white)](https://open.imoulife.com/)
 [![Release](https://img.shields.io/badge/release-1.1.0-blue.svg)](https://github.com/maximunited/imou_life/releases/tag/v1.1.0)
 [![Pre-release](https://img.shields.io/badge/pre--release-1.1.0-orange.svg)](https://github.com/maximunited/imou_life/releases/tag/v1.1.0)
 [![Quality Scale](https://img.shields.io/badge/quality%20scale-gold-brightgreen.svg)](https://developers.home-assistant.io/docs/core/integration-quality-scale/)
+[![Buy Me a Coffee](https://img.shields.io/badge/buy%20me%20a%20coffee-%23FFDD00.svg?logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/maxim_united)
 
 A Home Assistant integration for Imou Life cameras and devices, providing comprehensive monitoring and control capabilities.
 
