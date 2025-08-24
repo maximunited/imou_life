@@ -38,6 +38,9 @@ class MockConfigEntry(ConfigEntry):
                     "discovery_keys": kwargs.get("discovery_keys", []),
                     "options": kwargs.get("options", {}),
                     "unique_id": kwargs.get("unique_id", "test_unique_id"),
+                    "minor_version": kwargs.get("minor_version", 1),
+                    "title": kwargs.get("title", "Test Entry"),
+                    "source": kwargs.get("source", "user"),
                 }
                 super().__init__(**params)
             except TypeError:
