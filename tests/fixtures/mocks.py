@@ -149,6 +149,7 @@ class MockHomeAssistant:
                         }.get(key)
                     )
                 else:
+                    # Determine step_id based on flow mode
                     if self._flow_mode == "discover":
                         step_id = "discover"
                     else:
