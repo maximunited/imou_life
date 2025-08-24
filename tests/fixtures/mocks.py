@@ -66,8 +66,11 @@ class MockConfigEntry(ConfigEntry):
                         "minor_version": kwargs.get("minor_version", 1),
                         "title": kwargs.get("title", "Test Entry"),
                         "source": kwargs.get("source", "user"),
+                        "discovery_keys": kwargs.get("discovery_keys", []),
+                        "options": kwargs.get("options", {}),
+                        "unique_id": kwargs.get("unique_id", "test_unique_id"),
                     }
-                    super().__init__(**params)
+                super().__init__(**params)
 
         self._hass = None
         self._options = kwargs.get("options", {})
