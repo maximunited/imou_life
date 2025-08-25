@@ -1,7 +1,7 @@
 """Battery optimization coordinator for Imou devices."""
 
 import logging
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 from typing import Dict, Optional
 
 from homeassistant.core import HomeAssistant
@@ -38,7 +38,7 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
             hass,
             _LOGGER,
             name=f"{device.get_name()}_battery_optimization",
-            update_interval=scan_interval,
+            update_interval=timedelta(seconds=scan_interval),
         )
         self.device = device
         self.config_entry = config_entry
