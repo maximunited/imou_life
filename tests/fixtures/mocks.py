@@ -106,16 +106,29 @@ class MockHomeAssistant:
         self.config_entries = MagicMock()
         self.async_block_till_done = AsyncMock()
 
-        # Mock config_entries.flow functionality
-        self.config_entries.flow = MagicMock()
-
-        # Create mock flow responses
-        from homeassistant import data_entry_flow
-
         # Track flow state for different responses
         self._flow_step = 0
         self._flow_mode = "discover"  # "discover" or "manual"
         self._flow_error = None  # Error to return
+
+        # Set up mocks
+        self._setup_config_entries_mocks()
+        self._setup_services_mocks()
+        self._setup_network_mocks()
+
+    def _setup_config_entries_mocks(self):
+        """Set up config entries mocks."""
+        # Mock config_entries.flow functionality
+        self.config_entries.flow = MagicMock()
+
+        # Set up flow mocks
+        self._setup_flow_mocks()
+        self._setup_entry_setup_mocks()
+        self._setup_options_flow_mocks()
+
+    def _setup_flow_mocks(self):
+        """Set up flow-related mocks."""
+        from homeassistant import data_entry_flow
 
         def mock_flow_init(*args, **kwargs):
             self._flow_step = 0
@@ -193,7 +206,9 @@ class MockHomeAssistant:
         )
         self.config_entries.flow.async_progress = mock_flow_progress
 
-        # Mock config_entries.async_setup
+    def _setup_entry_setup_mocks(self):
+        """Set up entry setup mocks."""
+
         def mock_async_setup(entry_id):
             # Store the entry in hass.data for testing
             if "imou_life" not in self.data:
@@ -259,6 +274,10 @@ class MockHomeAssistant:
         # Mock async_forward_entry_unload
         self.config_entries.async_forward_entry_unload = AsyncMock(return_value=True)
 
+    def _setup_options_flow_mocks(self):
+        """Set up options flow mocks."""
+        from homeassistant import data_entry_flow
+
         # Mock options flow
         self.config_entries.options = MagicMock()
         mock_options_response = MagicMock()
@@ -294,9 +313,13 @@ class MockHomeAssistant:
             side_effect=mock_options_configure
         )
 
+    def _setup_services_mocks(self):
+        """Set up services mocks."""
         # Mock services
         self.services.async_call = AsyncMock()
 
+    def _setup_network_mocks(self):
+        """Set up network component mocks."""
         # Mock network component
         self.data["network"] = MagicMock()
         self.data["network"].adapters = []
