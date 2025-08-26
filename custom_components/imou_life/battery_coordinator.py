@@ -178,35 +178,47 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
             return
 
         current_time = dt_util.now().time()
+        should_sleep = await self._determine_sleep_state(current_time)
+        await self._apply_sleep_mode(should_sleep)
 
-        if self._sleep_schedule == "night_only":
-            # Simple night schedule (10 PM to 6 AM)
-            should_sleep = (
+    def _should_sleep_night_only(self, current_time: time) -> bool:
+        """Check if device should sleep during night-only schedule."""
+        return (
+            current_time >= self._sleep_start_time
+            or current_time <= self._sleep_end_time
+        )
+
+    def _should_sleep_custom(self, current_time: time) -> bool:
+        """Check if device should sleep during custom schedule."""
+        if self._sleep_start_time <= self._sleep_end_time:
+            # Same day schedule (e.g., 10 PM to 6 AM)
+            return self._sleep_start_time <= current_time <= self._sleep_end_time
+        else:
+            # Overnight schedule (e.g., 10 PM to 6 AM next day)
+            return (
                 current_time >= self._sleep_start_time
                 or current_time <= self._sleep_end_time
             )
-        elif self._sleep_schedule == "custom":
-            # Custom schedule
-            if self._sleep_start_time <= self._sleep_end_time:
-                # Same day schedule (e.g., 10 PM to 6 AM)
-                should_sleep = (
-                    self._sleep_start_time <= current_time <= self._sleep_end_time
-                )
-            else:
-                # Overnight schedule (e.g., 10 PM to 6 AM next day)
-                should_sleep = (
-                    current_time >= self._sleep_start_time
-                    or current_time <= self._sleep_end_time
-                )
-        elif self._sleep_schedule == "battery_based":
-            # Battery-based schedule - only sleep when battery is low
-            battery_data = await self._get_battery_data()
-            battery_level = battery_data.get("level", 100)
-            should_sleep = battery_level <= self._battery_threshold
-        else:
-            should_sleep = False
 
-        # Apply sleep mode if needed
+    async def _should_sleep_battery_based(self) -> bool:
+        """Check if device should sleep during battery-based schedule."""
+        battery_data = await self._get_battery_data()
+        battery_level = battery_data.get("level", 100)
+        return battery_level <= self._battery_threshold
+
+    async def _determine_sleep_state(self, current_time: time) -> bool:
+        """Determine if device should be in sleep mode based on schedule."""
+        if self._sleep_schedule == "night_only":
+            return self._should_sleep_night_only(current_time)
+        elif self._sleep_schedule == "custom":
+            return self._should_sleep_custom(current_time)
+        elif self._sleep_schedule == "battery_based":
+            return await self._should_sleep_battery_based()
+        else:
+            return False
+
+    async def _apply_sleep_mode(self, should_sleep: bool):
+        """Apply sleep mode based on determined state."""
         if should_sleep and not self._is_sleep_mode_active():
             await self._enter_sleep_mode()
         elif not should_sleep and self._is_sleep_mode_active():
