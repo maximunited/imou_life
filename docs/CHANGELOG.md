@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.2] (2025-08-26)
+### Changed
+- Version bump to 1.1.2
+
+
 ## [1.1.1] (2025-08-24)
 ### Changed
 - Version bump to 1.1.1
