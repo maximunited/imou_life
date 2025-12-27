@@ -44,7 +44,13 @@
           "api_timeout": "Tempo limite da API (segundos)",
           "callback_url": "URL de retorno de chamada",
           "camera_wait_before_download": "Aguarde antes de baixar o instantâneo da câmera (segundos)",
-          "wait_after_wakeup": "Aguarde depois de ativar o dispositivo inativo (segundos)"
+          "wait_after_wakeup": "Aguarde depois de ativar o dispositivo inativo (segundos)",
+          "battery_optimization": "Otimização de bateria",
+          "power_saving_mode": "Modo de economia de energia"
+        },
+        "data_description": {
+          "battery_optimization": "🔋 Otimiza automaticamente as configurações da bateria para máxima duração. Quando habilitado, a integração ajustará o modo de energia, qualidade de gravação e sensibilidade de movimento com base no nível da bateria.",
+          "power_saving_mode": "⚡ Habilita o modo de economia de energia do dispositivo. Reduz o consumo de energia limitando certos recursos e funcionalidades."
         }
       }
     }

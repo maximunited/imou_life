@@ -44,7 +44,13 @@
           "api_timeout": "Temps d'espera de l'API (segons)",
           "callback_url": "URL de retorn de trucada",
           "camera_wait_before_download": "Espereu abans de baixar la instantània de la càmera (segons)",
-          "wait_after_wakeup": "Espereu després d'activar el dispositiu inactiu (segons)"
+          "wait_after_wakeup": "Espereu després d'activar el dispositiu inactiu (segons)",
+          "battery_optimization": "Optimització de bateria",
+          "power_saving_mode": "Mode d'estalvi d'energia"
+        },
+        "data_description": {
+          "battery_optimization": "🔋 Optimitza automàticament la configuració de la bateria per maximitzar l'autonomia. Quan està habilitat, la integració ajustarà el mode d'alimentació, la qualitat d'enregistrament i la sensibilitat de moviment segons el nivell de bateria.",
+          "power_saving_mode": "⚡ Habilita el mode d'estalvi d'energia del dispositiu. Redueix el consum d'energia limitant certes funcions i funcionalitats."
         }
       }
     }
