@@ -44,7 +44,17 @@
           "api_timeout": "Délai d'expiration de l'API (secondes)",
           "callback_url": "URL de rappel",
           "camera_wait_before_download": "Attendre avant de télécharger l'instantané de la caméra (secondes)",
-          "wait_after_wakeup": "Attendre après le réveil d'un appareil en dormance (secondes)"
+          "wait_after_wakeup": "Attendre après le réveil d'un appareil en dormance (secondes)",
+          "battery_optimization": "Optimisation de la batterie",
+          "power_saving_mode": "Mode d'économie d'énergie"
+        },
+        "description": {
+          "api_timeout": "Laissez vide pour utiliser le délai d'expiration par défaut. Par défaut: non défini",
+          "callback_url": "Laissez vide si vous n'utilisez pas de callbacks. Par défaut: non défini",
+          "camera_wait_before_download": "Laissez vide pour utiliser le délai par défaut. Par défaut: non défini",
+          "wait_after_wakeup": "Laissez vide pour utiliser le délai par défaut. Par défaut: non défini",
+          "battery_optimization": "Optimise automatiquement les paramètres de la batterie pour maximiser l'autonomie. Lorsqu'il est activé, l'intégration ajustera le mode d'alimentation, la qualité d'enregistrement et la sensibilité au mouvement en fonction du niveau de batterie.",
+          "power_saving_mode": "Active le mode d'économie d'énergie de l'appareil. Réduit la consommation d'énergie en limitant certaines fonctionnalités."
         }
       }
     }

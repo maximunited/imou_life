@@ -232,24 +232,34 @@ class ImouOptionsFlowHandler(config_entries.OptionsFlow):
                     ): int,
                     vol.Optional(
                         OPTION_API_TIMEOUT,
-                        default=self.options.get(OPTION_API_TIMEOUT, ""),
+                        default=(
+                            str(self.options.get(OPTION_API_TIMEOUT))
+                            if self.options.get(OPTION_API_TIMEOUT) not in (None, "")
+                            else ""
+                        ),
                     ): str,
                     vol.Optional(
                         OPTION_CALLBACK_URL,
-                        default=self.options.get(OPTION_CALLBACK_URL, ""),
+                        default=self.options.get(OPTION_CALLBACK_URL) or "",
                     ): str,
                     vol.Optional(
                         OPTION_CAMERA_WAIT_BEFORE_DOWNLOAD,
-                        default=self.options.get(
-                            OPTION_CAMERA_WAIT_BEFORE_DOWNLOAD, vol.UNDEFINED
+                        default=(
+                            str(self.options.get(OPTION_CAMERA_WAIT_BEFORE_DOWNLOAD))
+                            if self.options.get(OPTION_CAMERA_WAIT_BEFORE_DOWNLOAD)
+                            not in (None, "")
+                            else ""
                         ),
-                    ): vol.Coerce(float),
+                    ): str,
                     vol.Optional(
                         OPTION_WAIT_AFTER_WAKE_UP,
-                        default=self.options.get(
-                            OPTION_WAIT_AFTER_WAKE_UP, vol.UNDEFINED
+                        default=(
+                            str(self.options.get(OPTION_WAIT_AFTER_WAKE_UP))
+                            if self.options.get(OPTION_WAIT_AFTER_WAKE_UP)
+                            not in (None, "")
+                            else ""
                         ),
-                    ): vol.Coerce(float),
+                    ): str,
                     vol.Optional(
                         OPTION_BATTERY_OPTIMIZATION,
                         default=self.options.get(
@@ -296,4 +306,57 @@ class ImouOptionsFlowHandler(config_entries.OptionsFlow):
 
     async def _update_options(self):
         """Update config entry options."""
+        # Clean up empty string values for optional numeric fields
+        if (
+            OPTION_API_TIMEOUT in self.options
+            and self.options[OPTION_API_TIMEOUT] == ""
+        ):
+            self.options[OPTION_API_TIMEOUT] = None
+        elif OPTION_API_TIMEOUT in self.options and self.options[OPTION_API_TIMEOUT]:
+            try:
+                self.options[OPTION_API_TIMEOUT] = int(self.options[OPTION_API_TIMEOUT])
+            except (ValueError, TypeError):
+                self.options[OPTION_API_TIMEOUT] = None
+
+        if (
+            OPTION_CALLBACK_URL in self.options
+            and self.options[OPTION_CALLBACK_URL] == ""
+        ):
+            self.options[OPTION_CALLBACK_URL] = None
+
+        if (
+            OPTION_CAMERA_WAIT_BEFORE_DOWNLOAD in self.options
+            and self.options[OPTION_CAMERA_WAIT_BEFORE_DOWNLOAD] == ""
+        ):
+            self.options[OPTION_CAMERA_WAIT_BEFORE_DOWNLOAD] = None
+        elif (
+            OPTION_CAMERA_WAIT_BEFORE_DOWNLOAD in self.options
+            and self.options[OPTION_CAMERA_WAIT_BEFORE_DOWNLOAD]
+        ):
+            try:
+                self.options[OPTION_CAMERA_WAIT_BEFORE_DOWNLOAD] = float(
+                    self.options[OPTION_CAMERA_WAIT_BEFORE_DOWNLOAD]
+                )
+            except (ValueError, TypeError):
+                self.options[OPTION_CAMERA_WAIT_BEFORE_DOWNLOAD] = None
+
+        if (
+            OPTION_WAIT_AFTER_WAKE_UP in self.options
+            and self.options[OPTION_WAIT_AFTER_WAKE_UP] == ""
+        ):
+            self.options[OPTION_WAIT_AFTER_WAKE_UP] = None
+        elif (
+            OPTION_WAIT_AFTER_WAKE_UP in self.options
+            and self.options[OPTION_WAIT_AFTER_WAKE_UP]
+        ):
+            try:
+                self.options[OPTION_WAIT_AFTER_WAKE_UP] = float(
+                    self.options[OPTION_WAIT_AFTER_WAKE_UP]
+                )
+            except (ValueError, TypeError):
+                self.options[OPTION_WAIT_AFTER_WAKE_UP] = None
+
+        # Remove None values to keep options clean
+        self.options = {k: v for k, v in self.options.items() if v is not None}
+
         return self.async_create_entry(title="", data=self.options)
