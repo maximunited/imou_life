@@ -47,14 +47,6 @@
           "wait_after_wakeup": "Espereu després d'activar el dispositiu inactiu (segons)",
           "battery_optimization": "Optimització de bateria",
           "power_saving_mode": "Mode d'estalvi d'energia"
-        },
-        "description": {
-          "api_timeout": "Deixeu buit per utilitzar el temps d'espera per defecte. Per defecte: no definit",
-          "callback_url": "Deixeu buit si no utilitzeu callbacks. Per defecte: no definit",
-          "camera_wait_before_download": "Deixeu buit per utilitzar el retard per defecte. Per defecte: no definit",
-          "wait_after_wakeup": "Deixeu buit per utilitzar el retard per defecte. Per defecte: no definit",
-          "battery_optimization": "Optimitza automàticament la configuració de la bateria per maximitzar l'autonomia. Quan està habilitat, la integració ajustarà el mode d'alimentació, la qualitat d'enregistrament i la sensibilitat de moviment segons el nivell de bateria.",
-          "power_saving_mode": "Habilita el mode d'estalvi d'energia del dispositiu. Redueix el consum d'energia limitant certes funcions i funcionalitats."
         }
       }
     }

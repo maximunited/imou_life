@@ -47,14 +47,6 @@
           "wait_after_wakeup": "Espere después de activar el dispositivo inactivo (segundos)",
           "battery_optimization": "Optimización de batería",
           "power_saving_mode": "Modo de ahorro de energía"
-        },
-        "description": {
-          "api_timeout": "Deje vacío para usar el tiempo límite predeterminado. Predeterminado: no establecido",
-          "callback_url": "Deje vacío si no usa callbacks. Predeterminado: no establecido",
-          "camera_wait_before_download": "Deje vacío para usar el retraso predeterminado. Predeterminado: no establecido",
-          "wait_after_wakeup": "Deje vacío para usar el retraso predeterminado. Predeterminado: no establecido",
-          "battery_optimization": "Optimiza automáticamente la configuración de la batería para maximizar la duración de la batería. Cuando está habilitado, la integración ajustará el modo de energía, la calidad de grabación y la sensibilidad de movimiento según el nivel de batería.",
-          "power_saving_mode": "Habilita el modo de ahorro de energía del dispositivo. Reduce el consumo de energía limitando ciertas funciones y funcionalidades."
         }
       }
     }

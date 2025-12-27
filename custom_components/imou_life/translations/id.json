@@ -47,14 +47,6 @@
             "wait_after_wakeup": "Tunggu setelah membangunkan perangkat dorman (detik)",
             "battery_optimization": "Optimisasi baterai",
             "power_saving_mode": "Mode hemat daya"
-          },
-          "description": {
-            "api_timeout": "Biarkan kosong untuk menggunakan waktu tunggu default. Default: tidak diatur",
-            "callback_url": "Biarkan kosong jika tidak menggunakan callback. Default: tidak diatur",
-            "camera_wait_before_download": "Biarkan kosong untuk menggunakan penundaan default. Default: tidak diatur",
-            "wait_after_wakeup": "Biarkan kosong untuk menggunakan penundaan default. Default: tidak diatur",
-            "battery_optimization": "Secara otomatis mengoptimalkan pengaturan baterai untuk masa pakai baterai maksimal. Saat diaktifkan, integrasi akan menyesuaikan mode daya, kualitas rekaman, dan sensitivitas gerakan berdasarkan level baterai.",
-            "power_saving_mode": "Mengaktifkan mode hemat daya perangkat. Mengurangi konsumsi daya dengan membatasi fitur dan fungsionalitas tertentu."
           }
         }
       }
