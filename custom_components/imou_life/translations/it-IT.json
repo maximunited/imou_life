@@ -47,6 +47,10 @@
           "wait_after_wakeup": "Attendi dopo aver svegliato un dispositivo dormente (secondi)",
           "battery_optimization": "Ottimizzazione batteria",
           "power_saving_mode": "Modalità risparmio energetico"
+        },
+        "data_description": {
+          "battery_optimization": "🔋 Ottimizza automaticamente le impostazioni della batteria per massimizzare l'autonomia. Quando abilitato, l'integrazione regolerà la modalità di alimentazione, la qualità di registrazione e la sensibilità al movimento in base al livello della batteria.",
+          "power_saving_mode": "⚡ Abilita la modalità di risparmio energetico del dispositivo. Riduce il consumo di energia limitando determinate funzionalità."
         }
       }
     }

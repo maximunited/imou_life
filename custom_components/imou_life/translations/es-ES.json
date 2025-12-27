@@ -47,6 +47,10 @@
           "wait_after_wakeup": "Espere después de activar el dispositivo inactivo (segundos)",
           "battery_optimization": "Optimización de batería",
           "power_saving_mode": "Modo de ahorro de energía"
+        },
+        "data_description": {
+          "battery_optimization": "🔋 Optimiza automáticamente la configuración de la batería para maximizar la duración de la batería. Cuando está habilitado, la integración ajustará el modo de energía, la calidad de grabación y la sensibilidad de movimiento según el nivel de batería.",
+          "power_saving_mode": "⚡ Habilita el modo de ahorro de energía del dispositivo. Reduce el consumo de energía limitando ciertas funciones y funcionalidades."
         }
       }
     }

@@ -47,6 +47,10 @@
           "wait_after_wakeup": "Wait after waking up dormant device (seconds)",
           "battery_optimization": "Battery optimization",
           "power_saving_mode": "Power saving mode"
+        },
+        "data_description": {
+          "battery_optimization": "🔋 Automatically optimize battery settings for maximum battery life. When enabled, the integration will adjust power mode, recording quality, and motion sensitivity based on battery level.",
+          "power_saving_mode": "⚡ Enable device power saving mode. Reduces power consumption by limiting certain features and functionality."
         }
       }
     }

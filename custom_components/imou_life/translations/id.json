@@ -47,6 +47,10 @@
             "wait_after_wakeup": "Tunggu setelah membangunkan perangkat dorman (detik)",
             "battery_optimization": "Optimisasi baterai",
             "power_saving_mode": "Mode hemat daya"
+          },
+          "data_description": {
+            "battery_optimization": "🔋 Secara otomatis mengoptimalkan pengaturan baterai untuk masa pakai baterai maksimal. Saat diaktifkan, integrasi akan menyesuaikan mode daya, kualitas rekaman, dan sensitivitas gerakan berdasarkan level baterai.",
+            "power_saving_mode": "⚡ Mengaktifkan mode hemat daya perangkat. Mengurangi konsumsi daya dengan membatasi fitur dan fungsionalitas tertentu."
           }
         }
       }

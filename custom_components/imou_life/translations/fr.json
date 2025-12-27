@@ -47,6 +47,10 @@
           "wait_after_wakeup": "Attendre après le réveil d'un appareil en dormance (secondes)",
           "battery_optimization": "Optimisation de la batterie",
           "power_saving_mode": "Mode d'économie d'énergie"
+        },
+        "data_description": {
+          "battery_optimization": "🔋 Optimise automatiquement les paramètres de la batterie pour maximiser l'autonomie. Lorsqu'il est activé, l'intégration ajustera le mode d'alimentation, la qualité d'enregistrement et la sensibilité au mouvement en fonction du niveau de batterie.",
+          "power_saving_mode": "⚡ Active le mode d'économie d'énergie de l'appareil. Réduit la consommation d'énergie en limitant certaines fonctionnalités."
         }
       }
     }
