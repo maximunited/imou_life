@@ -1,5 +1,37 @@
 # Changelog
 
+## [1.2.0] (2026-04-29)
+### Added
+- Comprehensive CLAUDE.md with project architecture and development commands
+- Karpathy Guidelines as git submodule for code quality standards
+- ImouBatteryEntity base class to eliminate code duplication across battery platforms
+- Asyncio.Lock for thread-safe state mutations in battery coordinator
+- Public API methods for battery optimization (enter_sleep_mode, exit_sleep_mode, etc.)
+- Complete battery API integration with proper fallback handling
+
+### Changed
+- Refactored battery coordinator to use cached battery data and avoid redundant API calls
+- Made battery optimization methods public instead of private
+- Updated all battery platform entities to inherit from ImouBatteryEntity base class
+- Improved type hints throughout battery code (Dict[str, str] → Dict[str, Any])
+- Enhanced current_option fallback logic in battery select entities
+
+### Fixed
+- **SECURITY**: Removed hardcoded credentials from camera.py fallback code
+- Fixed exception handling in __init__.py to preserve original exception context
+- Added error messages to UpdateFailed exceptions in coordinator.py for better debugging
+- Added input validation for timeout parsing with try/except to prevent crashes
+- Used ValueError instead of generic Exception in switch.py for better error handling
+- Removed unittest.mock imports from production code (was incorrectly used)
+- Fixed hardcoded mock battery data - now uses real coordinator data
+
+### Tests
+- Updated all 206 battery tests to work with new base class architecture
+- Added AsyncMock for async_get_battery_status in test fixtures
+- Fixed method names in tests to use public API methods
+- All tests passing (206 passed, 1 skipped)
+
+
 ## [1.1.2] (2025-08-26)
 ### Changed
 - Version bump to 1.1.2
