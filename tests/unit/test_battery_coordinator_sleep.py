@@ -14,8 +14,8 @@ class TestBatteryCoordinatorSleep:
         """Test sleep schedule check with 'never' schedule."""
         coordinator._sleep_schedule = "never"
 
-        with patch.object(coordinator, "_enter_sleep_mode") as mock_enter:
-            with patch.object(coordinator, "_exit_sleep_mode") as mock_exit:
+        with patch.object(coordinator, "enter_sleep_mode") as mock_enter:
+            with patch.object(coordinator, "exit_sleep_mode") as mock_exit:
                 await coordinator._check_sleep_schedule()
                 mock_enter.assert_not_called()
                 mock_exit.assert_not_called()
@@ -32,9 +32,9 @@ class TestBatteryCoordinatorSleep:
         ) as mock_dt:
             mock_dt.now.return_value.time.return_value = time(23, 0)
 
-            with patch.object(coordinator, "_enter_sleep_mode") as mock_enter:
+            with patch.object(coordinator, "enter_sleep_mode") as mock_enter:
                 with patch.object(
-                    coordinator, "_is_sleep_mode_active", return_value=False
+                    coordinator, "is_sleep_mode_active", return_value=False
                 ):
                     await coordinator._check_sleep_schedule()
                     mock_enter.assert_called_once()
@@ -51,9 +51,9 @@ class TestBatteryCoordinatorSleep:
         ) as mock_dt:
             mock_dt.now.return_value.time.return_value = time(23, 0)
 
-            with patch.object(coordinator, "_enter_sleep_mode") as mock_enter:
+            with patch.object(coordinator, "enter_sleep_mode") as mock_enter:
                 with patch.object(
-                    coordinator, "_is_sleep_mode_active", return_value=False
+                    coordinator, "is_sleep_mode_active", return_value=False
                 ):
                     await coordinator._check_sleep_schedule()
                     mock_enter.assert_called_once()
@@ -70,9 +70,9 @@ class TestBatteryCoordinatorSleep:
         ) as mock_dt:
             mock_dt.now.return_value.time.return_value = time(2, 0)
 
-            with patch.object(coordinator, "_enter_sleep_mode") as mock_enter:
+            with patch.object(coordinator, "enter_sleep_mode") as mock_enter:
                 with patch.object(
-                    coordinator, "_is_sleep_mode_active", return_value=False
+                    coordinator, "is_sleep_mode_active", return_value=False
                 ):
                     await coordinator._check_sleep_schedule()
                     mock_enter.assert_called_once()
@@ -82,14 +82,14 @@ class TestBatteryCoordinatorSleep:
         """Test sleep schedule check with battery-based schedule."""
         coordinator._sleep_schedule = "battery_based"
         coordinator._battery_threshold = 20
+        coordinator.data = {"battery_level": 15}
 
-        with patch.object(coordinator, "_get_battery_data", return_value={"level": 15}):
-            with patch.object(coordinator, "_enter_sleep_mode") as mock_enter:
-                with patch.object(
-                    coordinator, "_is_sleep_mode_active", return_value=False
-                ):
-                    await coordinator._check_sleep_schedule()
-                    mock_enter.assert_called_once()
+        with patch.object(coordinator, "enter_sleep_mode") as mock_enter:
+            with patch.object(
+                coordinator, "is_sleep_mode_active", return_value=False
+            ):
+                await coordinator._check_sleep_schedule()
+                mock_enter.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_set_sleep_schedule_valid(self, coordinator):

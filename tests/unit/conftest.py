@@ -1,6 +1,6 @@
 """Shared fixtures for battery coordinator tests."""
 
-from unittest.mock import MagicMock
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
@@ -20,6 +20,15 @@ def mock_device():
     """Create a mock device."""
     device = MagicMock()
     device.get_name.return_value = "Test Device"
+    # Set up async_get_battery_status for battery coordinator tests
+    device.async_get_battery_status = AsyncMock(
+        return_value={
+            "level": 85,
+            "voltage": 3.8,
+            "consumption": 0.5,
+            "charging": False,
+        }
+    )
     return device
 
 

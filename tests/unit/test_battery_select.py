@@ -276,12 +276,8 @@ class TestImouBatterySelect:
     @pytest.mark.asyncio
     async def test_select_added_to_hass(self, power_mode_select):
         """Test select entity added to hass."""
-        # Patch the sensor instance's async_update method
-        with patch.object(
-            power_mode_select.sensor_instance, "async_update", new_callable=AsyncMock
-        ):
-            await power_mode_select.async_added_to_hass()
-            # Should not raise any exceptions
+        await power_mode_select.async_added_to_hass()
+        # Should not raise any exceptions
 
     @pytest.mark.asyncio
     async def test_select_will_remove_from_hass(self, power_mode_select):

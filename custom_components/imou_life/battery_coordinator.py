@@ -1,8 +1,9 @@
 """Battery optimization coordinator for Imou devices."""
 
+import asyncio
 import logging
 from datetime import datetime, time, timedelta
-from typing import Dict, Optional
+from typing import Any, Dict, Optional
 
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
@@ -14,6 +15,7 @@ from .const import (
     DEFAULT_LED_INDICATORS,
     DEFAULT_MOTION_SENSITIVITY,
     DEFAULT_RECORDING_QUALITY,
+    DEFAULT_POWER_SAVING_MODE,
     MOTION_SENSITIVITY_LEVELS,
     POWER_MODES,
     RECORDING_QUALITY_OPTIONS,
@@ -61,6 +63,14 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
         # Battery monitoring
         self._last_battery_level = None
         self._battery_optimization_active = False
+        self._sleep_mode_active = False
+
+        # State locking to prevent race conditions
+        self._optimization_lock = asyncio.Lock()
+        self._sleep_lock = asyncio.Lock()
+
+        # Hysteresis for battery optimization
+        self._battery_hysteresis = 10  # Deactivate at threshold + 10%
 
         _LOGGER.debug(
             "Initialized battery optimization coordinator for %s", device.get_name()
@@ -133,16 +143,29 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
     async def _get_battery_data(self):
         """Get battery data from device."""
         try:
-            # This would integrate with the actual device API
-            # For now, return mock data
-            return {
-                "level": 85,  # Mock battery level
-                "voltage": 3.8,  # Mock voltage
-                "consumption": 0.5,  # Mock power consumption in watts
-            }
+            # Try to get battery data from device API
+            if hasattr(self.device, "async_get_battery_status"):
+                battery_status = await self.device.async_get_battery_status()
+                return {
+                    "level": battery_status.get("level", 100),
+                    "voltage": battery_status.get("voltage"),
+                    "consumption": battery_status.get("consumption"),
+                    "charging": battery_status.get("charging", False),
+                }
+            else:
+                # Fallback: try to get from device data
+                device_data = await self.device.async_get_data()
+                battery_info = device_data.get("battery", {})
+                return {
+                    "level": battery_info.get("level", 100),
+                    "voltage": battery_info.get("voltage"),
+                    "consumption": battery_info.get("consumption"),
+                    "charging": battery_info.get("charging", False),
+                }
         except Exception as exception:
             _LOGGER.error("Error getting battery data: %s", str(exception))
-            return {}
+            # Return safe defaults
+            return {"level": 100, "voltage": None, "consumption": None, "charging": False}
 
     async def _check_battery_optimization(self, battery_data):
         """Check if battery optimization should be activated."""
@@ -150,7 +173,7 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
         if battery_level is None:
             return
 
-        # Check if battery level is below threshold
+        # Check if battery level is below threshold (with hysteresis)
         if (
             battery_level <= self._battery_threshold
             and not self._battery_optimization_active
@@ -162,13 +185,14 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
             )
             await self._activate_battery_optimization()
         elif (
-            battery_level > self._battery_threshold + 10
+            battery_level > self._battery_threshold + self._battery_hysteresis
             and self._battery_optimization_active
         ):
             _LOGGER.info(
-                "Battery level %d%% is above threshold + 10%%, "
+                "Battery level %d%% is above threshold + hysteresis (%d%%), "
                 "deactivating optimization",
                 battery_level,
+                self._battery_threshold + self._battery_hysteresis,
             )
             await self._deactivate_battery_optimization()
 
@@ -191,10 +215,10 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
     def _should_sleep_custom(self, current_time: time) -> bool:
         """Check if device should sleep during custom schedule."""
         if self._sleep_start_time <= self._sleep_end_time:
-            # Same day schedule (e.g., 10 PM to 6 AM)
+            # Same-day schedule (e.g., 09:00 to 17:00 - daytime sleep)
             return self._sleep_start_time <= current_time <= self._sleep_end_time
         else:
-            # Overnight schedule (e.g., 10 PM to 6 AM next day)
+            # Overnight schedule (e.g., 22:00 to 06:00 - nighttime sleep)
             return (
                 current_time >= self._sleep_start_time
                 or current_time <= self._sleep_end_time
@@ -202,8 +226,8 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
 
     async def _should_sleep_battery_based(self) -> bool:
         """Check if device should sleep during battery-based schedule."""
-        battery_data = await self._get_battery_data()
-        battery_level = battery_data.get("level", 100)
+        # Use cached battery level from coordinator data instead of making new API call
+        battery_level = self.data.get("battery_level", 100) if self.data else 100
         return battery_level <= self._battery_threshold
 
     async def _determine_sleep_state(self, current_time: time) -> bool:
@@ -219,80 +243,110 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
 
     async def _apply_sleep_mode(self, should_sleep: bool):
         """Apply sleep mode based on determined state."""
-        if should_sleep and not self._is_sleep_mode_active():
-            await self._enter_sleep_mode()
-        elif not should_sleep and self._is_sleep_mode_active():
-            await self._exit_sleep_mode()
+        if should_sleep and not self.is_sleep_mode_active():
+            await self.enter_sleep_mode()
+        elif not should_sleep and self.is_sleep_mode_active():
+            await self.exit_sleep_mode()
 
     async def _activate_battery_optimization(self):
         """Activate battery optimization features."""
-        try:
-            # Reduce motion sensitivity
-            if self._motion_sensitivity != "low":
-                await self._set_motion_sensitivity("low")
+        async with self._optimization_lock:
+            if self._battery_optimization_active:
+                return  # Already active
 
-            # Reduce recording quality
-            if self._recording_quality != "low":
-                await self._set_recording_quality("low")
+            try:
+                # Reduce motion sensitivity
+                if self._motion_sensitivity != "low":
+                    await self._set_motion_sensitivity("low")
 
-            # Disable LED indicators
-            if self._led_indicators:
-                await self._set_led_indicators(False)
+                # Reduce recording quality
+                if self._recording_quality != "low":
+                    await self._set_recording_quality("low")
 
-            # Set power mode to power saving
-            if self._power_mode != "power_saving":
-                await self._set_power_mode("power_saving")
+                # Disable LED indicators
+                if self._led_indicators:
+                    await self._set_led_indicators(False)
 
-            self._battery_optimization_active = True
-            _LOGGER.info("Battery optimization activated")
+                # Set power mode to power saving
+                if self._power_mode != "power_saving":
+                    await self._set_power_mode("power_saving")
 
-        except Exception as exception:
-            _LOGGER.error("Error activating battery optimization: %s", str(exception))
+                self._battery_optimization_active = True
+                _LOGGER.info("Battery optimization activated")
+
+            except Exception as exception:
+                _LOGGER.error("Error activating battery optimization: %s", str(exception))
 
     async def _deactivate_battery_optimization(self):
         """Deactivate battery optimization features."""
-        try:
-            # Restore motion sensitivity
-            await self._set_motion_sensitivity(self._motion_sensitivity)
+        async with self._optimization_lock:
+            if not self._battery_optimization_active:
+                return  # Already inactive
 
-            # Restore recording quality
-            await self._set_recording_quality(self._recording_quality)
+            try:
+                # Restore motion sensitivity
+                await self._set_motion_sensitivity(self._motion_sensitivity)
 
-            # Restore LED indicators
-            await self._set_led_indicators(self._led_indicators)
+                # Restore recording quality
+                await self._set_recording_quality(self._recording_quality)
 
-            # Restore power mode
-            await self._set_power_mode(self._power_mode)
+                # Restore LED indicators
+                await self._set_led_indicators(self._led_indicators)
 
-            self._battery_optimization_active = False
-            _LOGGER.info("Battery optimization deactivated")
+                # Restore power mode
+                await self._set_power_mode(self._power_mode)
 
-        except Exception as exception:
-            _LOGGER.error("Error deactivating battery optimization: %s", str(exception))
+                self._battery_optimization_active = False
+                _LOGGER.info("Battery optimization deactivated")
 
-    async def _enter_sleep_mode(self):
-        """Enter sleep mode."""
-        try:
-            # This would integrate with the actual device API
-            _LOGGER.info("Entering sleep mode")
-            # await self.device.async_enter_sleep_mode()
-        except Exception as exception:
-            _LOGGER.error("Error entering sleep mode: %s", str(exception))
+            except Exception as exception:
+                _LOGGER.error("Error deactivating battery optimization: %s", str(exception))
 
-    async def _exit_sleep_mode(self):
-        """Exit sleep mode."""
-        try:
-            # This would integrate with the actual device API
-            _LOGGER.info("Exiting sleep mode")
-            # await self.device.async_exit_sleep_mode()
-        except Exception as exception:
-            _LOGGER.error("Error exiting sleep mode: %s", str(exception))
+    async def enter_sleep_mode(self):
+        """Enter sleep mode - public API method."""
+        async with self._sleep_lock:
+            if self._sleep_mode_active:
+                _LOGGER.debug("Sleep mode already active")
+                return
 
-    def _is_sleep_mode_active(self):
-        """Check if sleep mode is currently active."""
-        # This would check the actual device state
-        # For now, return False
-        return False
+            try:
+                _LOGGER.info("Entering sleep mode")
+                # Try to call device API if available
+                if hasattr(self.device, "async_enter_sleep_mode"):
+                    await self.device.async_enter_sleep_mode()
+                    self._sleep_mode_active = True
+                else:
+                    _LOGGER.warning(
+                        "Device does not support async_enter_sleep_mode - "
+                        "sleep mode API not available"
+                    )
+            except Exception as exception:
+                _LOGGER.error("Error entering sleep mode: %s", str(exception))
+
+    async def exit_sleep_mode(self):
+        """Exit sleep mode - public API method."""
+        async with self._sleep_lock:
+            if not self._sleep_mode_active:
+                _LOGGER.debug("Sleep mode already inactive")
+                return
+
+            try:
+                _LOGGER.info("Exiting sleep mode")
+                # Try to call device API if available
+                if hasattr(self.device, "async_exit_sleep_mode"):
+                    await self.device.async_exit_sleep_mode()
+                    self._sleep_mode_active = False
+                else:
+                    _LOGGER.warning(
+                        "Device does not support async_exit_sleep_mode - "
+                        "sleep mode API not available"
+                    )
+            except Exception as exception:
+                _LOGGER.error("Error exiting sleep mode: %s", str(exception))
+
+    def is_sleep_mode_active(self) -> bool:
+        """Check if sleep mode is currently active - public API method."""
+        return self._sleep_mode_active
 
     async def _set_motion_sensitivity(self, sensitivity: str):
         """Set motion sensitivity level."""
@@ -300,12 +354,16 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
             raise ValueError(f"Invalid motion sensitivity: {sensitivity}")
 
         try:
-            # This would integrate with the actual device API
             _LOGGER.info("Setting motion sensitivity to %s", sensitivity)
-            # await self.device.async_set_motion_sensitivity(sensitivity)
+            if hasattr(self.device, "async_set_motion_sensitivity"):
+                await self.device.async_set_motion_sensitivity(sensitivity)
+            else:
+                _LOGGER.warning(
+                    "Device does not support async_set_motion_sensitivity - "
+                    "motion sensitivity API not available"
+                )
         except Exception as exception:
             _LOGGER.error("Error setting motion sensitivity: %s", str(exception))
-            raise
 
     async def _set_recording_quality(self, quality: str):
         """Set recording quality."""
@@ -313,24 +371,32 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
             raise ValueError(f"Invalid recording quality: {quality}")
 
         try:
-            # This would integrate with the actual device API
             _LOGGER.info("Setting recording quality to %s", quality)
-            # await self.device.async_set_recording_quality(quality)
+            if hasattr(self.device, "async_set_recording_quality"):
+                await self.device.async_set_recording_quality(quality)
+            else:
+                _LOGGER.warning(
+                    "Device does not support async_set_recording_quality - "
+                    "recording quality API not available"
+                )
         except Exception as exception:
             _LOGGER.error("Error setting recording quality: %s", str(exception))
-            raise
 
     async def _set_led_indicators(self, enabled: bool):
         """Set LED indicators on/off."""
         try:
-            # This would integrate with the actual device API
             _LOGGER.info(
                 "Setting LED indicators to %s", "enabled" if enabled else "disabled"
             )
-            # await self.device.async_set_led_indicators(enabled)
+            if hasattr(self.device, "async_set_led_indicators"):
+                await self.device.async_set_led_indicators(enabled)
+            else:
+                _LOGGER.warning(
+                    "Device does not support async_set_led_indicators - "
+                    "LED indicators API not available"
+                )
         except Exception as exception:
             _LOGGER.error("Error setting LED indicators: %s", str(exception))
-            raise
 
     async def _set_power_mode(self, mode: str):
         """Set power mode."""
@@ -338,14 +404,34 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
             raise ValueError(f"Invalid power mode: {mode}")
 
         try:
-            # This would integrate with the actual device API
             _LOGGER.info("Setting power mode to %s", mode)
-            # await self.device.async_set_power_mode(mode)
+            if hasattr(self.device, "async_set_power_mode"):
+                await self.device.async_set_power_mode(mode)
+            else:
+                _LOGGER.warning(
+                    "Device does not support async_set_power_mode - "
+                    "power mode API not available"
+                )
         except Exception as exception:
             _LOGGER.error("Error setting power mode: %s", str(exception))
-            raise
 
     # Public methods for external use
+    async def set_power_mode(self, mode: str):
+        """Set power mode - public API method."""
+        await self._set_power_mode(mode)
+
+    async def set_motion_sensitivity(self, sensitivity: str):
+        """Set motion sensitivity - public API method."""
+        await self._set_motion_sensitivity(sensitivity)
+
+    async def set_recording_quality(self, quality: str):
+        """Set recording quality - public API method."""
+        await self._set_recording_quality(quality)
+
+    async def set_led_indicators(self, enabled: bool):
+        """Set LED indicators - public API method."""
+        await self._set_led_indicators(enabled)
+
     async def optimize_battery(self, **kwargs):
         """Optimize battery settings."""
         power_mode = kwargs.get("power_mode", "power_saving")
@@ -364,7 +450,6 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
 
         except Exception as exception:
             _LOGGER.error("Error applying battery optimization: %s", str(exception))
-            raise
 
     async def set_sleep_schedule(
         self,
@@ -385,7 +470,7 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
 
         _LOGGER.info("Sleep schedule set to %s", schedule)
 
-    def get_battery_optimization_status(self) -> Dict[str, str]:
+    def get_battery_optimization_status(self) -> Dict[str, Any]:
         """Get current battery optimization status."""
         return {
             "active": self._battery_optimization_active,
@@ -396,4 +481,5 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
             "auto_sleep": self._auto_sleep,
             "battery_threshold": self._battery_threshold,
             "sleep_schedule": self._sleep_schedule,
+            "sleep_mode_active": self._sleep_mode_active,
         }

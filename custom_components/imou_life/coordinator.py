@@ -42,5 +42,6 @@ class ImouDataUpdateCoordinator(DataUpdateCoordinator):
         try:
             return await self.device.async_get_data()
         except ImouException as exception:
-            _LOGGER.error("Imou exception: %s", str(exception))
-            raise UpdateFailed() from exception
+            error_msg = f"Imou API error: {str(exception)}"
+            _LOGGER.error(error_msg)
+            raise UpdateFailed(error_msg) from exception

@@ -170,20 +170,20 @@ class TestImouBatteryBinarySensor:
 
     def test_sleep_mode_sensor_active(self, sleep_mode_sensor, mock_coordinator):
         """Test sleep mode sensor when sleep mode is active."""
-        mock_coordinator._is_sleep_mode_active.return_value = True
+        mock_coordinator.is_sleep_mode_active.return_value = True
 
         assert sleep_mode_sensor.is_on is True
 
     def test_sleep_mode_sensor_inactive(self, sleep_mode_sensor, mock_coordinator):
         """Test sleep mode sensor when sleep mode is inactive."""
-        mock_coordinator._is_sleep_mode_active.return_value = False
+        mock_coordinator.is_sleep_mode_active.return_value = False
 
         assert sleep_mode_sensor.is_on is False
 
     def test_sleep_mode_sensor_coordinator_method_not_found(self, sleep_mode_sensor):
         """Test sleep mode sensor when coordinator method is not found."""
-        # Remove the _is_sleep_mode_active method from coordinator
-        delattr(sleep_mode_sensor.coordinator, "_is_sleep_mode_active")
+        # Remove the is_sleep_mode_active method from coordinator
+        delattr(sleep_mode_sensor.coordinator, "is_sleep_mode_active")
 
         # Should return False when method not found
         assert sleep_mode_sensor.is_on is False
@@ -302,11 +302,11 @@ class TestImouBatteryBinarySensor:
     def test_sleep_mode_status_retrieval(self, sleep_mode_sensor, mock_coordinator):
         """Test sleep mode status retrieval from coordinator."""
         # Test active status
-        mock_coordinator._is_sleep_mode_active.return_value = True
+        mock_coordinator.is_sleep_mode_active.return_value = True
         assert sleep_mode_sensor.is_on is True
 
         # Test inactive status
-        mock_coordinator._is_sleep_mode_active.return_value = False
+        mock_coordinator.is_sleep_mode_active.return_value = False
         assert sleep_mode_sensor.is_on is False
 
     def test_sensor_error_logging(self, low_battery_sensor):

@@ -114,7 +114,13 @@ def _create_api_client(device_config: dict, session, entry: ConfigEntry):
 def _parse_timeout_option(timeout_value):
     """Parse timeout option value safely."""
     if isinstance(timeout_value, str):
-        return None if timeout_value == "" else int(timeout_value)
+        if timeout_value == "":
+            return None
+        try:
+            return int(timeout_value)
+        except (ValueError, TypeError):
+            _LOGGER.warning("Invalid timeout value: %s, using default", timeout_value)
+            return None
     return timeout_value
 
 
@@ -161,7 +167,7 @@ async def _initialize_device(device: ImouDevice, entry: ConfigEntry):
         raise ConfigEntryNotReady("Device initialization timed out")
     except ImouException as exception:
         _LOGGER.error("Imou exception: %s", str(exception))
-        raise ImouException() from exception
+        raise
 
     # Disable all sensors initially (will be enabled individually by
     # async_added_to_hass())
