@@ -42,6 +42,16 @@ class ImouDataUpdateCoordinator(DataUpdateCoordinator):
         try:
             return await self.device.async_get_data()
         except ImouException as exception:
-            error_msg = f"Imou API error: {str(exception)}"
-            _LOGGER.error(error_msg)
+            error_str = str(exception)
+            # Provide helpful message for rate limit errors
+            if "OP1013" in error_str or "exceed limit" in error_str.lower():
+                error_msg = (
+                    f"Imou API rate limit exceeded. "
+                    f"The integration will retry on the next update cycle. "
+                    f"Error: {error_str}"
+                )
+                _LOGGER.warning(error_msg)
+            else:
+                error_msg = f"Imou API error: {error_str}"
+                _LOGGER.error(error_msg)
             raise UpdateFailed(error_msg) from exception

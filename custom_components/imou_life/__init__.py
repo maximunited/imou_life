@@ -166,7 +166,19 @@ async def _initialize_device(device: ImouDevice, entry: ConfigEntry):
         _LOGGER.error("Device initialization timed out after %d seconds", setup_timeout)
         raise ConfigEntryNotReady("Device initialization timed out")
     except ImouException as exception:
-        _LOGGER.error("Imou exception: %s", str(exception))
+        error_msg = str(exception)
+        # Handle API rate limit errors (OP1013) by requesting retry
+        if "OP1013" in error_msg or "exceed limit" in error_msg.lower():
+            _LOGGER.warning(
+                "Imou API rate limit exceeded during initialization. "
+                "Home Assistant will automatically retry. "
+                "Error: %s",
+                error_msg,
+            )
+            raise ConfigEntryNotReady(
+                f"API rate limit exceeded, will retry later: {error_msg}"
+            )
+        _LOGGER.error("Imou exception: %s", error_msg)
         raise
 
     # Disable all sensors initially (will be enabled individually by
