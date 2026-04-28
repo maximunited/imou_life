@@ -1,9 +1,13 @@
 """Global fixtures for imou_life integration."""
 
-# Mock turbojpeg before any other imports to prevent import errors
-
+# Mock fcntl for Windows compatibility (Unix-only module)
 import sys
 from unittest.mock import MagicMock
+
+mock_fcntl = MagicMock()
+sys.modules["fcntl"] = mock_fcntl
+
+# Mock turbojpeg before any other imports to prevent import errors
 
 # Create a mock turbojpeg module
 mock_turbojpeg = MagicMock()

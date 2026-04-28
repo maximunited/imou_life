@@ -32,6 +32,18 @@ def mock_imou_device():
         "charging": False,
     })
 
+    # Mock battery optimization methods
+    device.async_enter_sleep_mode = AsyncMock()
+    device.async_exit_sleep_mode = AsyncMock()
+    device.async_set_power_mode = AsyncMock()
+    device.async_set_motion_sensitivity = AsyncMock()
+    device.async_set_recording_quality = AsyncMock()
+    device.async_set_led_indicators = AsyncMock()
+
+    # Also mock synchronous versions for backward compat
+    device.set_power_mode = AsyncMock()
+    device.set_led_status = AsyncMock()
+
     # Mock sensor discovery by platform
     def get_sensors_by_platform(platform):
         if platform == "switch":
