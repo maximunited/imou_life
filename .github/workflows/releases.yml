@@ -98,7 +98,6 @@ jobs:
         run: |
           cd "${{ github.workspace }}/custom_components/${{ steps.information.outputs.name }}"
           zip -r ../../${{ steps.information.outputs.name }}.zip . -x "*.pyc" -x "*__pycache__*" -x "*.git*"
-          mv ../../${{ steps.information.outputs.name }}.zip "${{ github.workspace }}/"
           ls -la "${{ github.workspace }}/"
           echo "Verifying zip structure:"
           unzip -l "${{ github.workspace }}/${{ steps.information.outputs.name }}.zip" | head -20
