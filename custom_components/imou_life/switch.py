@@ -86,7 +86,7 @@ class ImouSwitch(ImouEntity, SwitchEntity):
             ):
                 callback_url = self.config_entry.options[OPTION_CALLBACK_URL]
             if callback_url is None:
-                raise Exception("No callback url provided")
+                raise ValueError("No callback URL provided for push notifications")
             _LOGGER.debug("Callback URL: %s", callback_url)
             await self.sensor_instance.async_turn_on(url=callback_url)
         # control all other switches

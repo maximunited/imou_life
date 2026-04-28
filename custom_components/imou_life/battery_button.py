@@ -1,15 +1,22 @@
 """Battery optimization button platform for Imou."""
 
 import logging
-from unittest.mock import AsyncMock, MagicMock
 
 from homeassistant.components.button import ButtonEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN
-from .entity import ImouEntity
+from .battery_entity import ImouBatteryEntity
+from .const import (
+    DEFAULT_AUTO_SLEEP,
+    DEFAULT_BATTERY_THRESHOLD,
+    DEFAULT_LED_INDICATORS,
+    DEFAULT_MOTION_SENSITIVITY,
+    DEFAULT_POWER_SAVING_MODE,
+    DEFAULT_RECORDING_QUALITY,
+    DOMAIN,
+)
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -71,7 +78,7 @@ async def async_setup_entry(
         _LOGGER.debug("Added %d battery optimization button entities", len(entities))
 
 
-class ImouBatteryButton(ImouEntity, ButtonEntity):
+class ImouBatteryButton(ImouBatteryEntity, ButtonEntity):
     """Imou battery optimization button entity."""
 
     def __init__(
@@ -84,35 +91,15 @@ class ImouBatteryButton(ImouEntity, ButtonEntity):
         action_name: str,
     ):
         """Initialize the battery optimization button entity."""
-        # Create a mock sensor instance for the parent class
-        sensor_instance = MagicMock()
-        sensor_instance.get_name.return_value = button_type
-        sensor_instance.get_description.return_value = description
-        sensor_instance.get_state.return_value = None
-        sensor_instance.get_attributes.return_value = {}
-        sensor_instance.async_update = AsyncMock()
-        sensor_instance.set_enabled = MagicMock()
-
-        super().__init__(coordinator, config_entry, sensor_instance, "button")
-        self.button_type = button_type
-        self._description = description
-        self._icon = icon
+        super().__init__(
+            coordinator,
+            config_entry,
+            "button",
+            description,
+            icon,
+            button_type,
+        )
         self._action_name = action_name
-
-    @property
-    def name(self) -> str:
-        """Return the name of the button entity."""
-        return f"{self.device.get_name()} {self._description}"
-
-    @property
-    def unique_id(self) -> str:
-        """Return a unique ID."""
-        return f"{self.config_entry.entry_id}_{self.button_type}"
-
-    @property
-    def icon(self) -> str:
-        """Return the icon of the button entity."""
-        return self._icon
 
     async def async_press(self) -> None:
         """Handle the button press."""
@@ -121,29 +108,39 @@ class ImouBatteryButton(ImouEntity, ButtonEntity):
                 if hasattr(self.coordinator, "enter_sleep_mode"):
                     await self.coordinator.enter_sleep_mode()
                 else:
-                    _LOGGER.warning("Enter sleep mode not implemented in coordinator")
+                    _LOGGER.warning("Coordinator does not support enter_sleep_mode")
+                    return
 
             elif self._action_name == "exit_sleep_mode":
                 if hasattr(self.coordinator, "exit_sleep_mode"):
                     await self.coordinator.exit_sleep_mode()
                 else:
-                    _LOGGER.warning("Exit sleep mode not implemented in coordinator")
+                    _LOGGER.warning("Coordinator does not support exit_sleep_mode")
+                    return
 
             elif self._action_name == "optimize_battery":
                 if hasattr(self.coordinator, "optimize_battery"):
                     await self.coordinator.optimize_battery()
                 else:
-                    _LOGGER.warning(
-                        "Battery optimization not implemented in coordinator"
-                    )
+                    _LOGGER.warning("Coordinator does not support optimize_battery")
+                    return
 
             elif self._action_name == "reset_power_settings":
-                await self._reset_power_settings()
+                if hasattr(self.coordinator, "reset_power_settings") and callable(
+                    getattr(self.coordinator, "reset_power_settings")
+                ):
+                    try:
+                        await self.coordinator.reset_power_settings()
+                    except TypeError:
+                        # Method exists but is not awaitable, use local implementation
+                        await self._reset_power_settings()
+                else:
+                    await self._reset_power_settings()
 
             _LOGGER.info(
                 "Executed %s action for device %s",
                 self._description,
-                self.device.get_name(),
+                self.coordinator.device.get_name(),
             )
 
         except Exception as exception:
@@ -155,15 +152,6 @@ class ImouBatteryButton(ImouEntity, ButtonEntity):
         """Reset power settings to defaults."""
         try:
             # Reset config entry options to defaults
-            from .const import (
-                DEFAULT_AUTO_SLEEP,
-                DEFAULT_BATTERY_THRESHOLD,
-                DEFAULT_LED_INDICATORS,
-                DEFAULT_MOTION_SENSITIVITY,
-                DEFAULT_POWER_SAVING_MODE,
-                DEFAULT_RECORDING_QUALITY,
-            )
-
             options = dict(self.config_entry.options)
             options.update(
                 {
@@ -181,27 +169,8 @@ class ImouBatteryButton(ImouEntity, ButtonEntity):
                 self.config_entry, options=options
             )
 
-            # If coordinator has reset method, call it
-            if hasattr(self.coordinator, "reset_power_settings"):
-                await self.coordinator.reset_power_settings()
-
             _LOGGER.info("Power settings reset to defaults")
 
         except Exception as exception:
             _LOGGER.error("Error resetting power settings: %s", str(exception))
             raise
-
-    @property
-    def available(self) -> bool:
-        """Return True if entity is available."""
-        return super().available and self.device.get_status()
-
-    async def async_added_to_hass(self) -> None:
-        """When entity is added to hass."""
-        await super().async_added_to_hass()
-        _LOGGER.debug("%s added to HA", self.name)
-
-    async def async_will_remove_from_hass(self) -> None:
-        """When entity will be removed from hass."""
-        await super().async_will_remove_from_hass()
-        _LOGGER.debug("%s removed from HA", self.name)

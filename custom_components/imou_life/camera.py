@@ -160,16 +160,9 @@ class ImouCamera(Camera):
 
     async def stream_source(self) -> str:
         """Return the source of the stream."""
-        try:
-            stream_url = await self._sensor_instance.async_get_stream_url()
-            _LOGGER.debug("Successfully got stream URL: %s", stream_url)
-            return stream_url
-        except imouapi.exceptions.APIError as e:
-            _LOGGER.warning("API stream failed, falling back to local RTSP: %s", str(e))
-            return (
-                "rtsp://admin:yourpassword@192.168.1.100:554/cam/realmonitor"
-                "?channel=1&subtype=0"
-            )
+        stream_url = await self._sensor_instance.async_get_stream_url()
+        _LOGGER.debug("Successfully got stream URL: %s", stream_url)
+        return stream_url
 
     async def async_added_to_hass(self):
         """Entity added to HA (at startup or when re-enabled)."""
