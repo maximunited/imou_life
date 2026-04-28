@@ -162,22 +162,40 @@ isort .
 python -c "import json; json.load(open('custom_components/imou_life/manifest.json')); print('Manifest validation passed')"
 ```
 
-### Version Management
+### Version Management & Releases
+
+**Prerequisites:**
+```bash
+# IMPORTANT: Install pre-commit before running git bump
+pip install pre-commit
+pre-commit install
+```
 
 **Automatic version bumping:**
 ```bash
 git bump                                 # Auto-increment patch version
-git bump 1.0.30                          # Specific version
-git bump 1.0.30 "Added new feature"      # With custom message
-git bump auto                            # Auto-bump based on commit history
+git bump 1.2.0                           # Specific version
+git bump 1.2.0 "Battery optimization"    # With custom message
 ```
 
-The `git bump` script automatically:
+The `git bump` script (PowerShell alias in `.git/config`):
 - Updates `manifest.json` version
-- Generates changelog entries
+- Generates changelog entry in `docs/CHANGELOG.md`
 - Commits changes with appropriate message
-- Creates and pushes git tags
-- Triggers GitHub Actions workflows
+- Creates and pushes git tag (triggers release workflow)
+- Requires pre-commit to be installed (will fail if missing)
+
+**IMPORTANT**: The `git bump` script creates a basic changelog entry. For production releases:
+1. Manually edit `docs/CHANGELOG.md` to add detailed sections (Added/Changed/Fixed/Security/Tests)
+2. Follow [Keep a Changelog](https://keepachangelog.com/) format
+3. Then run `git bump` to create the release
+
+**Release Process:**
+See `docs/RELEASE_PROCESS.md` for complete documentation including:
+- Automated release workflow
+- Manual release when automation fails
+- Troubleshooting common issues
+- Changelog format requirements
 
 ## CI/CD Workflows
 
@@ -193,7 +211,12 @@ The `git bump` script automatically:
 - Code formatting and linting
 - Manifest and translation validation
 
-**releases.yml** - Automated release creation on version tags
+**releases.yml** - Automated release creation:
+- Triggered by version tags (e.g., `v1.2.0`)
+- Reads changelog using `mindsers/changelog-reader-action`
+- Creates integration zip file (`imou_life.zip`)
+- Creates GitHub pre-release with zip attachment
+- Requires Keep a Changelog format in `docs/CHANGELOG.md`
 
 ## Coding Standards
 

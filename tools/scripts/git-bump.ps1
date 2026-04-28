@@ -183,6 +183,13 @@ git add "docs/CHANGELOG.md"
 $commitMessage = if ($Message) { "Bump version to $newVersion - $Message" } else { "Bump version to $newVersion" }
 Write-Host "Committing changes: $commitMessage" -ForegroundColor Green
 git commit -m $commitMessage
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Error: Git commit failed!" -ForegroundColor Red
+    Write-Host "This might be due to pre-commit hooks. Try:" -ForegroundColor Yellow
+    Write-Host "  git commit --no-verify -m `"$commitMessage`"" -ForegroundColor Yellow
+    Write-Host "Or install pre-commit: pip install pre-commit" -ForegroundColor Yellow
+    exit 1
+}
 
 # Create and push tag
 $tagName = "v$newVersion"
@@ -208,7 +215,18 @@ git tag $tagName
 # Push changes and tag
 Write-Host "Pushing changes and tag..." -ForegroundColor Green
 git push origin master
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Error: Failed to push commits to remote!" -ForegroundColor Red
+    exit 1
+}
+
 git push origin $tagName
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Error: Failed to push tag to remote!" -ForegroundColor Red
+    Write-Host "The commit was pushed but the tag wasn't. You can manually push:" -ForegroundColor Yellow
+    Write-Host "  git push origin $tagName" -ForegroundColor Yellow
+    exit 1
+}
 
 Write-Host ""
 Write-Host "🎉 Version bump completed successfully!" -ForegroundColor Green
