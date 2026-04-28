@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.2.2] (2026-04-29)
+### Added
+- Handle API rate limit errors gracefully
+
+
 ## [1.2.1] (2026-04-29)
 ### Added
 - Fix HACS installation directory structure
