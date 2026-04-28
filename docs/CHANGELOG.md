@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.2.1] (2026-04-29)
+### Added
+- Fix HACS installation directory structure
+
+
 ## [1.2.0] (2026-04-29)
 ### Added
 - Comprehensive CLAUDE.md with project architecture and development commands
