@@ -119,8 +119,19 @@ python -m pytest tests/ --cov=custom_components/imou_life --cov-report=html
 **Test categories:**
 ```bash
 python -m pytest tests/unit/             # Unit tests only
-python -m pytest tests/integration/      # Integration tests
+python -m pytest tests/integration/      # End-to-end integration tests
+python -m pytest tests/unit/test_battery_*.py  # Battery coordinator tests
 ```
+
+**Test organization:**
+- `tests/unit/` - Isolated unit tests for individual components
+- `tests/integration/` - End-to-end tests covering full workflows:
+  - Full setup flow (config → entities)
+  - Battery optimization integration
+  - Entity state updates and interactions
+  - Error handling and recovery scenarios
+  - Multi-device setups
+- `tests/fixtures/` - Shared test fixtures and mocks
 
 **Coverage requirements:** Minimum 70% required
 
