@@ -1,7 +1,6 @@
 """Base entity class for battery optimization features."""
 
 import logging
-from typing import Any
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.device_registry import DeviceInfo
