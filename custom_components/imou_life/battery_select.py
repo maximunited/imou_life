@@ -125,7 +125,9 @@ class ImouBatterySelect(ImouBatteryEntity, SelectEntity):
                     return current
 
         except (AttributeError, KeyError, TypeError) as exception:
-            _LOGGER.debug("Failed to get current option from coordinator: %s", exception)
+            _LOGGER.debug(
+                "Failed to get current option from coordinator: %s", exception
+            )
 
         # Fallback to config entry options
         try:

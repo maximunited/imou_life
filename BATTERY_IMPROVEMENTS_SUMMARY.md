@@ -72,7 +72,7 @@ async def enter_sleep_mode(self):
     async with self._sleep_lock:
         if self._sleep_mode_active:
             return
-        
+
         _LOGGER.info("Entering sleep mode")
         if hasattr(self.device, "async_enter_sleep_mode"):
             await self.device.async_enter_sleep_mode()
@@ -81,7 +81,7 @@ async def enter_sleep_mode(self):
             _LOGGER.warning("Device does not support sleep mode API")
 ```
 
-**Impact**: 
+**Impact**:
 - Proper API integration with graceful fallback
 - Clear warnings when API not available
 - State tracking works correctly
@@ -208,15 +208,15 @@ async def _should_sleep_battery_based(self) -> bool:
 ```python
 class ImouBatteryEntity(CoordinatorEntity):
     """Base class for Imou battery optimization entities."""
-    
-    def __init__(self, coordinator, config_entry, entity_type, 
+
+    def __init__(self, coordinator, config_entry, entity_type,
                  description, icon, unique_id_suffix):
         # Proper initialization without mocks
         # Common properties (name, unique_id, icon, device_info, available)
         # Lifecycle methods (async_added_to_hass, async_will_remove_from_hass)
 ```
 
-**Impact**: 
+**Impact**:
 - Eliminated code duplication across 3 files
 - Consistent behavior across all battery entities
 - Single source of truth for common functionality
@@ -259,7 +259,7 @@ async def _get_battery_data(self):
         return {"level": 100, "voltage": None, "charging": False}
 ```
 
-**Impact**: 
+**Impact**:
 - Attempts real API calls
 - Graceful fallback to safe defaults
 - Better error handling
@@ -304,7 +304,7 @@ except (AttributeError, KeyError, TypeError) as exception:
     return False
 ```
 
-**Impact**: 
+**Impact**:
 - Specific exceptions caught
 - Proper logging
 - Clear error messages

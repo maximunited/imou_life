@@ -85,9 +85,7 @@ class TestBatteryCoordinatorSleep:
         coordinator.data = {"battery_level": 15}
 
         with patch.object(coordinator, "enter_sleep_mode") as mock_enter:
-            with patch.object(
-                coordinator, "is_sleep_mode_active", return_value=False
-            ):
+            with patch.object(coordinator, "is_sleep_mode_active", return_value=False):
                 await coordinator._check_sleep_schedule()
                 mock_enter.assert_called_once()
 

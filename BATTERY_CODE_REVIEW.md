@@ -4,8 +4,8 @@
 
 The battery optimization feature is well-structured but has several critical issues that prevent it from being production-ready. Most concerning are the use of unittest.mock in production code and placeholder/commented-out API integrations.
 
-**Overall Assessment**: 🟡 Framework is good, implementation needs work  
-**Test Coverage**: ✅ 72-85% (good)  
+**Overall Assessment**: 🟡 Framework is good, implementation needs work
+**Test Coverage**: ✅ 72-85% (good)
 **Production Ready**: ❌ No - contains mocks and incomplete integrations
 
 ---
@@ -21,8 +21,8 @@ The battery optimization feature is well-structured but has several critical iss
 from unittest.mock import AsyncMock, MagicMock
 ```
 
-**Problem**: Test utilities imported in production code  
-**Impact**: Technical debt, confusing for developers, unprofessional  
+**Problem**: Test utilities imported in production code
+**Impact**: Technical debt, confusing for developers, unprofessional
 **Fix**: Remove mocks, create proper entity base class or use real device instances
 
 **Recommendation**:
@@ -45,8 +45,8 @@ def _is_low_battery(self) -> bool:
     return battery_level <= battery_threshold
 ```
 
-**Problem**: Returns fake data, feature doesn't work  
-**Impact**: User sees incorrect battery status  
+**Problem**: Returns fake data, feature doesn't work
+**Impact**: User sees incorrect battery status
 **Fix**: Integrate with actual battery data from coordinator
 
 ---
@@ -61,8 +61,8 @@ async def _enter_sleep_mode(self):
     # await self.device.async_enter_sleep_mode()  # <-- Not implemented
 ```
 
-**Problem**: Feature is a skeleton, doesn't actually control device  
-**Impact**: Buttons and settings do nothing  
+**Problem**: Feature is a skeleton, doesn't actually control device
+**Impact**: Buttons and settings do nothing
 **Fix**: Complete the imouapi integration or document as "planned feature"
 
 ---
@@ -80,7 +80,7 @@ def _should_sleep_custom(self, current_time: time) -> bool:
         return self._sleep_start_time <= current_time <= self._sleep_end_time
 ```
 
-**Problem**: 
+**Problem**:
 - Comment says "10 PM to 6 AM" but that's overnight, not same-day
 - Same-day would be "9 AM to 5 PM" (both times on same day)
 - Logic is inverted
@@ -112,7 +112,7 @@ def _should_sleep_night_only(self, current_time: time) -> bool:
     )
 ```
 
-**Status**: Actually this is CORRECT for overnight schedule  
+**Status**: Actually this is CORRECT for overnight schedule
 **Recommendation**: Rename to `_should_sleep_overnight` for clarity
 
 ---
@@ -130,7 +130,7 @@ elif (
 ):
 ```
 
-**Problem**: Magic number, not configurable  
+**Problem**: Magic number, not configurable
 **Recommendation**: Add `battery_hysteresis` config option (default: 10)
 
 ---
@@ -157,7 +157,7 @@ def get_battery_optimization_status(self) -> Dict[str, Any]:
 
 ### 8. ⚠️ Method Visibility Issues
 
-**Problem**: Private methods (`_enter_sleep_mode`) called from other classes  
+**Problem**: Private methods (`_enter_sleep_mode`) called from other classes
 **Files**: Coordinator has `_is_sleep_mode_active` called from binary_sensor
 
 **Recommendation**: Make public methods that are part of the coordinator's API:
@@ -181,8 +181,8 @@ if hasattr(self.coordinator, "get_battery_optimization_status"):
     status = self.coordinator.get_battery_optimization_status()
 ```
 
-**Problem**: Coordinator should have a defined interface  
-**Recommendation**: 
+**Problem**: Coordinator should have a defined interface
+**Recommendation**:
 - Define a `BatteryOptimizationCoordinator` protocol/ABC
 - Remove hasattr checks
 - Let it fail fast if coordinator doesn't support battery features
@@ -197,19 +197,19 @@ if hasattr(self.coordinator, "get_battery_optimization_status"):
 ```python
 class ImouBatteryEntity(ImouEntity):
     """Base class for battery optimization entities."""
-    
-    def __init__(self, coordinator, config_entry, entity_type: str, 
+
+    def __init__(self, coordinator, config_entry, entity_type: str,
                  description: str, icon: str, attribute_name: str):
         # Create proper entity without mocks
         super().__init__(coordinator, config_entry, platform=entity_type)
         self._description = description
         self._icon = icon
         self._attribute_name = attribute_name
-        
+
     @property
     def name(self) -> str:
         return f"{self.coordinator.device.get_name()} {self._description}"
-    
+
     @property
     def icon(self) -> str:
         return self._icon
@@ -271,7 +271,7 @@ async def _should_sleep_battery_based(self) -> bool:
     return battery_level <= self._battery_threshold
 ```
 
-**Problem**: Called during every update cycle, makes redundant API call  
+**Problem**: Called during every update cycle, makes redundant API call
 **Recommendation**: Use cached data from last update
 ```python
 async def _should_sleep_battery_based(self) -> bool:

@@ -39,9 +39,11 @@ class ImouBatteryEntity(CoordinatorEntity):
             identifiers={(DOMAIN, self.config_entry.entry_id)},
             name=self.coordinator.device.get_name(),
             manufacturer="Imou",
-            model=self.coordinator.device.get_model()
-            if hasattr(self.coordinator.device, "get_model")
-            else "Unknown",
+            model=(
+                self.coordinator.device.get_model()
+                if hasattr(self.coordinator.device, "get_model")
+                else "Unknown"
+            ),
         )
 
         # Add software version if available
@@ -73,7 +75,10 @@ class ImouBatteryEntity(CoordinatorEntity):
     @property
     def available(self) -> bool:
         """Return True if entity is available."""
-        return self.coordinator.last_update_success and self.coordinator.device.get_status()
+        return (
+            self.coordinator.last_update_success
+            and self.coordinator.device.get_status()
+        )
 
     @property
     def sensor_type(self) -> str:

@@ -1,6 +1,6 @@
 # Critical Fixes Applied
 
-**Date**: 2026-04-29  
+**Date**: 2026-04-29
 **Test Results**: ✅ All 206 tests passing, 1 skipped
 
 ---
@@ -19,7 +19,7 @@ Fixed **5 critical issues** identified in the codebase review:
 
 ### 1. ✅ FIXED: Removed Hardcoded Credentials (CRITICAL)
 
-**File**: `custom_components/imou_life/camera.py`  
+**File**: `custom_components/imou_life/camera.py`
 **Lines**: 167-172
 
 **Before**:
@@ -57,7 +57,7 @@ async def stream_source(self) -> str:
 
 ### 2. ✅ FIXED: Preserved Exception Context
 
-**File**: `custom_components/imou_life/__init__.py`  
+**File**: `custom_components/imou_life/__init__.py`
 **Line**: 164
 
 **Before**:
@@ -84,7 +84,7 @@ except ImouException as exception:
 
 ### 3. ✅ FIXED: Added Error Message to UpdateFailed
 
-**File**: `custom_components/imou_life/coordinator.py`  
+**File**: `custom_components/imou_life/coordinator.py`
 **Line**: 46
 
 **Before**:
@@ -119,7 +119,7 @@ async def _async_update_data(self):
 
 ### 4. ✅ FIXED: Added Input Validation for Timeout
 
-**File**: `custom_components/imou_life/__init__.py`  
+**File**: `custom_components/imou_life/__init__.py`
 **Line**: 117
 
 **Before**:
@@ -155,7 +155,7 @@ def _parse_timeout_option(timeout_value):
 
 ### 5. ✅ FIXED: Used Specific Exception Type
 
-**File**: `custom_components/imou_life/switch.py`  
+**File**: `custom_components/imou_life/switch.py`
 **Line**: 89
 
 **Before**:
@@ -252,7 +252,7 @@ if callback_url is None:
 - More reliable error handling
 - No functional changes to features
 
-**Upgrade Path**: 
+**Upgrade Path**:
 - Users can upgrade without any configuration changes
 - Invalid timeout configurations will now be handled gracefully
 - Better diagnostic information available for troubleshooting

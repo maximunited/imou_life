@@ -14,8 +14,8 @@ from .const import (
     DEFAULT_BATTERY_THRESHOLD,
     DEFAULT_LED_INDICATORS,
     DEFAULT_MOTION_SENSITIVITY,
-    DEFAULT_RECORDING_QUALITY,
     DEFAULT_POWER_SAVING_MODE,
+    DEFAULT_RECORDING_QUALITY,
     MOTION_SENSITIVITY_LEVELS,
     POWER_MODES,
     RECORDING_QUALITY_OPTIONS,
@@ -165,7 +165,12 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
         except Exception as exception:
             _LOGGER.error("Error getting battery data: %s", str(exception))
             # Return safe defaults
-            return {"level": 100, "voltage": None, "consumption": None, "charging": False}
+            return {
+                "level": 100,
+                "voltage": None,
+                "consumption": None,
+                "charging": False,
+            }
 
     async def _check_battery_optimization(self, battery_data):
         """Check if battery optimization should be activated."""
@@ -275,7 +280,9 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
                 _LOGGER.info("Battery optimization activated")
 
             except Exception as exception:
-                _LOGGER.error("Error activating battery optimization: %s", str(exception))
+                _LOGGER.error(
+                    "Error activating battery optimization: %s", str(exception)
+                )
 
     async def _deactivate_battery_optimization(self):
         """Deactivate battery optimization features."""
@@ -300,7 +307,9 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
                 _LOGGER.info("Battery optimization deactivated")
 
             except Exception as exception:
-                _LOGGER.error("Error deactivating battery optimization: %s", str(exception))
+                _LOGGER.error(
+                    "Error deactivating battery optimization: %s", str(exception)
+                )
 
     async def enter_sleep_mode(self):
         """Enter sleep mode - public API method."""

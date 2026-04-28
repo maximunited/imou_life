@@ -116,7 +116,11 @@ class ImouBatteryBinarySensor(ImouBatteryEntity, BinarySensorEntity):
             battery_threshold = status.get("battery_threshold", 20)
 
             # Get current battery level from coordinator data
-            battery_level = self.coordinator.data.get("battery_level", 100) if self.coordinator.data else 100
+            battery_level = (
+                self.coordinator.data.get("battery_level", 100)
+                if self.coordinator.data
+                else 100
+            )
 
             return battery_level <= battery_threshold
         except (AttributeError, KeyError, TypeError) as exception:
