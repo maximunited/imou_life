@@ -176,15 +176,13 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
             error_msg = str(exception)
             # Check if this is a rate limit error
             if "OP1013" in error_msg or "exceed limit" in error_msg.lower():
-                self._errors["base"] = "rate_limit_exceeded"
+                self._errors["base"] = "rate_limit_discovery"
                 _LOGGER.warning(
                     "API rate limit exceeded during device discovery. "
-                    "Please wait a few minutes or use manual device entry. "
+                    "Disable discovery and enter device ID manually to continue. "
                     "Error: %s",
                     error_msg,
                 )
-                # Redirect to manual entry when rate limited
-                return await self.async_step_manual()
             else:
                 self._errors["base"] = exception.get_title()
                 _LOGGER.error("Imou exception: %s", str(exception))
@@ -216,15 +214,28 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
             # create an imou device instance
             device = ImouDevice(self._api_client, user_input[CONF_DEVICE_ID])
             valid = False
+            rate_limited = False
             # check if the provided credentials are working
             try:
                 await device.async_initialize()
                 valid = True
             except ImouException as exception:
-                self._errors["base"] = exception.get_title()
-                _LOGGER.error("Imou exception: %s", str(exception))
-            # valid credentials provided, create the entry
-            if valid:
+                error_msg = str(exception)
+                # Check if this is a rate limit error
+                if "OP1013" in error_msg or "exceed limit" in error_msg.lower():
+                    rate_limited = True
+                    _LOGGER.warning(
+                        "API rate limit exceeded during device validation. "
+                        "Creating entry anyway - device will initialize when rate limit clears. "
+                        "Error: %s",
+                        error_msg,
+                    )
+                else:
+                    self._errors["base"] = exception.get_title()
+                    _LOGGER.error("Imou exception: %s", str(exception))
+
+            # valid credentials provided OR rate limited, create the entry
+            if valid or rate_limited:
                 # create the entry using common method
                 return await self._create_entry_from_device(device, user_input)
 
