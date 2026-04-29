@@ -107,6 +107,8 @@ class ImouAPIStatusSensor(CoordinatorEntity, SensorEntity):
         attrs = {
             "rate_limited": self.coordinator.is_rate_limited,
             "rate_limit_count": self.coordinator.rate_limit_count,
+            "scan_interval": int(self.coordinator.update_interval.total_seconds()),
+            "scan_interval_adjusted": self.coordinator._is_interval_adjusted,
         }
 
         if self.coordinator.last_error_type:
@@ -118,6 +120,22 @@ class ImouAPIStatusSensor(CoordinatorEntity, SensorEntity):
         if self.coordinator.last_successful_update:
             attrs["last_successful_update"] = (
                 self.coordinator.last_successful_update.isoformat()
+            )
+
+        if self.coordinator.rate_limit_start_time:
+            attrs["rate_limit_started_at"] = (
+                self.coordinator.rate_limit_start_time.isoformat()
+            )
+
+        if self.coordinator.rate_limit_estimated_reset:
+            attrs["rate_limit_estimated_reset"] = (
+                self.coordinator.rate_limit_estimated_reset.isoformat()
+            )
+            # Calculate time remaining
+            now = self.coordinator.hass.data["core"].now()
+            remaining = self.coordinator.rate_limit_estimated_reset - now
+            attrs["rate_limit_reset_in_seconds"] = max(
+                0, int(remaining.total_seconds())
             )
 
         return attrs

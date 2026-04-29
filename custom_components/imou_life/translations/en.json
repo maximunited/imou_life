@@ -78,6 +78,21 @@
           "rate_limit_count": {
             "name": "Rate Limit Count"
           },
+          "scan_interval": {
+            "name": "Scan Interval (seconds)"
+          },
+          "scan_interval_adjusted": {
+            "name": "Scan Interval Adjusted"
+          },
+          "rate_limit_started_at": {
+            "name": "Rate Limit Started At"
+          },
+          "rate_limit_estimated_reset": {
+            "name": "Estimated Reset Time"
+          },
+          "rate_limit_reset_in_seconds": {
+            "name": "Reset In (seconds)"
+          },
           "last_error_type": {
             "name": "Last Error Type"
           },
