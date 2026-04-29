@@ -5,14 +5,15 @@
         "title": "Accés",
         "data": {
           "api_server": "Servidor API",
-          "api_url": "URL Base de l'API",
+          "api_url": "URL de l'API personalitzada",
           "app_id": "Imou App ID",
           "app_secret": "Imou App Secret",
-          "enable_discover": "Descobrir els dispositius registrats"
+          "enable_discover": "Activar descoberta de dispositius"
         },
         "data_description": {
           "api_server": "Seleccioneu la vostra regió geogràfica per a un rendiment òptim de l'API. El punt final d'API corresponent s'utilitzarà automàticament.",
-          "api_url": "Només necessari quan se selecciona 'Personalitzat' a dalt. Deixeu buit per als servidors predefinits."
+          "api_url": "Introduïu l'URL complet del punt final d'API per al vostre servidor API Imou personalitzat.",
+          "enable_discover": "Descobrir automàticament tots els dispositius registrats al vostre compte Imou. Desactiveu per introduir manualment un ID de dispositiu específic."
         }
       },
       "discover": {

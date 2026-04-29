@@ -5,14 +5,15 @@
         "title": "Masuk",
         "data": {
           "api_server": "Server API",
-          "api_url": "URL Dasar API",
+          "api_url": "URL API kustom",
           "app_id": "App ID Imou",
           "app_secret": "App Secret Imou",
-          "enable_discover": "Cari perangkat terdaftar"
+          "enable_discover": "Aktifkan penemuan perangkat"
         },
         "data_description": {
           "api_server": "Pilih wilayah geografis Anda untuk kinerja API yang optimal. Endpoint API yang sesuai akan digunakan secara otomatis.",
-          "api_url": "Hanya diperlukan saat 'Kustom' dipilih di atas. Biarkan kosong untuk server yang telah ditentukan."
+          "api_url": "Masukkan URL lengkap endpoint API untuk server API Imou kustom Anda.",
+          "enable_discover": "Secara otomatis menemukan semua perangkat yang terdaftar di akun Imou Anda. Nonaktifkan untuk memasukkan ID perangkat tertentu secara manual."
         }
       },
       "discover": {
