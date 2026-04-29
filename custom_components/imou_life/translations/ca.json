@@ -54,7 +54,12 @@
           "camera_wait_before_download": "Espereu abans de baixar la instantània de la càmera (segons)",
           "wait_after_wakeup": "Espereu després d'activar el dispositiu inactiu (segons)",
           "battery_optimization": "Optimització de bateria",
-          "power_saving_mode": "Mode d'estalvi d'energia"
+          "power_saving_mode": "Mode d'estalvi d'energia",
+          "motion_sensitivity": "Sensibilitat de Moviment",
+          "recording_quality": "Qualitat d'Enregistrament",
+          "led_indicators": "Indicadors LED",
+          "auto_sleep": "Repòs Automàtic",
+          "battery_threshold": "Llindar de Bateria"
         },
         "description": {
           "api_timeout": "Deixeu buit per utilitzar el temps d'espera per defecte. Per defecte: no definit",
@@ -62,7 +67,30 @@
           "camera_wait_before_download": "Deixeu buit per utilitzar el retard per defecte. Per defecte: no definit",
           "wait_after_wakeup": "Deixeu buit per utilitzar el retard per defecte. Per defecte: no definit",
           "battery_optimization": "Optimitza automàticament la configuració de la bateria per maximitzar l'autonomia. Quan està habilitat, la integració ajustarà el mode d'alimentació, la qualitat d'enregistrament i la sensibilitat de moviment segons el nivell de bateria.",
-          "power_saving_mode": "Habilita el mode d'estalvi d'energia del dispositiu. Redueix el consum d'energia limitant certes funcions i funcionalitats."
+          "power_saving_mode": "Habilita el mode d'estalvi d'energia del dispositiu. Redueix el consum d'energia limitant certes funcions i funcionalitats.",
+          "motion_sensitivity": "Ajusta la sensibilitat de detecció de moviment. Una sensibilitat més alta detecta moviments més petits però pot augmentar les falses alarmes.",
+          "recording_quality": "Qualitat d'enregistrament de vídeo. Una qualitat més alta utilitza més emmagatzematge i bateria.",
+          "led_indicators": "Activa els indicadors LED d'estat al dispositiu. Desactiva per estalviar bateria.",
+          "auto_sleep": "Posa el dispositiu en repòs automàticament quan està inactiu per conservar bateria.",
+          "battery_threshold": "Nivell de bateria (%) per sota del qual s'activen automàticament les funcions d'optimització."
+        },
+        "selector": {
+          "motion_sensitivity": {
+            "options": {
+              "low": "Baixa",
+              "medium": "Mitjana",
+              "high": "Alta",
+              "ultra_high": "Ultra Alta"
+            }
+          },
+          "recording_quality": {
+            "options": {
+              "low": "Baixa (SD - 480p)",
+              "standard": "Estàndard (HD - 720p)",
+              "high": "Alta (Full HD - 1080p)",
+              "ultra_high": "Ultra Alta (2K/4K)"
+            }
+          }
         }
       }
     }

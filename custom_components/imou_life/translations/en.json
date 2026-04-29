@@ -55,11 +55,39 @@
           "camera_wait_before_download": "Wait before downloading camera snapshot (seconds)",
           "wait_after_wakeup": "Wait after waking up dormant device (seconds)",
           "battery_optimization": "Battery optimization",
-          "power_saving_mode": "Power saving mode"
+          "power_saving_mode": "Power saving mode",
+          "motion_sensitivity": "Motion Sensitivity",
+          "recording_quality": "Recording Quality",
+          "led_indicators": "LED Indicators",
+          "auto_sleep": "Auto Sleep",
+          "battery_threshold": "Battery Threshold"
         },
         "data_description": {
           "battery_optimization": "🔋 Automatically optimize battery settings for maximum battery life. When enabled, the integration will adjust power mode, recording quality, and motion sensitivity based on battery level.",
-          "power_saving_mode": "⚡ Enable device power saving mode. Reduces power consumption by limiting certain features and functionality."
+          "power_saving_mode": "⚡ Enable device power saving mode. Reduces power consumption by limiting certain features and functionality.",
+          "motion_sensitivity": "Adjust motion detection sensitivity. Higher sensitivity detects smaller movements but may increase false alarms.",
+          "recording_quality": "Video recording quality. Higher quality uses more storage and battery power.",
+          "led_indicators": "Enable LED status indicators on the device. Disable to save battery.",
+          "auto_sleep": "Automatically put device to sleep when inactive to conserve battery.",
+          "battery_threshold": "Battery level (%) below which optimization features automatically activate."
+        },
+        "selector": {
+          "motion_sensitivity": {
+            "options": {
+              "low": "Low",
+              "medium": "Medium",
+              "high": "High",
+              "ultra_high": "Ultra High"
+            }
+          },
+          "recording_quality": {
+            "options": {
+              "low": "Low (SD - 480p)",
+              "standard": "Standard (HD - 720p)",
+              "high": "High (Full HD - 1080p)",
+              "ultra_high": "Ultra High (2K/4K)"
+            }
+          }
         }
       }
     }

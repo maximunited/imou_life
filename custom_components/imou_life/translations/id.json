@@ -54,11 +54,39 @@
           "camera_wait_before_download": "Tunggu sebelum mengunduh snapshot kamera (detik)",
           "wait_after_wakeup": "Tunggu setelah membangunkan perangkat dorman (detik)",
           "battery_optimization": "Optimisasi baterai",
-          "power_saving_mode": "Mode hemat daya"
+          "power_saving_mode": "Mode hemat daya",
+          "motion_sensitivity": "Sensitivitas Gerakan",
+          "recording_quality": "Kualitas Rekaman",
+          "led_indicators": "Indikator LED",
+          "auto_sleep": "Tidur Otomatis",
+          "battery_threshold": "Ambang Baterai"
         },
         "data_description": {
           "battery_optimization": "🔋 Secara otomatis mengoptimalkan pengaturan baterai untuk masa pakai baterai maksimal. Saat diaktifkan, integrasi akan menyesuaikan mode daya, kualitas rekaman, dan sensitivitas gerakan berdasarkan level baterai.",
-          "power_saving_mode": "⚡ Mengaktifkan mode hemat daya perangkat. Mengurangi konsumsi daya dengan membatasi fitur dan fungsionalitas tertentu."
+          "power_saving_mode": "⚡ Mengaktifkan mode hemat daya perangkat. Mengurangi konsumsi daya dengan membatasi fitur dan fungsionalitas tertentu.",
+          "motion_sensitivity": "Sesuaikan sensitivitas deteksi gerakan. Sensitivitas lebih tinggi mendeteksi gerakan lebih kecil tetapi dapat meningkatkan alarm palsu.",
+          "recording_quality": "Kualitas rekaman video. Kualitas lebih tinggi menggunakan lebih banyak penyimpanan dan baterai.",
+          "led_indicators": "Mengaktifkan indikator status LED pada perangkat. Nonaktifkan untuk menghemat baterai.",
+          "auto_sleep": "Secara otomatis mengatur perangkat ke mode tidur saat tidak aktif untuk menghemat baterai.",
+          "battery_threshold": "Level baterai (%) di bawah ini fitur optimisasi otomatis diaktifkan."
+        },
+        "selector": {
+          "motion_sensitivity": {
+            "options": {
+              "low": "Rendah",
+              "medium": "Sedang",
+              "high": "Tinggi",
+              "ultra_high": "Ultra Tinggi"
+            }
+          },
+          "recording_quality": {
+            "options": {
+              "low": "Rendah (SD - 480p)",
+              "standard": "Standar (HD - 720p)",
+              "high": "Tinggi (Full HD - 1080p)",
+              "ultra_high": "Ultra Tinggi (2K/4K)"
+            }
+          }
         }
       }
     }

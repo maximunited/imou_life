@@ -54,11 +54,39 @@
           "camera_wait_before_download": "Espere antes de descargar la instantánea de la cámara (segundos)",
           "wait_after_wakeup": "Espere después de activar el dispositivo inactivo (segundos)",
           "battery_optimization": "Optimización de batería",
-          "power_saving_mode": "Modo de ahorro de energía"
+          "power_saving_mode": "Modo de ahorro de energía",
+          "motion_sensitivity": "Sensibilidad de Movimiento",
+          "recording_quality": "Calidad de Grabación",
+          "led_indicators": "Indicadores LED",
+          "auto_sleep": "Reposo Automático",
+          "battery_threshold": "Umbral de Batería"
         },
         "data_description": {
           "battery_optimization": "🔋 Optimiza automáticamente la configuración de la batería para maximizar la duración de la batería. Cuando está habilitado, la integración ajustará el modo de energía, la calidad de grabación y la sensibilidad de movimiento según el nivel de batería.",
-          "power_saving_mode": "⚡ Habilita el modo de ahorro de energía del dispositivo. Reduce el consumo de energía limitando ciertas funciones y funcionalidades."
+          "power_saving_mode": "⚡ Habilita el modo de ahorro de energía del dispositivo. Reduce el consumo de energía limitando ciertas funciones y funcionalidades.",
+          "motion_sensitivity": "Ajusta la sensibilidad de detección de movimiento. Una mayor sensibilidad detecta movimientos más pequeños pero puede aumentar las falsas alarmas.",
+          "recording_quality": "Calidad de grabación de video. Mayor calidad utiliza más almacenamiento y batería.",
+          "led_indicators": "Habilita los indicadores LED de estado en el dispositivo. Desactive para ahorrar batería.",
+          "auto_sleep": "Pone el dispositivo en reposo automáticamente cuando está inactivo para conservar batería.",
+          "battery_threshold": "Nivel de batería (%) por debajo del cual se activan automáticamente las funciones de optimización."
+        },
+        "selector": {
+          "motion_sensitivity": {
+            "options": {
+              "low": "Baja",
+              "medium": "Media",
+              "high": "Alta",
+              "ultra_high": "Ultra Alta"
+            }
+          },
+          "recording_quality": {
+            "options": {
+              "low": "Baja (SD - 480p)",
+              "standard": "Estándar (HD - 720p)",
+              "high": "Alta (Full HD - 1080p)",
+              "ultra_high": "Ultra Alta (2K/4K)"
+            }
+          }
         }
       }
     }
