@@ -66,6 +66,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     hass.data[DOMAIN][entry.entry_id] = coordinator
     await _setup_platforms(hass, entry, coordinator)
 
+    # Check for rate limiting and notify user if detected
+    _check_rate_limit_status(hass, entry, coordinator)
+
     _LOGGER.debug("Integration setup completed successfully")
     return True
 
@@ -220,6 +223,32 @@ async def _setup_platforms(hass: HomeAssistant, entry: ConfigEntry, coordinator)
     _LOGGER.debug("Setting up platforms: %s", PLATFORMS)
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     entry.add_update_listener(async_reload_entry)
+
+
+def _check_rate_limit_status(hass: HomeAssistant, entry: ConfigEntry, coordinator):
+    """Check for rate limiting and notify user if detected."""
+    if coordinator.is_rate_limited:
+        device_name = coordinator.device.get_name()
+        notification_id = f"{DOMAIN}_{entry.entry_id}_rate_limit"
+
+        message = (
+            f"The Imou API is currently rate limiting requests for {device_name}. "
+            f"The integration will continue to retry automatically. "
+            f"Check the 'API Status' diagnostic sensor for details.\n\n"
+            f"Rate limit count: {coordinator.rate_limit_count}\n"
+            f"Error: {coordinator.last_error_message}"
+        )
+
+        hass.components.persistent_notification.async_create(
+            message,
+            title="Imou API Rate Limit Detected",
+            notification_id=notification_id,
+        )
+
+        _LOGGER.warning(
+            "Rate limiting detected for %s during setup. Notification created.",
+            device_name,
+        )
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:

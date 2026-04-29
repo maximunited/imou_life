@@ -60,5 +60,35 @@
         }
       }
     }
+  },
+  "entity": {
+    "sensor": {
+      "api_status": {
+        "name": "API Status",
+        "state": {
+          "ok": "OK",
+          "rate_limited": "Rate Limited",
+          "error": "Error",
+          "unknown": "Unknown"
+        },
+        "state_attributes": {
+          "rate_limited": {
+            "name": "Rate Limited"
+          },
+          "rate_limit_count": {
+            "name": "Rate Limit Count"
+          },
+          "last_error_type": {
+            "name": "Last Error Type"
+          },
+          "last_error_message": {
+            "name": "Last Error Message"
+          },
+          "last_successful_update": {
+            "name": "Last Successful Update"
+          }
+        }
+      }
+    }
   }
 }
