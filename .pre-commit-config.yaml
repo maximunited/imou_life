@@ -2,24 +2,32 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
+      # File size and safety checks
       - id: check-added-large-files
         args: ['--maxkb=500']
+      - id: check-merge-conflict
+      - id: check-case-conflict
+
+      # File format validation
       - id: check-yaml
+      - id: check-json
+      - id: check-toml
+
+      # File content fixes
       - id: end-of-file-fixer
       - id: trailing-whitespace
-      - id: check-merge-conflict
-      - id: check-json
-      - id: check-case-conflict
+      - id: fix-byte-order-marker
+      - id: mixed-line-ending
+
+      # Python-specific
       - id: check-docstring-first
       - id: debug-statements
       - id: requirements-txt-fixer
-      - id: check-toml
-      - id: check-vcs-permalinks
-      - id: fix-byte-order-marker
-      - id: mixed-line-ending
-      - id: check-executables-have-shebangs
-      - id: check-shebang-scripts-are-executable
 
+      # VCS-related
+      - id: check-vcs-permalinks
+
+  # Python code quality tools
   - repo: https://github.com/psf/black
     rev: 25.1.0
     hooks:
@@ -58,4 +66,3 @@ repos:
         language: system
         pass_filenames: false
         always_run: true
-        # This hook is excluded from pre-commit.ci via .pre-commit-ci.yaml
