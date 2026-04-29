@@ -1,5 +1,47 @@
 # Changelog
 
+## [1.3.0] (2026-04-30)
+### Added
+- **API Rate Limit Visibility**: New diagnostic sensor showing real-time API health status
+  - States: `ok`, `rate_limited`, `error`, `unknown`
+  - Tracks rate limit occurrences, duration, and estimated reset time
+  - Persistent notification when rate limiting detected during setup
+  - Sensor attributes: rate_limit_count, scan_interval, last_error_message, and more
+- **Automatic Scan Interval Adjustment**: Intelligently handles rate limiting
+  - Automatically doubles scan interval when rate limited (e.g., 15min → 30min)
+  - Automatically restores original interval when limit clears
+  - Reduces unnecessary API calls during rate limit periods
+  - Logs all interval changes for transparency
+- **Rate Limit Duration Tracking**: Know exactly when rate limiting will end
+  - Tracks when rate limiting started
+  - Estimates reset time (Imou API resets hourly)
+  - Shows countdown in seconds via `rate_limit_reset_in_seconds` attribute
+  - All timestamps in ISO format
+- **API Server Region Selector**: User-friendly dropdown to select optimal API server
+  - Predefined options: Global, Europe (Frankfurt), Asia Pacific (Singapore), North America (Oregon), China
+  - Custom URL option for advanced users
+  - Based on ping tests showing Frankfurt server is 3x faster for EU users
+  - Validation for custom URLs (shows error if empty when "Custom" selected)
+
+### Changed
+- Enhanced coordinator to track rate limit state and adjust behavior automatically
+- API Status sensor appears automatically in device panel (diagnostic category)
+- Config flow login step now uses dropdown selector instead of text input for API URL
+- Improved user experience during rate limiting with automatic recovery
+
+### Fixed
+- Rate limit errors no longer crash the integration - handled gracefully with automatic retry
+- Empty custom URL validation prevents invalid configurations
+
+### Tests
+- Added 18 comprehensive tests for rate limit handling and API status sensor
+- Added 4 tests for API server selection in config flow
+- Total: 229 tests passing (211 existing + 18 new)
+
+### Documentation
+- Added `HOOK_ANALYSIS.md` documenting pre-commit hook decisions
+- Updated all 8 translation files with new config flow labels and sensor attributes
+
 ## [1.2.2] (2026-04-29)
 ### Added
 - Handle API rate limit errors gracefully
