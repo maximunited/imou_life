@@ -69,24 +69,6 @@
           "led_indicators": "Habilita indicadores LED de status no dispositivo. Desative para economizar bateria.",
           "auto_sleep": "Coloca automaticamente o dispositivo em suspensão quando inativo para economizar bateria.",
           "battery_threshold": "Nível de bateria (%) abaixo do qual os recursos de otimização são ativados automaticamente."
-        },
-        "selector": {
-          "motion_sensitivity": {
-            "options": {
-              "low": "Baixa",
-              "medium": "Média",
-              "high": "Alta",
-              "ultra_high": "Ultra Alta"
-            }
-          },
-          "recording_quality": {
-            "options": {
-              "low": "Baixa (SD - 480p)",
-              "standard": "Padrão (HD - 720p)",
-              "high": "Alta (Full HD - 1080p)",
-              "ultra_high": "Ultra Alta (2K/4K)"
-            }
-          }
         }
       }
     }

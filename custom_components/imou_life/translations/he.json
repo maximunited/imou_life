@@ -69,24 +69,6 @@
           "led_indicators": "מפעיל מחווני סטטוס LED במכשיר. כבה כדי לחסוך בסוללה.",
           "auto_sleep": "מעביר אוטומטית את המכשיר למצב שינה כאשר הוא לא פעיל כדי לשמר סוללה.",
           "battery_threshold": "רמת סוללה (%) מתחת לה תכונות אופטימיזציה מופעלות אוטומטית."
-        },
-        "selector": {
-          "motion_sensitivity": {
-            "options": {
-              "low": "נמוכה",
-              "medium": "בינונית",
-              "high": "גבוהה",
-              "ultra_high": "גבוהה מאוד"
-            }
-          },
-          "recording_quality": {
-            "options": {
-              "low": "נמוכה (SD - 480p)",
-              "standard": "סטנדרטית (HD - 720p)",
-              "high": "גבוהה (Full HD - 1080p)",
-              "ultra_high": "גבוהה מאוד (2K/4K)"
-            }
-          }
         }
       }
     }

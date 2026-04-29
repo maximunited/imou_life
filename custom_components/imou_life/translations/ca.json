@@ -73,24 +73,6 @@
           "led_indicators": "Activa els indicadors LED d'estat al dispositiu. Desactiva per estalviar bateria.",
           "auto_sleep": "Posa el dispositiu en repòs automàticament quan està inactiu per conservar bateria.",
           "battery_threshold": "Nivell de bateria (%) per sota del qual s'activen automàticament les funcions d'optimització."
-        },
-        "selector": {
-          "motion_sensitivity": {
-            "options": {
-              "low": "Baixa",
-              "medium": "Mitjana",
-              "high": "Alta",
-              "ultra_high": "Ultra Alta"
-            }
-          },
-          "recording_quality": {
-            "options": {
-              "low": "Baixa (SD - 480p)",
-              "standard": "Estàndard (HD - 720p)",
-              "high": "Alta (Full HD - 1080p)",
-              "ultra_high": "Ultra Alta (2K/4K)"
-            }
-          }
         }
       }
     }

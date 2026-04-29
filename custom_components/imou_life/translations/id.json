@@ -69,24 +69,6 @@
           "led_indicators": "Mengaktifkan indikator status LED pada perangkat. Nonaktifkan untuk menghemat baterai.",
           "auto_sleep": "Secara otomatis mengatur perangkat ke mode tidur saat tidak aktif untuk menghemat baterai.",
           "battery_threshold": "Level baterai (%) di bawah ini fitur optimisasi otomatis diaktifkan."
-        },
-        "selector": {
-          "motion_sensitivity": {
-            "options": {
-              "low": "Rendah",
-              "medium": "Sedang",
-              "high": "Tinggi",
-              "ultra_high": "Ultra Tinggi"
-            }
-          },
-          "recording_quality": {
-            "options": {
-              "low": "Rendah (SD - 480p)",
-              "standard": "Standar (HD - 720p)",
-              "high": "Tinggi (Full HD - 1080p)",
-              "ultra_high": "Ultra Tinggi (2K/4K)"
-            }
-          }
         }
       }
     }

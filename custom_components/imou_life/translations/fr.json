@@ -69,24 +69,6 @@
           "led_indicators": "Active les indicateurs LED d'état sur l'appareil. Désactivez pour économiser la batterie.",
           "auto_sleep": "Met automatiquement l'appareil en veille lorsqu'il est inactif pour économiser la batterie.",
           "battery_threshold": "Niveau de batterie (%) en dessous duquel les fonctions d'optimisation s'activent automatiquement."
-        },
-        "selector": {
-          "motion_sensitivity": {
-            "options": {
-              "low": "Faible",
-              "medium": "Moyen",
-              "high": "Élevé",
-              "ultra_high": "Ultra Élevé"
-            }
-          },
-          "recording_quality": {
-            "options": {
-              "low": "Faible (SD - 480p)",
-              "standard": "Standard (HD - 720p)",
-              "high": "Élevé (Full HD - 1080p)",
-              "ultra_high": "Ultra Élevé (2K/4K)"
-            }
-          }
         }
       }
     }

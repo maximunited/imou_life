@@ -70,24 +70,6 @@
           "led_indicators": "Enable LED status indicators on the device. Disable to save battery.",
           "auto_sleep": "Automatically put device to sleep when inactive to conserve battery.",
           "battery_threshold": "Battery level (%) below which optimization features automatically activate."
-        },
-        "selector": {
-          "motion_sensitivity": {
-            "options": {
-              "low": "Low",
-              "medium": "Medium",
-              "high": "High",
-              "ultra_high": "Ultra High"
-            }
-          },
-          "recording_quality": {
-            "options": {
-              "low": "Low (SD - 480p)",
-              "standard": "Standard (HD - 720p)",
-              "high": "High (Full HD - 1080p)",
-              "ultra_high": "Ultra High (2K/4K)"
-            }
-          }
         }
       }
     }

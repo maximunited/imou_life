@@ -69,24 +69,6 @@
           "led_indicators": "Abilita gli indicatori LED di stato sul dispositivo. Disabilita per risparmiare batteria.",
           "auto_sleep": "Mette automaticamente il dispositivo in modalità riposo quando inattivo per risparmiare batteria.",
           "battery_threshold": "Livello di batteria (%) al di sotto del quale si attivano automaticamente le funzioni di ottimizzazione."
-        },
-        "selector": {
-          "motion_sensitivity": {
-            "options": {
-              "low": "Bassa",
-              "medium": "Media",
-              "high": "Alta",
-              "ultra_high": "Ultra Alta"
-            }
-          },
-          "recording_quality": {
-            "options": {
-              "low": "Bassa (SD - 480p)",
-              "standard": "Standard (HD - 720p)",
-              "high": "Alta (Full HD - 1080p)",
-              "ultra_high": "Ultra Alta (2K/4K)"
-            }
-          }
         }
       }
     }
