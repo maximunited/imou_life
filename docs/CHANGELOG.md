@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.3.3] (2026-04-30)
+### Fixed
+- **Critical: Rate Limit Infinite Loop**: Users can now complete setup even when rate limited
+  - Discovery rate limit error now shows clear message instead of auto-redirecting
+  - Manual device entry skips validation when rate limited, creates entry anyway
+  - Device initializes automatically when rate limit clears
+  - Prevents infinite loop where users couldn't complete setup
+  - Error message: "Please uncheck 'Enable Device Discovery' and enter device ID manually"
+
+- **URL Field Auto-Population**: URL field now updates correctly based on server selection
+  - URL field always visible with auto-populated value for preset servers
+  - For custom server: Required field (shows asterisk) with empty default
+  - For preset servers: Optional field with auto-populated API endpoint URL
+  - Description updated: "Auto-populated based on server selection"
+
+### Changed
+- Manual device entry now allows completion even when API rate limited
+- Discovery error handling improved with clearer user guidance
+- URL field requirement level changes dynamically based on server type
+
+### Technical
+- Config flow schema conditionally sets URL field as Required vs Optional
+- Manual entry skips device validation when OP1013 error detected
+- Added "rate_limit_discovery" error message for discovery failures
+- Added 2 new tests for URL field behavior
+
 ## [1.3.2] (2026-04-30)
 ### Fixed
 - **Config Flow UI Bug**: URL field no longer shows for preset servers
