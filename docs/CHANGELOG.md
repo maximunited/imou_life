@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.3.1] (2026-04-30)
+### Changed
+- **Improved API Server Selector UI**: Enhanced config flow login step
+  - Renamed "Oregon" to "Virginia (USA)" after geo-location verification
+  - API Base URL field now auto-populates based on server selection
+  - Clearer field labels: "API Server" and "API Base URL"
+  - Dropdown shows proper capitalized names with countries/domains
+  - Better descriptions explaining when custom URL is needed
+  - Updated all 8 translation files
+
+### Fixed
+- **Rate Limit Handling During Discovery**: Config flow now handles rate limits gracefully
+  - Detects OP1013 rate limit errors during device discovery
+  - Shows helpful error message explaining the situation
+  - Automatically redirects to manual device entry instead of infinite loop
+  - Prevents repeated API calls when rate limited
+  - Users can now complete setup even when rate limited
+
+### Technical
+- Verified API server locations via IP geolocation:
+  - 8.219.71.80 → Singapore
+  - 47.245.141.21 → Frankfurt am Main, Germany
+  - 47.90.226.98 → Virginia Beach, Virginia, USA (not Oregon!)
+  - openapi-or.easy4ip.com resolves to us-east-1.alb.aliyuncsslbintl.com
+
 ## [1.3.0] (2026-04-30)
 ### Added
 - **API Rate Limit Visibility**: New diagnostic sensor showing real-time API health status
