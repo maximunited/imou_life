@@ -5,14 +5,15 @@
         "title": "Login",
         "data": {
           "api_server": "Servidor API",
-          "api_url": "URL Base da API",
+          "api_url": "URL da API personalizada",
           "app_id": "ID do app Imou",
           "app_secret": "Secret do app Imou",
-          "enable_discover": "Descubra dispositivos registrados"
+          "enable_discover": "Ativar descoberta de dispositivos"
         },
         "data_description": {
           "api_server": "Selecione sua região geográfica para desempenho ideal da API. O endpoint de API correspondente será usado automaticamente.",
-          "api_url": "Necessário apenas quando 'Personalizado' é selecionado acima. Deixe vazio para servidores predefinidos."
+          "api_url": "Digite a URL completa do endpoint de API para seu servidor API Imou personalizado.",
+          "enable_discover": "Descobrir automaticamente todos os dispositivos registrados em sua conta Imou. Desative para inserir manualmente um ID de dispositivo específico."
         }
       },
       "discover": {

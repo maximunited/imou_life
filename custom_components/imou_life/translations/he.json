@@ -5,14 +5,15 @@
         "title": "התחברות",
         "data": {
           "api_server": "API Server",
-          "api_url": "API Base URL",
+          "api_url": "Custom API URL",
           "app_id": "מזהה אפליקציית Imou",
           "app_secret": "סוד אפליקציית Imou",
-          "enable_discover": "גלה מכשירים רשומים"
+          "enable_discover": "Enable Device Discovery"
         },
         "data_description": {
           "api_server": "Select your geographic region for optimal API performance. The corresponding API endpoint will be used automatically.",
-          "api_url": "Only required when 'Custom' is selected above. Leave empty for predefined servers."
+          "api_url": "Enter the full API endpoint URL for your custom Imou API server.",
+          "enable_discover": "Automatically discover all devices registered to your Imou account. Disable to manually enter a specific device ID instead."
         }
       },
       "discover": {

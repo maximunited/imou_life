@@ -5,14 +5,15 @@
         "title": "Connexion",
         "data": {
           "api_server": "Serveur API",
-          "api_url": "URL de Base API",
+          "api_url": "URL API personnalisée",
           "app_id": "ID de l'application Imou",
           "app_secret": "Secret de l'application Imou",
-          "enable_discover": "Découvrir les appareils enregistrés"
+          "enable_discover": "Activer la découverte des appareils"
         },
         "data_description": {
           "api_server": "Sélectionnez votre région géographique pour des performances API optimales. Le point de terminaison API correspondant sera utilisé automatiquement.",
-          "api_url": "Requis uniquement lorsque 'Personnalisé' est sélectionné ci-dessus. Laissez vide pour les serveurs prédéfinis."
+          "api_url": "Entrez l'URL complète du point de terminaison API pour votre serveur API Imou personnalisé.",
+          "enable_discover": "Découvrir automatiquement tous les appareils enregistrés sur votre compte Imou. Désactiver pour saisir manuellement un ID d'appareil spécifique à la place."
         }
       },
       "discover": {

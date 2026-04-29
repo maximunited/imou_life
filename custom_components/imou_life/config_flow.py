@@ -21,7 +21,6 @@ from .const import (
     CONF_DISCOVERED_DEVICE,
     CONF_ENABLE_DISCOVER,
     DEFAULT_API_SERVER,
-    DEFAULT_API_URL,
     DEFAULT_AUTO_SLEEP,
     DEFAULT_BATTERY_OPTIMIZATION,
     DEFAULT_BATTERY_THRESHOLD,
@@ -119,32 +118,33 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
             if user_input and not self._errors
             else DEFAULT_API_SERVER
         )
-        if selected_server != "custom":
-            display_url = API_SERVER_OPTIONS.get(selected_server, DEFAULT_API_URL)
-        else:
-            display_url = ""
+
+        # Build schema conditionally - only show URL field for custom server
+        schema_fields = {
+            vol.Required(CONF_API_SERVER, default=selected_server): vol.In(
+                {
+                    "global": "Global (openapi.easy4ip.com)",
+                    "frankfurt": "Frankfurt (Germany)",
+                    "singapore": "Singapore",
+                    "virginia": "Virginia (USA)",
+                    "china": "China",
+                    "custom": "Custom",
+                }
+            ),
+        }
+
+        # Only show URL field when custom is selected
+        if selected_server == "custom":
+            schema_fields[vol.Required(CONF_API_URL, default="")] = str
+
+        schema_fields[vol.Required(CONF_APP_ID)] = str
+        schema_fields[vol.Required(CONF_APP_SECRET)] = str
+        schema_fields[vol.Required(CONF_ENABLE_DISCOVER, default=True)] = bool
 
         # by default show up the form
         return self.async_show_form(
             step_id="login",
-            data_schema=vol.Schema(
-                {
-                    vol.Required(CONF_API_SERVER, default=selected_server): vol.In(
-                        {
-                            "global": "Global (openapi.easy4ip.com)",
-                            "frankfurt": "Frankfurt (Germany)",
-                            "singapore": "Singapore",
-                            "virginia": "Virginia (USA)",
-                            "china": "China",
-                            "custom": "Custom",
-                        }
-                    ),
-                    vol.Optional(CONF_API_URL, default=display_url): str,
-                    vol.Required(CONF_APP_ID): str,
-                    vol.Required(CONF_APP_SECRET): str,
-                    vol.Required(CONF_ENABLE_DISCOVER, default=True): bool,
-                }
-            ),
+            data_schema=vol.Schema(schema_fields),
             errors=self._errors,
         )
 
