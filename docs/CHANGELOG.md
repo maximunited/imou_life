@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.3.2] (2026-04-30)
+### Fixed
+- **Config Flow UI Bug**: URL field no longer shows for preset servers
+  - URL field now only appears when "Custom" server is selected
+  - Eliminates confusing behavior where URL didn't update when switching servers
+  - Cleaner, more intuitive user interface
+
+### Changed
+- **Improved Field Labels and Descriptions**:
+  - "enable_discover" renamed to "Enable Device Discovery" with helpful description
+  - "API Base URL" renamed to "Custom API URL" (only shown for custom servers)
+  - Added description: "Automatically discover all devices registered to your Imou account. Disable to manually enter a specific device ID instead."
+  - Updated all 8 translation files
+
+### Technical
+- Config flow schema now built conditionally based on selected server
+- URL field only added to schema when custom server is selected
+- Removed unused DEFAULT_API_URL import
+
 ## [1.3.1] (2026-04-30)
 ### Changed
 - **Improved API Server Selector UI**: Enhanced config flow login step
