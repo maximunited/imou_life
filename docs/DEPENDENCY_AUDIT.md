@@ -1,13 +1,13 @@
 # Dependency Audit Report
 
-**Date**: 2026-04-29  
-**Integration Version**: 1.2.0  
+**Date**: 2026-04-29
+**Integration Version**: 1.2.0
 **Auditor**: Claude Sonnet 4.5
 
 ## Summary
 
-✅ All dependencies are up-to-date  
-✅ No security vulnerabilities detected  
+✅ All dependencies are up-to-date
+✅ No security vulnerabilities detected
 ✅ No breaking changes in dependency updates
 
 ## Current Dependencies
@@ -77,11 +77,11 @@ When updating imouapi in the future:
    ```bash
    # Update manifest.json
    "requirements": ["imouapi==X.Y.Z"]
-   
+
    # Test locally
    pip install imouapi==X.Y.Z
    python -m pytest tests/
-   
+
    # Update changelog
    # Create PR with dependency update
    ```
@@ -129,10 +129,10 @@ Managed separately in test requirements:
 
 ```
 imouapi (1.0.15)
-Available versions: 1.0.15, 1.0.14, 1.0.13, 1.0.12, 1.0.11, 
-                    1.0.10, 1.0.9, 1.0.8, 1.0.7, 1.0.6, 
-                    1.0.5, 1.0.4, 1.0.3, 1.0.2, 1.0.1, 1.0.0, 
-                    0.2.2, 0.2.1, 0.2.0, 
+Available versions: 1.0.15, 1.0.14, 1.0.13, 1.0.12, 1.0.11,
+                    1.0.10, 1.0.9, 1.0.8, 1.0.7, 1.0.6,
+                    1.0.5, 1.0.4, 1.0.3, 1.0.2, 1.0.1, 1.0.0,
+                    0.2.2, 0.2.1, 0.2.0,
                     0.1.5, 0.1.4
 ```
 
@@ -143,6 +143,6 @@ Available versions: 1.0.15, 1.0.14, 1.0.13, 1.0.12, 1.0.11,
 
 ---
 
-**Audit Status**: ✅ PASSED  
-**Action Required**: None  
+**Audit Status**: ✅ PASSED
+**Action Required**: None
 **Next Review**: 2026-07-29

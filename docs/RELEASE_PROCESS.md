@@ -126,7 +126,7 @@ The release should include:
    ## [1.2.0] (2026-04-29)
    ### Added
    - Comprehensive CLAUDE.md with project architecture
-   
+
    ### Fixed
    - **SECURITY**: Removed hardcoded credentials from camera.py
    ```
@@ -135,12 +135,12 @@ The release should include:
    ```bash
    # Delete failed draft release if exists
    gh release delete ci-v1.2.0 -y
-   
+
    # Create zip file
    cd custom_components
    zip -r ../imou_life.zip imou_life/ -x "*.pyc" -x "*__pycache__*" -x "*.git*"
    cd ..
-   
+
    # Extract changelog for this version
    python -c "
    import re
@@ -151,14 +151,14 @@ The release should include:
        with open('release_notes.txt', 'w', encoding='utf-8') as f:
            f.write(match.group(0).strip())
    "
-   
+
    # Create pre-release
    gh release create v1.2.0 \
      --title "v1.2.0 - Brief Description" \
      --notes-file release_notes.txt \
      --prerelease \
      imou_life.zip
-   
+
    # Clean up
    rm release_notes.txt imou_life.zip
    ```
@@ -223,7 +223,7 @@ Automatically created on pushes to master/main:
    ```bash
    # Install the changelog reader locally if needed
    npm install -g changelog-reader
-   
+
    # Test parsing
    changelog-reader --version 1.2.0 ./docs/CHANGELOG.md
    ```
@@ -237,13 +237,13 @@ Automatically created on pushes to master/main:
    ```bash
    # List all tags
    git tag
-   
+
    # Delete local tag
    git tag -d v1.2.0
-   
+
    # Delete remote tag
    git push origin :refs/tags/v1.2.0
-   
+
    # Re-create tag at specific commit
    git tag v1.2.0 <commit-sha>
    git push origin v1.2.0

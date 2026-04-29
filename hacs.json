@@ -5,6 +5,5 @@
   "zip_release": true,
   "filename": "imou_life.zip",
   "hide_default_branch": true,
-  "content_in_root": true,
   "hacs": "1.6.0"
 }

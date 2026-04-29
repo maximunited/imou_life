@@ -31,8 +31,8 @@ async def test_switch_entity_interaction(hass, api_ok, mock_imou_device):
         assert await hass.config_entries.async_setup(config_entry.entry_id)
         await hass.async_block_till_done()
 
-    # Get coordinator
-    coordinator = hass.data[DOMAIN][config_entry.entry_id]
+    # Get coordinator (verify it exists in hass.data)
+    _coordinator = hass.data[DOMAIN][config_entry.entry_id]  # noqa: F841
 
     # Verify switch sensors were discovered
     switch_sensors = mock_imou_device.get_sensors_by_platform("switch")
@@ -262,7 +262,9 @@ async def test_config_entry_options_update(hass, api_ok, mock_imou_device):
 
 
 @pytest.mark.asyncio
-async def test_entity_availability_reflects_device_status(hass, api_ok, mock_imou_device):
+async def test_entity_availability_reflects_device_status(
+    hass, api_ok, mock_imou_device
+):
     """Test that entity availability reflects device online/offline status."""
     config_entry = MockConfigEntry(
         domain=DOMAIN,

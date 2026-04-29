@@ -4,10 +4,15 @@
       "login": {
         "title": "התחברות",
         "data": {
-          "api_url": "כתובת URL בסיסית של ה-API",
+          "api_server": "API Server Region",
+          "api_url": "Custom API URL",
           "app_id": "מזהה אפליקציית Imou",
           "app_secret": "סוד אפליקציית Imou",
           "enable_discover": "גלה מכשירים רשומים"
+        },
+        "data_description": {
+          "api_server": "Select your region for optimal performance. Choose 'Custom' to enter a different API endpoint.",
+          "api_url": "Enter custom API URL (only used when 'Custom' is selected)"
         }
       },
       "discover": {
@@ -33,7 +38,8 @@
       "api_error": "שגיאת API מרוחק",
       "invalid_reponse": "תגובת API מעוותת או לא צפויה",
       "device_offline": "המכשיר לא מקוון",
-      "generic_error": "אירעה שגיאה לא ידועה"
+      "generic_error": "אירעה שגיאה לא ידועה",
+      "custom_url_required": "Custom URL is required when 'Custom' server is selected"
     }
   },
   "options": {

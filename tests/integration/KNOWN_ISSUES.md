@@ -1,6 +1,6 @@
 # Known Issues - Integration Tests
 
-**Last Updated**: 2026-04-29  
+**Last Updated**: 2026-04-29
 **Status**: Documented for future resolution
 
 ## Overview
@@ -17,7 +17,7 @@ Out of 22 integration tests created, 19 are currently running (3 skipped in firs
 
 **Affected Tests**:
 1. `test_binary_sensor_state_changes`
-2. `test_coordinator_update_failure_recovery`  
+2. `test_coordinator_update_failure_recovery`
 3. `test_setup_and_entity_state_updates`
 4. `test_entity_availability_reflects_device_status` (actually passing, works around issue)
 
@@ -41,7 +41,7 @@ Remove `api_ok` parameter from integration tests and use direct patching:
 ```python
 # Instead of:
 async def test_example(hass, api_ok, mock_imou_device):
-    
+
 # Use:
 async def test_example(hass, mock_imou_device):
     with patch("imouapi.device.ImouDevice", return_value=mock_imou_device):
@@ -65,7 +65,7 @@ async def test_example(hass, mock_imou_device):
 # Test 1:
 AssertionError: assert None == 'Test Camera'  # result["title"] is None
 
-# Test 2:  
+# Test 2:
 AssertionError: assert 'discover' == 'manual'  # Wrong step reached
 ```
 
@@ -113,7 +113,7 @@ with patch("imouapi.api.ImouAPIClient") as mock_api:
         side_effect=ImouException("Connection failed")
     )
     mock_api.return_value = mock_api_instance
-    
+
     with pytest.raises(ConfigEntryNotReady):
         await async_setup_entry(hass, config_entry)
 ```

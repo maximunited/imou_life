@@ -10,6 +10,7 @@ from custom_components.imou_life.const import (
     CONF_APP_ID,
     CONF_APP_SECRET,
     CONF_DEVICE_ID,
+    CONF_ENABLE_DISCOVER,
     DOMAIN,
     OPTION_API_TIMEOUT,
     OPTION_CALLBACK_URL,
@@ -187,3 +188,66 @@ async def test_options_flow(hass):
     assert result["data"][OPTION_SCAN_INTERVAL] == 30
     assert result["data"][OPTION_API_TIMEOUT] == "20"
     assert result["data"][OPTION_CALLBACK_URL] == "url"
+
+
+@pytest.mark.asyncio
+async def test_login_with_predefined_server(hass, api_ok):
+    """Test login with Frankfurt server selection."""
+    from tests.fixtures.const import MOCK_LOGIN_WITH_FRANKFURT_SERVER
+
+    result = await _test_flow_init(hass, "discover")
+    result = await _test_flow_configure(
+        hass, result["flow_id"], MOCK_LOGIN_WITH_FRANKFURT_SERVER, "discover"
+    )
+    # Verify it proceeds to discover step
+    assert result["step_id"] == "discover"
+
+
+@pytest.mark.asyncio
+async def test_login_with_custom_server(hass, api_ok):
+    """Test login with custom URL."""
+    from tests.fixtures.const import MOCK_LOGIN_WITH_CUSTOM_SERVER
+
+    result = await _test_flow_init(hass, "manual")
+    result = await _test_flow_configure(
+        hass, result["flow_id"], MOCK_LOGIN_WITH_CUSTOM_SERVER, "manual"
+    )
+    # Verify it proceeds to manual step
+    assert result["step_id"] == "manual"
+
+
+@pytest.mark.asyncio
+async def test_custom_server_with_valid_url(hass, api_ok):
+    """Test that custom server with valid URL works."""
+    from tests.fixtures.const import MOCK_LOGIN_WITH_CUSTOM_SERVER
+
+    result = await _test_flow_init(hass, "discover")
+
+    # Submit with custom server and valid URL
+    result = await _test_flow_configure(
+        hass, result["flow_id"], MOCK_LOGIN_WITH_CUSTOM_SERVER, "discover"
+    )
+
+    # Verify it proceeds to discover step
+    assert result["step_id"] == "discover"
+
+
+@pytest.mark.asyncio
+async def test_all_server_options(hass, api_ok):
+    """Test that each server option works."""
+    servers = ["global", "frankfurt", "singapore", "oregon", "china"]
+
+    for server in servers:
+        result = await _test_flow_init(hass, "discover")
+        user_input = {
+            "api_server": server,
+            "api_url": "",
+            CONF_APP_ID: "app_id",
+            CONF_APP_SECRET: "app_secret",
+            CONF_ENABLE_DISCOVER: True,
+        }
+        result = await _test_flow_configure(
+            hass, result["flow_id"], user_input, "discover"
+        )
+        assert result["type"] == data_entry_flow.FlowResultType.FORM
+        assert result["step_id"] == "discover"

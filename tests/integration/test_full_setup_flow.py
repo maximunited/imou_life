@@ -4,7 +4,6 @@ from unittest.mock import patch
 
 import pytest
 from homeassistant import config_entries
-from homeassistant.const import CONF_NAME
 
 from custom_components.imou_life.const import (
     CONF_API_URL,

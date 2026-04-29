@@ -20,17 +20,21 @@ def mock_imou_device():
 
     # Mock async methods
     device.async_initialize = AsyncMock()
-    device.async_get_data = AsyncMock(return_value={
-        "battery_level": 85,
-        "online": True,
-        "motion_detected": False,
-    })
-    device.async_get_battery_status = AsyncMock(return_value={
-        "level": 85,
-        "voltage": 3.8,
-        "consumption": 0.5,
-        "charging": False,
-    })
+    device.async_get_data = AsyncMock(
+        return_value={
+            "battery_level": 85,
+            "online": True,
+            "motion_detected": False,
+        }
+    )
+    device.async_get_battery_status = AsyncMock(
+        return_value={
+            "level": 85,
+            "voltage": 3.8,
+            "consumption": 0.5,
+            "charging": False,
+        }
+    )
 
     # Mock battery optimization methods
     device.async_enter_sleep_mode = AsyncMock()

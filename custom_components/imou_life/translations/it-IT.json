@@ -4,10 +4,15 @@
       "login": {
         "title": "Login",
         "data": {
-          "api_url": "URL delle API",
+          "api_server": "Regione del Server API",
+          "api_url": "URL API personalizzato",
           "app_id": "Imou App ID",
           "app_secret": "Imou App Secret",
           "enable_discover": "Individua dispositivi registrati"
+        },
+        "data_description": {
+          "api_server": "Seleziona la tua regione per prestazioni ottimali. Scegli 'Personalizzato' per inserire un endpoint API diverso.",
+          "api_url": "Inserisci URL API personalizzato (usato solo quando è selezionato 'Personalizzato')"
         }
       },
       "discover": {
@@ -33,7 +38,8 @@
       "api_error": "Errore API remote",
       "invalid_reponse": "Risposta malformata o inaspettata dalle API",
       "device_offline": "Dispositivo non in linea",
-      "generic_error": "Errore sconosciuto"
+      "generic_error": "Errore sconosciuto",
+      "custom_url_required": "L'URL personalizzato è richiesto quando è selezionato il server 'Personalizzato'"
     }
   },
   "options": {

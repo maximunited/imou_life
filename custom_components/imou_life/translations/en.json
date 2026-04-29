@@ -4,10 +4,15 @@
       "login": {
         "title": "Login",
         "data": {
-          "api_url": "API Base URL",
+          "api_server": "API Server Region",
+          "api_url": "Custom API URL",
           "app_id": "Imou App ID",
           "app_secret": "Imou App Secret",
           "enable_discover": "Discover registered devices"
+        },
+        "data_description": {
+          "api_server": "Select your region for optimal performance. Choose 'Custom' to enter a different API endpoint.",
+          "api_url": "Enter custom API URL (only used when 'Custom' is selected)"
         }
       },
       "discover": {
@@ -33,7 +38,8 @@
       "api_error": "Remote API error",
       "invalid_reponse": "Malformed or unexpected API response",
       "device_offline": "Device is offline",
-      "generic_error": "An unknown error occurred"
+      "generic_error": "An unknown error occurred",
+      "custom_url_required": "Custom URL is required when 'Custom' server is selected"
     }
   },
   "options": {
