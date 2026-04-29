@@ -88,8 +88,24 @@ POWER_MODES = ["performance", "balanced", "power_saving", "ultra_power_saving"]
 # Motion sensitivity levels
 MOTION_SENSITIVITY_LEVELS = ["low", "medium", "high", "ultra_high"]
 
+# Motion sensitivity display names
+MOTION_SENSITIVITY_OPTIONS = {
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High",
+    "ultra_high": "Ultra High",
+}
+
 # Recording quality options
 RECORDING_QUALITY_OPTIONS = ["low", "standard", "high", "ultra_high"]
+
+# Recording quality display names
+RECORDING_QUALITY_DISPLAY = {
+    "low": "Low (SD - 480p)",
+    "standard": "Standard (HD - 720p)",
+    "high": "High (Full HD - 1080p)",
+    "ultra_high": "Ultra High (2K/4K)",
+}
 
 # Sleep schedule options
 SLEEP_SCHEDULE_OPTIONS = ["never", "night_only", "custom", "battery_based"]

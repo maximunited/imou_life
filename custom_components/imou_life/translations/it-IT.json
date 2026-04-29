@@ -54,11 +54,21 @@
           "camera_wait_before_download": "Attendi prima di scaricare l'immagine dalla camera (secondi)",
           "wait_after_wakeup": "Attendi dopo aver svegliato un dispositivo dormente (secondi)",
           "battery_optimization": "Ottimizzazione batteria",
-          "power_saving_mode": "Modalità risparmio energetico"
+          "power_saving_mode": "Modalità risparmio energetico",
+          "motion_sensitivity": "Sensibilità al Movimento",
+          "recording_quality": "Qualità di Registrazione",
+          "led_indicators": "Indicatori LED",
+          "auto_sleep": "Riposo Automatico",
+          "battery_threshold": "Soglia Batteria"
         },
         "data_description": {
           "battery_optimization": "🔋 Ottimizza automaticamente le impostazioni della batteria per massimizzare l'autonomia. Quando abilitato, l'integrazione regolerà la modalità di alimentazione, la qualità di registrazione e la sensibilità al movimento in base al livello della batteria.",
-          "power_saving_mode": "⚡ Abilita la modalità di risparmio energetico del dispositivo. Riduce il consumo di energia limitando determinate funzionalità."
+          "power_saving_mode": "⚡ Abilita la modalità di risparmio energetico del dispositivo. Riduce il consumo di energia limitando determinate funzionalità.",
+          "motion_sensitivity": "Regola la sensibilità di rilevamento del movimento. Una sensibilità più alta rileva movimenti più piccoli ma può aumentare i falsi allarmi.",
+          "recording_quality": "Qualità di registrazione video. Una qualità più alta utilizza più spazio di archiviazione e batteria.",
+          "led_indicators": "Abilita gli indicatori LED di stato sul dispositivo. Disabilita per risparmiare batteria.",
+          "auto_sleep": "Mette automaticamente il dispositivo in modalità riposo quando inattivo per risparmiare batteria.",
+          "battery_threshold": "Livello di batteria (%) al di sotto del quale si attivano automaticamente le funzioni di ottimizzazione."
         }
       }
     }

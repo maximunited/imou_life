@@ -54,11 +54,21 @@
           "camera_wait_before_download": "Aguarde antes de baixar o instantâneo da câmera (segundos)",
           "wait_after_wakeup": "Aguarde depois de ativar o dispositivo inativo (segundos)",
           "battery_optimization": "Otimização de bateria",
-          "power_saving_mode": "Modo de economia de energia"
+          "power_saving_mode": "Modo de economia de energia",
+          "motion_sensitivity": "Sensibilidade de Movimento",
+          "recording_quality": "Qualidade de Gravação",
+          "led_indicators": "Indicadores LED",
+          "auto_sleep": "Suspensão Automática",
+          "battery_threshold": "Limite de Bateria"
         },
         "data_description": {
           "battery_optimization": "🔋 Otimiza automaticamente as configurações da bateria para máxima duração. Quando habilitado, a integração ajustará o modo de energia, qualidade de gravação e sensibilidade de movimento com base no nível da bateria.",
-          "power_saving_mode": "⚡ Habilita o modo de economia de energia do dispositivo. Reduz o consumo de energia limitando certos recursos e funcionalidades."
+          "power_saving_mode": "⚡ Habilita o modo de economia de energia do dispositivo. Reduz o consumo de energia limitando certos recursos e funcionalidades.",
+          "motion_sensitivity": "Ajusta a sensibilidade de detecção de movimento. Sensibilidade mais alta detecta movimentos menores, mas pode aumentar alarmes falsos.",
+          "recording_quality": "Qualidade de gravação de vídeo. Qualidade mais alta usa mais armazenamento e bateria.",
+          "led_indicators": "Habilita indicadores LED de status no dispositivo. Desative para economizar bateria.",
+          "auto_sleep": "Coloca automaticamente o dispositivo em suspensão quando inativo para economizar bateria.",
+          "battery_threshold": "Nível de bateria (%) abaixo do qual os recursos de otimização são ativados automaticamente."
         }
       }
     }

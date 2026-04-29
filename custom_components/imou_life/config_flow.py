@@ -29,7 +29,7 @@ from .const import (
     DEFAULT_POWER_SAVING_MODE,
     DEFAULT_RECORDING_QUALITY,
     DEFAULT_SCAN_INTERVAL,
-    MOTION_SENSITIVITY_LEVELS,
+    MOTION_SENSITIVITY_OPTIONS,
     OPTION_API_TIMEOUT,
     OPTION_AUTO_SLEEP,
     OPTION_BATTERY_OPTIMIZATION,
@@ -42,7 +42,7 @@ from .const import (
     OPTION_RECORDING_QUALITY,
     OPTION_SCAN_INTERVAL,
     OPTION_WAIT_AFTER_WAKE_UP,
-    RECORDING_QUALITY_OPTIONS,
+    RECORDING_QUALITY_DISPLAY,
 )
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -349,13 +349,13 @@ class ImouOptionsFlowHandler(config_entries.OptionsFlow):
                         default=self.options.get(
                             OPTION_MOTION_SENSITIVITY, DEFAULT_MOTION_SENSITIVITY
                         ),
-                    ): vol.In(MOTION_SENSITIVITY_LEVELS),
+                    ): vol.In(MOTION_SENSITIVITY_OPTIONS),
                     vol.Optional(
                         OPTION_RECORDING_QUALITY,
                         default=self.options.get(
                             OPTION_RECORDING_QUALITY, DEFAULT_RECORDING_QUALITY
                         ),
-                    ): vol.In(RECORDING_QUALITY_OPTIONS),
+                    ): vol.In(RECORDING_QUALITY_DISPLAY),
                     vol.Optional(
                         OPTION_LED_INDICATORS,
                         default=self.options.get(
