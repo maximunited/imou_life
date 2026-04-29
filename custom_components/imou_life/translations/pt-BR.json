@@ -4,10 +4,15 @@
       "login": {
         "title": "Login",
         "data": {
-          "api_url": "URL base da API",
+          "api_server": "Região do Servidor API",
+          "api_url": "URL da API personalizada",
           "app_id": "ID do app Imou",
           "app_secret": "Secret do app Imou",
           "enable_discover": "Descubra dispositivos registrados"
+        },
+        "data_description": {
+          "api_server": "Selecione sua região para desempenho ideal. Escolha 'Personalizado' para inserir um endpoint de API diferente.",
+          "api_url": "Digite a URL da API personalizada (usado apenas quando 'Personalizado' é selecionado)"
         }
       },
       "discover": {
@@ -33,7 +38,20 @@
       "api_error": "Erro de API remota",
       "invalid_reponse": "Resposta de API malformada ou inesperada",
       "device_offline": "O dispositivo está offline",
-      "generic_error": "Ocorreu um erro desconhecido"
+      "generic_error": "Ocorreu um erro desconhecido",
+      "custom_url_required": "URL personalizada é necessária quando o servidor 'Personalizado' é selecionado"
+    },
+    "selector": {
+      "api_server": {
+        "options": {
+          "global": "Global Default (https://openapi.easy4ip.com)",
+          "frankfurt": "Europe - Frankfurt (https://openapi-fk.easy4ip.com) [Recommended for EU]",
+          "singapore": "Asia Pacific - Singapore (https://openapi-sg.easy4ip.com)",
+          "oregon": "North America - Oregon (https://openapi-or.easy4ip.com)",
+          "china": "China Mainland (https://openapi.lechange.cn)",
+          "custom": "Custom URL (Enter manually below)"
+        }
+      }
     }
   },
   "options": {

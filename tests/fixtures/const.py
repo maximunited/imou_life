@@ -49,3 +49,19 @@ MOCK_CREATE_ENTRY_FROM_MANUAL = {
     CONF_DEVICE_ID: "device_id",
     CONF_DEVICE_NAME: "device_name",
 }
+
+MOCK_LOGIN_WITH_FRANKFURT_SERVER = {
+    "api_server": "frankfurt",
+    "api_url": "",  # Not used when predefined server selected
+    CONF_APP_ID: "app_id",
+    CONF_APP_SECRET: "app_secret",
+    CONF_ENABLE_DISCOVER: True,
+}
+
+MOCK_LOGIN_WITH_CUSTOM_SERVER = {
+    "api_server": "custom",
+    "api_url": "https://custom.api.url/openapi",
+    CONF_APP_ID: "app_id",
+    CONF_APP_SECRET: "app_secret",
+    CONF_ENABLE_DISCOVER: True,
+}

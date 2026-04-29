@@ -1,58 +1,76 @@
 {
-    "config": {
-      "step": {
-        "login": {
-          "title": "Masuk",
-          "data": {
-            "api_url": "URL API Base",
-            "app_id": "App ID Imou",
-            "app_secret": "App Secret Imou",
-            "enable_discover": "Cari perangkat terdaftar"
-          }
+  "config": {
+    "step": {
+      "login": {
+        "title": "Masuk",
+        "data": {
+          "api_server": "Wilayah Server API",
+          "api_url": "URL API Kustom",
+          "app_id": "App ID Imou",
+          "app_secret": "App Secret Imou",
+          "enable_discover": "Cari perangkat terdaftar"
         },
-        "discover": {
-          "title": "Perangkat Ditemukan",
-          "data": {
-            "discovered_device": "Pilih perangkat untuk ditambahkan:",
-            "device_name": "Ganti nama sebagai"
-          }
-        },
-        "manual": {
-          "title": "Tambah Perangkat",
-          "data": {
-            "device_id": "ID perangkat",
-            "device_name": "Ganti nama sebagai"
-          }
+        "data_description": {
+          "api_server": "Pilih wilayah Anda untuk kinerja optimal. Pilih 'Kustom' untuk memasukkan endpoint API yang berbeda.",
+          "api_url": "Masukkan URL API kustom (hanya digunakan saat 'Kustom' dipilih)"
         }
       },
-      "error": {
-        "not_connected": "Tindakan diminta tetapi belum terhubung ke API",
-        "connection_failed": "Gagal terhubung ke API",
-        "invalid_configuration": "ID Aplikasi atau App Secret tidak valid",
-        "not_authorized": "Tidak diizinkan untuk beroperasi pada perangkat atau ID perangkat tidak valid",
-        "api_error": "Kesalahan API jarak jauh",
-        "invalid_reponse": "Respon API cacat atau tidak terduga",
-        "device_offline": "Perangkat tidak terhubung ke jaringan",
-        "generic_error": "Terjadi kesalahan yang tidak diketahui"
+      "discover": {
+        "title": "Perangkat Ditemukan",
+        "data": {
+          "discovered_device": "Pilih perangkat untuk ditambahkan:",
+          "device_name": "Ganti nama sebagai"
+        }
+      },
+      "manual": {
+        "title": "Tambah Perangkat",
+        "data": {
+          "device_id": "ID perangkat",
+          "device_name": "Ganti nama sebagai"
+        }
       }
     },
-    "options": {
-      "step": {
-        "init": {
-          "data": {
-            "scan_interval": "Interval pemindaian (detik)",
-            "api_timeout": "Waktu tunggu API (detik)",
-            "callback_url": "URL Callback",
-            "camera_wait_before_download": "Tunggu sebelum mengunduh snapshot kamera (detik)",
-            "wait_after_wakeup": "Tunggu setelah membangunkan perangkat dorman (detik)",
-            "battery_optimization": "Optimisasi baterai",
-            "power_saving_mode": "Mode hemat daya"
-          },
-          "data_description": {
-            "battery_optimization": "🔋 Secara otomatis mengoptimalkan pengaturan baterai untuk masa pakai baterai maksimal. Saat diaktifkan, integrasi akan menyesuaikan mode daya, kualitas rekaman, dan sensitivitas gerakan berdasarkan level baterai.",
-            "power_saving_mode": "⚡ Mengaktifkan mode hemat daya perangkat. Mengurangi konsumsi daya dengan membatasi fitur dan fungsionalitas tertentu."
-          }
+    "error": {
+      "not_connected": "Tindakan diminta tetapi belum terhubung ke API",
+      "connection_failed": "Gagal terhubung ke API",
+      "invalid_configuration": "ID Aplikasi atau App Secret tidak valid",
+      "not_authorized": "Tidak diizinkan untuk beroperasi pada perangkat atau ID perangkat tidak valid",
+      "api_error": "Kesalahan API jarak jauh",
+      "invalid_reponse": "Respon API cacat atau tidak terduga",
+      "device_offline": "Perangkat tidak terhubung ke jaringan",
+      "generic_error": "Terjadi kesalahan yang tidak diketahui",
+      "custom_url_required": "URL kustom diperlukan saat server 'Kustom' dipilih"
+    },
+    "selector": {
+      "api_server": {
+        "options": {
+          "global": "Global Default (https://openapi.easy4ip.com)",
+          "frankfurt": "Europe - Frankfurt (https://openapi-fk.easy4ip.com) [Recommended for EU]",
+          "singapore": "Asia Pacific - Singapore (https://openapi-sg.easy4ip.com)",
+          "oregon": "North America - Oregon (https://openapi-or.easy4ip.com)",
+          "china": "China Mainland (https://openapi.lechange.cn)",
+          "custom": "Custom URL (Enter manually below)"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "scan_interval": "Interval pemindaian (detik)",
+          "api_timeout": "Waktu tunggu API (detik)",
+          "callback_url": "URL Callback",
+          "camera_wait_before_download": "Tunggu sebelum mengunduh snapshot kamera (detik)",
+          "wait_after_wakeup": "Tunggu setelah membangunkan perangkat dorman (detik)",
+          "battery_optimization": "Optimisasi baterai",
+          "power_saving_mode": "Mode hemat daya"
+        },
+        "data_description": {
+          "battery_optimization": "🔋 Secara otomatis mengoptimalkan pengaturan baterai untuk masa pakai baterai maksimal. Saat diaktifkan, integrasi akan menyesuaikan mode daya, kualitas rekaman, dan sensitivitas gerakan berdasarkan level baterai.",
+          "power_saving_mode": "⚡ Mengaktifkan mode hemat daya perangkat. Mengurangi konsumsi daya dengan membatasi fitur dan fungsionalitas tertentu."
         }
       }
     }
   }
+}

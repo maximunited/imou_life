@@ -4,10 +4,15 @@
       "login": {
         "title": "Accés",
         "data": {
-          "api_url": "URL base de l'API",
+          "api_server": "Regió del Servidor API",
+          "api_url": "URL d'API personalitzada",
           "app_id": "Imou App ID",
           "app_secret": "Imou App Secret",
           "enable_discover": "Descobrir els dispositius registrats"
+        },
+        "data_description": {
+          "api_server": "Seleccioneu la vostra regió per a un rendiment òptim. Trieu 'Personalitzat' per introduir un punt final d'API diferent.",
+          "api_url": "Introduïu l'URL d'API personalitzada (només s'utilitza quan se selecciona 'Personalitzat')"
         }
       },
       "discover": {
@@ -33,7 +38,20 @@
       "api_error": "Error de l'API remota",
       "invalid_reponse": "Resposta de l'API malformada o inesperada",
       "device_offline": "El dispositiu està fora de línia",
-      "generic_error": "S'ha produït un error desconegut"
+      "generic_error": "S'ha produït un error desconegut",
+      "custom_url_required": "Es requereix una URL personalitzada quan se selecciona el servidor 'Personalitzat'"
+    },
+    "selector": {
+      "api_server": {
+        "options": {
+          "global": "Global Default (https://openapi.easy4ip.com)",
+          "frankfurt": "Europe - Frankfurt (https://openapi-fk.easy4ip.com) [Recommended for EU]",
+          "singapore": "Asia Pacific - Singapore (https://openapi-sg.easy4ip.com)",
+          "oregon": "North America - Oregon (https://openapi-or.easy4ip.com)",
+          "china": "China Mainland (https://openapi.lechange.cn)",
+          "custom": "Custom URL (Enter manually below)"
+        }
+      }
     }
   },
   "options": {

@@ -11,6 +11,8 @@ from imouapi.device import ImouDevice, ImouDiscoverService
 from imouapi.exceptions import ImouException
 
 from .const import (
+    API_SERVER_OPTIONS,
+    CONF_API_SERVER,
     CONF_API_URL,
     CONF_APP_ID,
     CONF_APP_SECRET,
@@ -18,7 +20,7 @@ from .const import (
     CONF_DEVICE_NAME,
     CONF_DISCOVERED_DEVICE,
     CONF_ENABLE_DISCOVER,
-    DEFAULT_API_URL,
+    DEFAULT_API_SERVER,
     DEFAULT_AUTO_SLEEP,
     DEFAULT_BATTERY_OPTIMIZATION,
     DEFAULT_BATTERY_THRESHOLD,
@@ -72,39 +74,53 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
         """Ask and validate app id and app secret."""
         self._errors = {}
         if user_input is not None:
-            # create an imou discovery service
-            self._api_client = ImouAPIClient(
-                user_input[CONF_APP_ID], user_input[CONF_APP_SECRET], self._session
-            )
-            self._api_client.set_base_url(user_input[CONF_API_URL])
-            self._discover_service = ImouDiscoverService(self._api_client)
-            valid = False
-            # check if the provided credentials are working
-            try:
-                await self._api_client.async_connect()
-                valid = True
-            except ImouException as exception:
-                self._errors["base"] = exception.get_title()
-                _LOGGER.error("Imou exception: %s", str(exception))
-            # valid credentials provided
-            if valid:
-                # store app id and secret for later steps
-                self._api_url = user_input[CONF_API_URL]
-                self._app_id = user_input[CONF_APP_ID]
-                self._app_secret = user_input[CONF_APP_SECRET]
-                # if discover is requested run the discover step,
-                # otherwise the manual step
-                if user_input[CONF_ENABLE_DISCOVER]:
-                    return await self.async_step_discover()
-                else:
-                    return await self.async_step_manual()
+            # Resolve API URL from server selection
+            selected_server = user_input.get(CONF_API_SERVER, DEFAULT_API_SERVER)
+            if selected_server == "custom":
+                api_url = user_input.get(CONF_API_URL, "").strip()
+                if not api_url:
+                    self._errors["api_url"] = "custom_url_required"
+            else:
+                api_url = API_SERVER_OPTIONS[selected_server]
+
+            # Only proceed if no errors
+            if not self._errors:
+                # create an imou discovery service
+                self._api_client = ImouAPIClient(
+                    user_input[CONF_APP_ID], user_input[CONF_APP_SECRET], self._session
+                )
+                self._api_client.set_base_url(api_url)
+                self._discover_service = ImouDiscoverService(self._api_client)
+                valid = False
+                # check if the provided credentials are working
+                try:
+                    await self._api_client.async_connect()
+                    valid = True
+                except ImouException as exception:
+                    self._errors["base"] = exception.get_title()
+                    _LOGGER.error("Imou exception: %s", str(exception))
+                # valid credentials provided
+                if valid:
+                    # store app id, secret, and resolved URL for later steps
+                    self._api_url = api_url
+                    self._app_id = user_input[CONF_APP_ID]
+                    self._app_secret = user_input[CONF_APP_SECRET]
+                    # if discover is requested run the discover step,
+                    # otherwise the manual step
+                    if user_input[CONF_ENABLE_DISCOVER]:
+                        return await self.async_step_discover()
+                    else:
+                        return await self.async_step_manual()
 
         # by default show up the form
         return self.async_show_form(
             step_id="login",
             data_schema=vol.Schema(
                 {
-                    vol.Required(CONF_API_URL, default=DEFAULT_API_URL): str,
+                    vol.Required(CONF_API_SERVER, default=DEFAULT_API_SERVER): vol.In(
+                        API_SERVER_OPTIONS.keys()
+                    ),
+                    vol.Optional(CONF_API_URL, default=""): str,
                     vol.Required(CONF_APP_ID): str,
                     vol.Required(CONF_APP_SECRET): str,
                     vol.Required(CONF_ENABLE_DISCOVER, default=True): bool,

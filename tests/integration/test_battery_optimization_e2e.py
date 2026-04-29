@@ -1,7 +1,7 @@
 """End-to-end tests for battery optimization features."""
 
 from datetime import time
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
@@ -80,9 +80,7 @@ async def test_battery_sleep_schedule_workflow(hass, mock_imou_device):
     assert coordinator._sleep_end_time == time(6, 0)
 
     # Simulate night time (should enter sleep mode)
-    with patch(
-        "custom_components.imou_life.battery_coordinator.dt_util"
-    ) as mock_dt:
+    with patch("custom_components.imou_life.battery_coordinator.dt_util") as mock_dt:
         mock_dt.now.return_value.time.return_value = time(23, 0)
 
         await coordinator._check_sleep_schedule()
@@ -91,9 +89,7 @@ async def test_battery_sleep_schedule_workflow(hass, mock_imou_device):
         assert coordinator.is_sleep_mode_active() is True
 
     # Simulate morning (should exit sleep mode)
-    with patch(
-        "custom_components.imou_life.battery_coordinator.dt_util"
-    ) as mock_dt:
+    with patch("custom_components.imou_life.battery_coordinator.dt_util") as mock_dt:
         mock_dt.now.return_value.time.return_value = time(7, 0)
 
         await coordinator._check_sleep_schedule()
