@@ -1,10 +1,11 @@
 """Class to manage fetching data from the API."""
 
 import logging
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from homeassistant.util import dt as dt_util
 from imouapi.device import ImouDevice
 from imouapi.exceptions import ImouException
 
@@ -27,6 +28,14 @@ class ImouDataUpdateCoordinator(DataUpdateCoordinator):
         self.scan_inteval = scan_interval
         self.platforms: list = []
         self.entities: list = []
+
+        # Rate limit tracking
+        self.is_rate_limited: bool = False
+        self.rate_limit_count: int = 0
+        self.last_error_type: str | None = None
+        self.last_error_message: str | None = None
+        self.last_successful_update: datetime | None = None
+
         super().__init__(
             hass,
             _LOGGER,
@@ -40,18 +49,38 @@ class ImouDataUpdateCoordinator(DataUpdateCoordinator):
     async def _async_update_data(self):
         """HA calls this every DEFAULT_SCAN_INTERVAL to run the update."""
         try:
-            return await self.device.async_get_data()
+            data = await self.device.async_get_data()
+
+            # Update succeeded - clear error status
+            self.is_rate_limited = False
+            self.last_error_type = None
+            self.last_error_message = None
+            self.last_successful_update = dt_util.utcnow()
+
+            return data
+
         except ImouException as exception:
             error_str = str(exception)
-            # Provide helpful message for rate limit errors
+
+            # Check if this is a rate limit error
             if "OP1013" in error_str or "exceed limit" in error_str.lower():
+                self.is_rate_limited = True
+                self.rate_limit_count += 1
+                self.last_error_type = "rate_limit"
+                self.last_error_message = error_str
+
                 error_msg = (
-                    f"Imou API rate limit exceeded. "
+                    f"Imou API rate limit exceeded (#{self.rate_limit_count}). "
                     f"The integration will retry on the next update cycle. "
                     f"Error: {error_str}"
                 )
                 _LOGGER.warning(error_msg)
             else:
+                self.is_rate_limited = False
+                self.last_error_type = "api_error"
+                self.last_error_message = error_str
+
                 error_msg = f"Imou API error: {error_str}"
                 _LOGGER.error(error_msg)
+
             raise UpdateFailed(error_msg) from exception
