@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.3.4] (2026-04-30)
+### Added
+- **Enhanced Options UI**: Humanized labels and descriptions for better user experience
+  - Field labels now capitalized and user-friendly (Motion Sensitivity, Recording Quality, LED Indicators, Auto Sleep, Battery Threshold)
+  - Option values humanized: low → "Low", medium → "Medium", high → "High", ultra_high → "Ultra High"
+  - Recording quality now shows resolution info: "Low (SD - 480p)", "Standard (HD - 720p)", "High (Full HD - 1080p)", "Ultra High (2K/4K)"
+  - Added helpful descriptions below each option explaining purpose and impact
+  - All 8 translation files updated with new labels and descriptions
+
+### Changed
+- Options flow now uses dictionary-based selectors for better display names
+- Motion sensitivity and recording quality options defined in const.py with display names
+
+### Technical
+- Added MOTION_SENSITIVITY_OPTIONS dict mapping values to display names
+- Added RECORDING_QUALITY_DISPLAY dict with resolution information
+- Updated config_flow.py to use vol.In(dict) for selector options
+- Fixed Hassfest validation by moving selector labels from translations to code
+
 ## [1.3.3] (2026-04-30)
 ### Fixed
 - **Critical: Rate Limit Infinite Loop**: Users can now complete setup even when rate limited
