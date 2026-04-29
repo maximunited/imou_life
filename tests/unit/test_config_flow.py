@@ -235,7 +235,7 @@ async def test_custom_server_with_valid_url(hass, api_ok):
 @pytest.mark.asyncio
 async def test_all_server_options(hass, api_ok):
     """Test that each server option works."""
-    servers = ["global", "frankfurt", "singapore", "oregon", "china"]
+    servers = ["global", "frankfurt", "singapore", "virginia", "china"]
 
     for server in servers:
         result = await _test_flow_init(hass, "discover")
