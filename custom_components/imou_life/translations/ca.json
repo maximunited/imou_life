@@ -42,6 +42,18 @@
       "generic_error": "S'ha produït un error desconegut",
       "custom_url_required": "Es requereix una URL personalitzada quan se selecciona el servidor 'Personalitzat'",
       "rate_limit_exceeded": "Límit de freqüència de l'API superat. Si us plau, espereu uns minuts abans de tornar-ho a provar, o introduïu l'ID del dispositiu manualment a continuació."
+    },
+    "selector": {
+      "api_server": {
+        "options": {
+          "global": "Global Default (https://openapi.easy4ip.com)",
+          "frankfurt": "Europe - Frankfurt (https://openapi-fk.easy4ip.com) [Recommended for EU]",
+          "singapore": "Asia Pacific - Singapore (https://openapi-sg.easy4ip.com)",
+          "oregon": "North America - Oregon (https://openapi-or.easy4ip.com)",
+          "china": "China Mainland (https://openapi.lechange.cn)",
+          "custom": "Custom URL (Enter manually below)"
+        }
+      }
     }
   },
   "options": {

@@ -42,6 +42,18 @@
       "generic_error": "Ha ocurrido un error inesperado",
       "custom_url_required": "Se requiere URL personalizada cuando se selecciona el servidor 'Personalizado'",
       "rate_limit_exceeded": "Límite de frecuencia de API excedido. Por favor espere unos minutos antes de reintentar, o ingrese su ID de dispositivo manualmente a continuación."
+    },
+    "selector": {
+      "api_server": {
+        "options": {
+          "global": "Global Default (https://openapi.easy4ip.com)",
+          "frankfurt": "Europe - Frankfurt (https://openapi-fk.easy4ip.com) [Recommended for EU]",
+          "singapore": "Asia Pacific - Singapore (https://openapi-sg.easy4ip.com)",
+          "oregon": "North America - Oregon (https://openapi-or.easy4ip.com)",
+          "china": "China Mainland (https://openapi.lechange.cn)",
+          "custom": "Custom URL (Enter manually below)"
+        }
+      }
     }
   },
   "options": {

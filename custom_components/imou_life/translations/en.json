@@ -43,6 +43,18 @@
       "custom_url_required": "Custom URL is required when 'Custom' server is selected",
       "rate_limit_exceeded": "API rate limit exceeded. Please wait a few minutes before retrying, or enter your device ID manually below.",
       "rate_limit_discovery": "API rate limit exceeded. Please uncheck 'Enable Device Discovery' above and enter your device ID manually in the next step."
+    },
+    "selector": {
+      "api_server": {
+        "options": {
+          "global": "Global Default (https://openapi.easy4ip.com)",
+          "frankfurt": "Europe - Frankfurt (https://openapi-fk.easy4ip.com) [Recommended for EU]",
+          "singapore": "Asia Pacific - Singapore (https://openapi-sg.easy4ip.com)",
+          "oregon": "North America - Oregon (https://openapi-or.easy4ip.com)",
+          "china": "China Mainland (https://openapi.lechange.cn)",
+          "custom": "Custom URL (Enter manually below)"
+        }
+      }
     }
   },
   "options": {
