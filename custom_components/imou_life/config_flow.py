@@ -21,6 +21,7 @@ from .const import (
     CONF_DISCOVERED_DEVICE,
     CONF_ENABLE_DISCOVER,
     DEFAULT_API_SERVER,
+    DEFAULT_API_URL,
     DEFAULT_AUTO_SLEEP,
     DEFAULT_BATTERY_OPTIMIZATION,
     DEFAULT_BATTERY_THRESHOLD,
@@ -112,15 +113,33 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
                     else:
                         return await self.async_step_manual()
 
+        # Determine the API URL to show based on previous selection or default
+        selected_server = (
+            user_input.get(CONF_API_SERVER, DEFAULT_API_SERVER)
+            if user_input and not self._errors
+            else DEFAULT_API_SERVER
+        )
+        if selected_server != "custom":
+            display_url = API_SERVER_OPTIONS.get(selected_server, DEFAULT_API_URL)
+        else:
+            display_url = ""
+
         # by default show up the form
         return self.async_show_form(
             step_id="login",
             data_schema=vol.Schema(
                 {
-                    vol.Required(CONF_API_SERVER, default=DEFAULT_API_SERVER): vol.In(
-                        API_SERVER_OPTIONS.keys()
+                    vol.Required(CONF_API_SERVER, default=selected_server): vol.In(
+                        {
+                            "global": "Global (openapi.easy4ip.com)",
+                            "frankfurt": "Frankfurt (Germany)",
+                            "singapore": "Singapore",
+                            "virginia": "Virginia (USA)",
+                            "china": "China",
+                            "custom": "Custom",
+                        }
                     ),
-                    vol.Optional(CONF_API_URL, default=""): str,
+                    vol.Optional(CONF_API_URL, default=display_url): str,
                     vol.Required(CONF_APP_ID): str,
                     vol.Required(CONF_APP_SECRET): str,
                     vol.Required(CONF_ENABLE_DISCOVER, default=True): bool,
@@ -147,20 +166,39 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
                 await self._discover_service.async_discover_devices()
             )
         except ImouException as exception:
-            self._errors["base"] = exception.get_title()
-            _LOGGER.error("Imou exception: %s", str(exception))
-        return self.async_show_form(
-            step_id="discover",
-            data_schema=vol.Schema(
-                {
-                    vol.Required(CONF_DISCOVERED_DEVICE): vol.In(
-                        self._discovered_devices.keys()
-                    ),
-                    vol.Optional(CONF_DEVICE_NAME): str,
-                }
-            ),
-            errors=self._errors,
-        )
+            error_msg = str(exception)
+            # Check if this is a rate limit error
+            if "OP1013" in error_msg or "exceed limit" in error_msg.lower():
+                self._errors["base"] = "rate_limit_exceeded"
+                _LOGGER.warning(
+                    "API rate limit exceeded during device discovery. "
+                    "Please wait a few minutes or use manual device entry. "
+                    "Error: %s",
+                    error_msg,
+                )
+                # Redirect to manual entry when rate limited
+                return await self.async_step_manual()
+            else:
+                self._errors["base"] = exception.get_title()
+                _LOGGER.error("Imou exception: %s", str(exception))
+
+        # If discovery succeeded, show device selection
+        if self._discovered_devices:
+            return self.async_show_form(
+                step_id="discover",
+                data_schema=vol.Schema(
+                    {
+                        vol.Required(CONF_DISCOVERED_DEVICE): vol.In(
+                            self._discovered_devices.keys()
+                        ),
+                        vol.Optional(CONF_DEVICE_NAME): str,
+                    }
+                ),
+                errors=self._errors,
+            )
+        else:
+            # No devices discovered or error occurred, go to manual entry
+            return await self.async_step_manual()
 
     # Step: manual configuration
 

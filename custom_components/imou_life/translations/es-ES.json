@@ -4,15 +4,15 @@
       "login": {
         "title": "Acceso",
         "data": {
-          "api_server": "Región del Servidor API",
-          "api_url": "URL de API personalizada",
+          "api_server": "Servidor API",
+          "api_url": "URL Base de API",
           "app_id": "ID de app Imou",
           "app_secret": "Secreto de app Imou",
           "enable_discover": "Descubrir dispositivos registrados"
         },
         "data_description": {
-          "api_server": "Seleccione su región para un rendimiento óptimo. Elija 'Personalizado' para ingresar un punto final de API diferente.",
-          "api_url": "Ingrese la URL de API personalizada (solo se usa cuando se selecciona 'Personalizado')"
+          "api_server": "Seleccione su región geográfica para un rendimiento API óptimo. El punto final de API correspondiente se utilizará automáticamente.",
+          "api_url": "Solo requerido cuando se selecciona 'Personalizado' arriba. Dejar vacío para servidores predefinidos."
         }
       },
       "discover": {
@@ -39,7 +39,8 @@
       "invalid_reponse": "Respuesta de API malformada o inesperada",
       "device_offline": "El dispositivo está desconectado",
       "generic_error": "Ha ocurrido un error inesperado",
-      "custom_url_required": "Se requiere URL personalizada cuando se selecciona el servidor 'Personalizado'"
+      "custom_url_required": "Se requiere URL personalizada cuando se selecciona el servidor 'Personalizado'",
+      "rate_limit_exceeded": "Límite de frecuencia de API excedido. Por favor espere unos minutos antes de reintentar, o ingrese su ID de dispositivo manualmente a continuación."
     }
   },
   "options": {

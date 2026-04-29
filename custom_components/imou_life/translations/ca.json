@@ -4,15 +4,15 @@
       "login": {
         "title": "Accés",
         "data": {
-          "api_server": "Regió del Servidor API",
-          "api_url": "URL d'API personalitzada",
+          "api_server": "Servidor API",
+          "api_url": "URL Base de l'API",
           "app_id": "Imou App ID",
           "app_secret": "Imou App Secret",
           "enable_discover": "Descobrir els dispositius registrats"
         },
         "data_description": {
-          "api_server": "Seleccioneu la vostra regió per a un rendiment òptim. Trieu 'Personalitzat' per introduir un punt final d'API diferent.",
-          "api_url": "Introduïu l'URL d'API personalitzada (només s'utilitza quan se selecciona 'Personalitzat')"
+          "api_server": "Seleccioneu la vostra regió geogràfica per a un rendiment òptim de l'API. El punt final d'API corresponent s'utilitzarà automàticament.",
+          "api_url": "Només necessari quan se selecciona 'Personalitzat' a dalt. Deixeu buit per als servidors predefinits."
         }
       },
       "discover": {
@@ -39,7 +39,8 @@
       "invalid_reponse": "Resposta de l'API malformada o inesperada",
       "device_offline": "El dispositiu està fora de línia",
       "generic_error": "S'ha produït un error desconegut",
-      "custom_url_required": "Es requereix una URL personalitzada quan se selecciona el servidor 'Personalitzat'"
+      "custom_url_required": "Es requereix una URL personalitzada quan se selecciona el servidor 'Personalitzat'",
+      "rate_limit_exceeded": "Límit de freqüència de l'API superat. Si us plau, espereu uns minuts abans de tornar-ho a provar, o introduïu l'ID del dispositiu manualment a continuació."
     }
   },
   "options": {

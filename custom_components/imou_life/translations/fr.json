@@ -4,15 +4,15 @@
       "login": {
         "title": "Connexion",
         "data": {
-          "api_server": "Région du Serveur API",
-          "api_url": "URL d'API personnalisée",
+          "api_server": "Serveur API",
+          "api_url": "URL de Base API",
           "app_id": "ID de l'application Imou",
           "app_secret": "Secret de l'application Imou",
           "enable_discover": "Découvrir les appareils enregistrés"
         },
         "data_description": {
-          "api_server": "Sélectionnez votre région pour des performances optimales. Choisissez 'Personnalisé' pour saisir un point de terminaison API différent.",
-          "api_url": "Entrez l'URL d'API personnalisée (utilisée uniquement lorsque 'Personnalisé' est sélectionné)"
+          "api_server": "Sélectionnez votre région géographique pour des performances API optimales. Le point de terminaison API correspondant sera utilisé automatiquement.",
+          "api_url": "Requis uniquement lorsque 'Personnalisé' est sélectionné ci-dessus. Laissez vide pour les serveurs prédéfinis."
         }
       },
       "discover": {
@@ -39,7 +39,8 @@
       "invalid_reponse": "Réponse de l'API malformée ou inattendue",
       "device_offline": "L'appareil est hors ligne",
       "generic_error": "Une erreur inconnue s'est produite",
-      "custom_url_required": "L'URL personnalisée est requise lorsque le serveur 'Personnalisé' est sélectionné'"
+      "custom_url_required": "L'URL personnalisée est requise lorsque le serveur 'Personnalisé' est sélectionné'",
+      "rate_limit_exceeded": "Limite de débit API dépassée. Veuillez attendre quelques minutes avant de réessayer, ou entrez votre ID d'appareil manuellement ci-dessous."
     }
   },
   "options": {
