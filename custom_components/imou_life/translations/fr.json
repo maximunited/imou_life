@@ -39,7 +39,8 @@
       "invalid_reponse": "Réponse de l'API malformée ou inattendue",
       "device_offline": "L'appareil est hors ligne",
       "generic_error": "Une erreur inconnue s'est produite",
-      "custom_url_required": "L'URL personnalisée est requise lorsque le serveur 'Personnalisé' est sélectionné'"
+      "custom_url_required": "L'URL personnalisée est requise lorsque le serveur 'Personnalisé' est sélectionné'",
+      "rate_limit_exceeded": "Limite de débit API dépassée. Veuillez attendre quelques minutes avant de réessayer, ou entrez votre ID d'appareil manuellement ci-dessous."
     }
   },
   "options": {

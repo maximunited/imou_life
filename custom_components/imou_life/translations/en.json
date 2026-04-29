@@ -39,7 +39,8 @@
       "invalid_reponse": "Malformed or unexpected API response",
       "device_offline": "Device is offline",
       "generic_error": "An unknown error occurred",
-      "custom_url_required": "Custom URL is required when 'Custom' server is selected"
+      "custom_url_required": "Custom URL is required when 'Custom' server is selected",
+      "rate_limit_exceeded": "API rate limit exceeded. Please wait a few minutes before retrying, or enter your device ID manually below."
     }
   },
   "options": {

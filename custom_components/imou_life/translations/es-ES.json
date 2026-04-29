@@ -39,7 +39,8 @@
       "invalid_reponse": "Respuesta de API malformada o inesperada",
       "device_offline": "El dispositivo está desconectado",
       "generic_error": "Ha ocurrido un error inesperado",
-      "custom_url_required": "Se requiere URL personalizada cuando se selecciona el servidor 'Personalizado'"
+      "custom_url_required": "Se requiere URL personalizada cuando se selecciona el servidor 'Personalizado'",
+      "rate_limit_exceeded": "Límite de frecuencia de API excedido. Por favor espere unos minutos antes de reintentar, o ingrese su ID de dispositivo manualmente a continuación."
     }
   },
   "options": {

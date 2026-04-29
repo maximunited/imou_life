@@ -39,7 +39,8 @@
       "invalid_reponse": "Respon API cacat atau tidak terduga",
       "device_offline": "Perangkat tidak terhubung ke jaringan",
       "generic_error": "Terjadi kesalahan yang tidak diketahui",
-      "custom_url_required": "URL kustom diperlukan saat server 'Kustom' dipilih"
+      "custom_url_required": "URL kustom diperlukan saat server 'Kustom' dipilih",
+      "rate_limit_exceeded": "Batas tingkat API terlampaui. Harap tunggu beberapa menit sebelum mencoba lagi, atau masukkan ID perangkat Anda secara manual di bawah ini."
     }
   },
   "options": {

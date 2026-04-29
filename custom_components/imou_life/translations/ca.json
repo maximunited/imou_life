@@ -39,7 +39,8 @@
       "invalid_reponse": "Resposta de l'API malformada o inesperada",
       "device_offline": "El dispositiu està fora de línia",
       "generic_error": "S'ha produït un error desconegut",
-      "custom_url_required": "Es requereix una URL personalitzada quan se selecciona el servidor 'Personalitzat'"
+      "custom_url_required": "Es requereix una URL personalitzada quan se selecciona el servidor 'Personalitzat'",
+      "rate_limit_exceeded": "Límit de freqüència de l'API superat. Si us plau, espereu uns minuts abans de tornar-ho a provar, o introduïu l'ID del dispositiu manualment a continuació."
     }
   },
   "options": {

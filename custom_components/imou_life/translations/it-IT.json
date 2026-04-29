@@ -39,7 +39,8 @@
       "invalid_reponse": "Risposta malformata o inaspettata dalle API",
       "device_offline": "Dispositivo non in linea",
       "generic_error": "Errore sconosciuto",
-      "custom_url_required": "L'URL personalizzato è richiesto quando è selezionato il server 'Personalizzato'"
+      "custom_url_required": "L'URL personalizzato è richiesto quando è selezionato il server 'Personalizzato'",
+      "rate_limit_exceeded": "Limite di frequenza API superato. Attendere qualche minuto prima di riprovare, oppure inserire manualmente l'ID del dispositivo di seguito."
     }
   },
   "options": {

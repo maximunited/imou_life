@@ -166,20 +166,39 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
                 await self._discover_service.async_discover_devices()
             )
         except ImouException as exception:
-            self._errors["base"] = exception.get_title()
-            _LOGGER.error("Imou exception: %s", str(exception))
-        return self.async_show_form(
-            step_id="discover",
-            data_schema=vol.Schema(
-                {
-                    vol.Required(CONF_DISCOVERED_DEVICE): vol.In(
-                        self._discovered_devices.keys()
-                    ),
-                    vol.Optional(CONF_DEVICE_NAME): str,
-                }
-            ),
-            errors=self._errors,
-        )
+            error_msg = str(exception)
+            # Check if this is a rate limit error
+            if "OP1013" in error_msg or "exceed limit" in error_msg.lower():
+                self._errors["base"] = "rate_limit_exceeded"
+                _LOGGER.warning(
+                    "API rate limit exceeded during device discovery. "
+                    "Please wait a few minutes or use manual device entry. "
+                    "Error: %s",
+                    error_msg,
+                )
+                # Redirect to manual entry when rate limited
+                return await self.async_step_manual()
+            else:
+                self._errors["base"] = exception.get_title()
+                _LOGGER.error("Imou exception: %s", str(exception))
+
+        # If discovery succeeded, show device selection
+        if self._discovered_devices:
+            return self.async_show_form(
+                step_id="discover",
+                data_schema=vol.Schema(
+                    {
+                        vol.Required(CONF_DISCOVERED_DEVICE): vol.In(
+                            self._discovered_devices.keys()
+                        ),
+                        vol.Optional(CONF_DEVICE_NAME): str,
+                    }
+                ),
+                errors=self._errors,
+            )
+        else:
+            # No devices discovered or error occurred, go to manual entry
+            return await self.async_step_manual()
 
     # Step: manual configuration
 

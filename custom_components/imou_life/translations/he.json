@@ -39,7 +39,8 @@
       "invalid_reponse": "תגובת API מעוותת או לא צפויה",
       "device_offline": "המכשיר לא מקוון",
       "generic_error": "אירעה שגיאה לא ידועה",
-      "custom_url_required": "Custom URL is required when 'Custom' server is selected"
+      "custom_url_required": "Custom URL is required when 'Custom' server is selected",
+      "rate_limit_exceeded": "API rate limit exceeded. Please wait a few minutes before retrying, or enter your device ID manually below."
     }
   },
   "options": {
