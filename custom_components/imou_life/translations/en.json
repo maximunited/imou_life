@@ -5,14 +5,14 @@
         "title": "Login",
         "data": {
           "api_server": "API Server",
-          "api_url": "Custom API URL",
+          "api_url": "API URL",
           "app_id": "Imou App ID",
           "app_secret": "Imou App Secret",
           "enable_discover": "Enable Device Discovery"
         },
         "data_description": {
           "api_server": "Select your geographic region for optimal API performance. The corresponding API endpoint will be used automatically.",
-          "api_url": "Enter the full API endpoint URL for your custom Imou API server.",
+          "api_url": "Auto-populated based on server selection. Only edit if using a custom API server.",
           "enable_discover": "Automatically discover all devices registered to your Imou account. Disable to manually enter a specific device ID instead."
         }
       },
@@ -41,7 +41,8 @@
       "device_offline": "Device is offline",
       "generic_error": "An unknown error occurred",
       "custom_url_required": "Custom URL is required when 'Custom' server is selected",
-      "rate_limit_exceeded": "API rate limit exceeded. Please wait a few minutes before retrying, or enter your device ID manually below."
+      "rate_limit_exceeded": "API rate limit exceeded. Please wait a few minutes before retrying, or enter your device ID manually below.",
+      "rate_limit_discovery": "API rate limit exceeded. Please uncheck 'Enable Device Discovery' above and enter your device ID manually in the next step."
     }
   },
   "options": {

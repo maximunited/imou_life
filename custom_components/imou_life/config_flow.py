@@ -115,36 +115,43 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
         # Determine the API URL to show based on previous selection or default
         selected_server = (
             user_input.get(CONF_API_SERVER, DEFAULT_API_SERVER)
-            if user_input and not self._errors
+            if user_input
             else DEFAULT_API_SERVER
         )
 
-        # Build schema conditionally - only show URL field for custom server
-        schema_fields = {
-            vol.Required(CONF_API_SERVER, default=selected_server): vol.In(
-                {
-                    "global": "Global (openapi.easy4ip.com)",
-                    "frankfurt": "Frankfurt (Germany)",
-                    "singapore": "Singapore",
-                    "virginia": "Virginia (USA)",
-                    "china": "China",
-                    "custom": "Custom",
-                }
-            ),
-        }
-
-        # Only show URL field when custom is selected
+        # Auto-populate URL based on selected server
         if selected_server == "custom":
-            schema_fields[vol.Required(CONF_API_URL, default="")] = str
-
-        schema_fields[vol.Required(CONF_APP_ID)] = str
-        schema_fields[vol.Required(CONF_APP_SECRET)] = str
-        schema_fields[vol.Required(CONF_ENABLE_DISCOVER, default=True)] = bool
+            # For custom, show empty field (required)
+            display_url = user_input.get(CONF_API_URL, "") if user_input else ""
+            url_field = vol.Required(CONF_API_URL, default=display_url)
+        else:
+            # For preset servers, show the URL (read-only via description)
+            display_url = API_SERVER_OPTIONS.get(
+                selected_server, API_SERVER_OPTIONS["global"]
+            )
+            url_field = vol.Optional(CONF_API_URL, default=display_url)
 
         # by default show up the form
         return self.async_show_form(
             step_id="login",
-            data_schema=vol.Schema(schema_fields),
+            data_schema=vol.Schema(
+                {
+                    vol.Required(CONF_API_SERVER, default=selected_server): vol.In(
+                        {
+                            "global": "Global (openapi.easy4ip.com)",
+                            "frankfurt": "Frankfurt (Germany)",
+                            "singapore": "Singapore",
+                            "virginia": "Virginia (USA)",
+                            "china": "China",
+                            "custom": "Custom",
+                        }
+                    ),
+                    url_field: str,
+                    vol.Required(CONF_APP_ID): str,
+                    vol.Required(CONF_APP_SECRET): str,
+                    vol.Required(CONF_ENABLE_DISCOVER, default=True): bool,
+                }
+            ),
             errors=self._errors,
         )
 
@@ -169,15 +176,13 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
             error_msg = str(exception)
             # Check if this is a rate limit error
             if "OP1013" in error_msg or "exceed limit" in error_msg.lower():
-                self._errors["base"] = "rate_limit_exceeded"
+                self._errors["base"] = "rate_limit_discovery"
                 _LOGGER.warning(
                     "API rate limit exceeded during device discovery. "
-                    "Please wait a few minutes or use manual device entry. "
+                    "Disable discovery and enter device ID manually to continue. "
                     "Error: %s",
                     error_msg,
                 )
-                # Redirect to manual entry when rate limited
-                return await self.async_step_manual()
             else:
                 self._errors["base"] = exception.get_title()
                 _LOGGER.error("Imou exception: %s", str(exception))
@@ -209,15 +214,28 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
             # create an imou device instance
             device = ImouDevice(self._api_client, user_input[CONF_DEVICE_ID])
             valid = False
+            rate_limited = False
             # check if the provided credentials are working
             try:
                 await device.async_initialize()
                 valid = True
             except ImouException as exception:
-                self._errors["base"] = exception.get_title()
-                _LOGGER.error("Imou exception: %s", str(exception))
-            # valid credentials provided, create the entry
-            if valid:
+                error_msg = str(exception)
+                # Check if this is a rate limit error
+                if "OP1013" in error_msg or "exceed limit" in error_msg.lower():
+                    rate_limited = True
+                    _LOGGER.warning(
+                        "API rate limit exceeded during device validation. "
+                        "Creating entry anyway - device will initialize when rate limit clears. "
+                        "Error: %s",
+                        error_msg,
+                    )
+                else:
+                    self._errors["base"] = exception.get_title()
+                    _LOGGER.error("Imou exception: %s", str(exception))
+
+            # valid credentials provided OR rate limited, create the entry
+            if valid or rate_limited:
                 # create the entry using common method
                 return await self._create_entry_from_device(device, user_input)
 
