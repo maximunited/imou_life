@@ -246,6 +246,38 @@ class TestBronzeTierCompliance:
         # Verify setup function exists
         assert setup_platform is not None
 
+    async def test_entity_event_setup_compliance(self):
+        """Test: entity-event-setup - Event entities use event platform.
+
+        Bronze tier requires event-like entities to use the Event platform.
+        This integration is compliant because:
+        1. Motion detection is state-based (binary_sensor with is_on state)
+        2. Last alarm timestamp is historical data (timestamp sensor)
+        3. No discrete event entities that require the Event platform
+        """
+        from custom_components.imou_life.binary_sensor import ImouBinarySensor
+        from custom_components.imou_life.const import PLATFORMS
+        from custom_components.imou_life.sensor import ImouSensor
+
+        # Verify motion alarm is a binary sensor (state-based, not event)
+        assert "binary_sensor" in PLATFORMS
+        assert hasattr(
+            ImouBinarySensor, "is_on"
+        ), "Motion detection is state-based (binary sensor)"
+
+        # Verify device class mapping for motion
+        assert "motionAlarm" in ImouBinarySensor.DEVICE_CLASS_MAPPING
+        assert ImouBinarySensor.DEVICE_CLASS_MAPPING["motionAlarm"] == "motion"
+
+        # Verify lastAlarm is a timestamp sensor (historical data, not event)
+        assert "lastAlarm" in ImouSensor.DEVICE_CLASS_MAPPING
+        assert ImouSensor.DEVICE_CLASS_MAPPING["lastAlarm"] == "timestamp"
+
+        # Verify no Event platform is registered (none needed for polling-based integration)
+        assert (
+            "event" not in PLATFORMS
+        ), "Integration uses polling, not push events - no Event platform needed"
+
     async def test_config_entry_unloading(self, hass, api_ok):
         """Test: config-entry-unloading - Integration can be unloaded.
 
@@ -290,7 +322,7 @@ async def test_bronze_tier_summary(hass):
         "docs-high-level-description": "✅ PASS - README overview",
         "docs-installation-instructions": "✅ PASS - docs/INSTALLATION.md",
         "docs-removal-instructions": "✅ PASS - docs/UNINSTALL.md",
-        "entity-event-setup": "⚠️  TODO - Needs verification",
+        "entity-event-setup": "✅ PASS - State-based entities (binary_sensor, timestamp sensor)",
         "entity-unique-id": "✅ PASS - Using device IDs",
         "has-entity-name": "✅ PASS - _attr_has_entity_name = True in base entity",
         "runtime-data": "✅ PASS - Migrated to entry.runtime_data",
@@ -313,8 +345,9 @@ async def test_bronze_tier_summary(hass):
         else:
             todo += 1
 
+    total = len(bronze_requirements)
     print("=" * 60)
-    print(f"TOTAL: {passed}/19 passed ({passed / 19 * 100:.0f}%), {todo} todo")
+    print(f"TOTAL: {passed}/{total} passed ({passed / total * 100:.0f}%), {todo} todo")
     print("=" * 60)
 
     # This test always passes - it's documentation
