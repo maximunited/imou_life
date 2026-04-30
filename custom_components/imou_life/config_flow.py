@@ -11,6 +11,7 @@ from imouapi.device import ImouDevice, ImouDiscoverService
 from imouapi.exceptions import ImouException
 
 from .const import (
+    API_SERVER_LABELS,
     API_SERVER_OPTIONS,
     CONF_API_SERVER,
     CONF_API_URL,
@@ -118,7 +119,7 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
             data_schema=vol.Schema(
                 {
                     vol.Required(CONF_API_SERVER, default=DEFAULT_API_SERVER): vol.In(
-                        API_SERVER_OPTIONS.keys()
+                        API_SERVER_LABELS
                     ),
                     vol.Optional(CONF_API_URL, default=""): str,
                     vol.Required(CONF_APP_ID): str,

@@ -72,6 +72,16 @@ API_SERVER_OPTIONS = {
     "custom": "custom",  # Special value to indicate custom URL
 }
 
+# UI labels for API server selector
+API_SERVER_LABELS = {
+    "global": "Global Default",
+    "frankfurt": "Europe - Frankfurt [Recommended for EU]",
+    "singapore": "Asia Pacific - Singapore",
+    "oregon": "North America - Oregon",
+    "china": "China Mainland",
+    "custom": "Custom URL",
+}
+
 DEFAULT_API_SERVER = "global"
 
 DEFAULT_BATTERY_OPTIMIZATION = True
