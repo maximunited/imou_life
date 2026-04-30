@@ -218,6 +218,71 @@ class TestBronzeTierCompliance:
             "DEFAULT_SCAN_INTERVAL" in source or "scan_interval" in source
         ), "Coordinator __init__ should reference scan_interval"
 
+    async def test_branding_assets_exist(self):
+        """Test: brands - Has branding assets available.
+
+        Bronze tier requires icon.png and icon@2x.png files.
+        As of HA 2026.3.0, custom integrations can include icons directly.
+
+        TODO: Download Imou logo and create icon files:
+        - icon.png (256×256) and icon@2x.png (512×512)
+        - See BRANDING.md for resources and requirements
+        """
+        import os
+        from pathlib import Path
+
+        # Get the integration directory
+        integration_dir = (
+            Path(__file__).parent.parent.parent / "custom_components" / "imou_life"
+        )
+
+        # Required icon files
+        icon_path = integration_dir / "icon.png"
+        icon_2x_path = integration_dir / "icon@2x.png"
+
+        # Skip if icons not yet added (runtime check allows test to run once added)
+        if not icon_path.exists() or not icon_2x_path.exists():
+            pytest.skip(
+                "Icons not yet added. See custom_components/imou_life/BRANDING.md"
+            )
+
+        # Validate PNG format and dimensions using PIL
+        try:
+            from PIL import Image
+        except ImportError:
+            pytest.skip("Pillow not installed, cannot validate image format/dimensions")
+
+        # Verify icon.png
+        with Image.open(icon_path) as img:
+            assert img.format == "PNG", f"icon.png must be PNG format, got {img.format}"
+            assert img.size == (
+                256,
+                256,
+            ), f"icon.png must be 256×256 pixels, got {img.size}"
+
+        # Verify icon@2x.png
+        with Image.open(icon_2x_path) as img:
+            assert (
+                img.format == "PNG"
+            ), f"icon@2x.png must be PNG format, got {img.format}"
+            assert img.size == (
+                512,
+                512,
+            ), f"icon@2x.png must be 512×512 pixels, got {img.size}"
+
+        # Verify file sizes (compressed, optimized for web)
+        icon_size = os.path.getsize(icon_path)
+        icon_2x_size = os.path.getsize(icon_2x_path)
+
+        assert icon_size > 1000, f"icon.png is too small ({icon_size} bytes)"
+        assert (
+            icon_size < 51200
+        ), f"icon.png is too large ({icon_size} bytes), compress to < 50KB"
+        assert icon_2x_size > 1000, f"icon@2x.png is too small ({icon_2x_size} bytes)"
+        assert (
+            icon_2x_size < 102400
+        ), f"icon@2x.png is too large ({icon_2x_size} bytes), compress to < 100KB"
+
     async def test_common_modules_exist(self):
         """Test: common-modules - Common patterns in shared modules.
 
@@ -310,10 +375,24 @@ async def test_bronze_tier_summary(hass):
     This test documents which Bronze tier requirements are met.
     It always passes but logs the compliance status.
     """
+    from pathlib import Path
+
+    # Check if branding icons are present (data-driven status)
+    integration_dir = (
+        Path(__file__).parent.parent.parent / "custom_components" / "imou_life"
+    )
+    icons_present = (integration_dir / "icon.png").exists() and (
+        integration_dir / "icon@2x.png"
+    ).exists()
+
     bronze_requirements = {
         "action-setup": "✅ PASS - PTZ services registered in camera platform",
         "appropriate-polling": "✅ PASS - 15min default, configurable",
-        "brands": "⚠️  TODO - Need branding assets",
+        "brands": (
+            "✅ PASS - icon.png/icon@2x.png present"
+            if icons_present
+            else "⚠️  TODO - Need icon.png/icon@2x.png (see BRANDING.md)"
+        ),
         "common-modules": "✅ PASS - entity.py, entity_mixins.py, platform_setup.py",
         "config-flow-test-coverage": "✅ PASS - 10/10 tests passing",
         "config-flow": "✅ PASS - UI-based setup",

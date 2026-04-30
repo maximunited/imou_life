@@ -6,7 +6,7 @@ rules:
   # 🥉 Bronze Tier (19 rules) - Baseline quality
   action-setup: done  # PTZ services registered in camera platform
   appropriate-polling: done  # 15min default, configurable
-  brands: todo  # Need branding assets
+  brands: todo  # Need icon.png/icon@2x.png files (see BRANDING.md for guide)
   common-modules: done  # entity.py, entity_mixins.py, platform_setup.py
   config-flow-test-coverage: done  # 10/10 tests passing
   config-flow: done  # UI-based setup
