@@ -50,7 +50,8 @@ class TestImouSiren:
 
     def test_siren_name(self, siren):
         """Test siren name property."""
-        assert siren.name == "Test Siren Siren"
+        # With has_entity_name=True, name is just the sensor description
+        assert siren.name == "Siren"
 
     def test_siren_unique_id(self, siren):
         """Test siren unique ID."""

@@ -46,7 +46,8 @@ class TestImouBinarySensor:
 
     def test_binary_sensor_name(self, binary_sensor):
         """Test binary sensor name property."""
-        assert binary_sensor.name == "Test Motion Sensor Motion"
+        # With has_entity_name=True, name is just the sensor description
+        assert binary_sensor.name == "Motion"
 
     def test_binary_sensor_unique_id(self, binary_sensor):
         """Test binary sensor unique ID."""

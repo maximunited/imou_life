@@ -44,7 +44,8 @@ class TestImouSensor:
 
     def test_sensor_name(self, sensor):
         """Test sensor name property."""
-        assert sensor.name == "Test Sensor Battery"
+        # With has_entity_name=True, name is just the sensor description
+        assert sensor.name == "Battery"
 
     def test_sensor_unique_id(self, sensor):
         """Test sensor unique ID."""

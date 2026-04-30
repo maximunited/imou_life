@@ -52,7 +52,8 @@ class TestImouEntity:
 
     def test_entity_name(self, entity):
         """Test entity name property."""
-        assert entity.name == "Test Entity Test"
+        # With has_entity_name=True, name is just the sensor description
+        assert entity.name == "Test"
 
     def test_entity_unique_id(self, entity):
         """Test entity unique ID."""

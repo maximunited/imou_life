@@ -49,7 +49,8 @@ class TestImouSelect:
 
     def test_select_name(self, select):
         """Test select name property."""
-        assert select.name == "Test Select Night Vision"
+        # With has_entity_name=True, name is just the sensor description
+        assert select.name == "Night Vision"
 
     def test_select_unique_id(self, select):
         """Test select unique ID."""
