@@ -218,6 +218,54 @@ class TestBronzeTierCompliance:
             "DEFAULT_SCAN_INTERVAL" in source or "scan_interval" in source
         ), "Coordinator __init__ should reference scan_interval"
 
+    @pytest.mark.skip(
+        reason="Icons not yet added. See custom_components/imou_life/BRANDING.md"
+    )
+    async def test_branding_assets_exist(self):
+        """Test: brands - Has branding assets available.
+
+        Bronze tier requires icon.png and icon@2x.png files.
+        As of HA 2026.3.0, custom integrations can include icons directly.
+
+        TODO: Download Imou logo and create icon files:
+        - icon.png (256×256) and icon@2x.png (512×512)
+        - See BRANDING.md for resources and requirements
+        """
+        import os
+        from pathlib import Path
+
+        # Get the integration directory
+        integration_dir = (
+            Path(__file__).parent.parent.parent / "custom_components" / "imou_life"
+        )
+
+        # Required icon files
+        icon_path = integration_dir / "icon.png"
+        icon_2x_path = integration_dir / "icon@2x.png"
+
+        # Check if icon files exist
+        assert icon_path.exists(), (
+            f"Missing icon.png at {icon_path}. "
+            "See custom_components/imou_life/BRANDING.md for requirements."
+        )
+        assert icon_2x_path.exists(), (
+            f"Missing icon@2x.png at {icon_2x_path}. "
+            "See custom_components/imou_life/BRANDING.md for requirements."
+        )
+
+        # Verify file sizes are reasonable (not empty, not too large)
+        icon_size = os.path.getsize(icon_path)
+        icon_2x_size = os.path.getsize(icon_2x_path)
+
+        assert icon_size > 1000, f"icon.png is too small ({icon_size} bytes)"
+        assert (
+            icon_size < 100000
+        ), f"icon.png is too large ({icon_size} bytes), compress it"
+        assert icon_2x_size > 1000, f"icon@2x.png is too small ({icon_2x_size} bytes)"
+        assert (
+            icon_2x_size < 200000
+        ), f"icon@2x.png is too large ({icon_2x_size} bytes), compress it"
+
     async def test_common_modules_exist(self):
         """Test: common-modules - Common patterns in shared modules.
 
@@ -281,7 +329,7 @@ async def test_bronze_tier_summary(hass):
     bronze_requirements = {
         "action-setup": "✅ PASS - PTZ services registered in camera platform",
         "appropriate-polling": "✅ PASS - 15min default, configurable",
-        "brands": "⚠️  TODO - Need branding assets",
+        "brands": "⚠️  TODO - Need icon.png/icon@2x.png (see BRANDING.md)",
         "common-modules": "✅ PASS - entity.py, entity_mixins.py, platform_setup.py",
         "config-flow-test-coverage": "✅ PASS - 10/10 tests passing",
         "config-flow": "✅ PASS - UI-based setup",
@@ -290,7 +338,7 @@ async def test_bronze_tier_summary(hass):
         "docs-high-level-description": "✅ PASS - README overview",
         "docs-installation-instructions": "✅ PASS - docs/INSTALLATION.md",
         "docs-removal-instructions": "✅ PASS - docs/UNINSTALL.md",
-        "entity-event-setup": "⚠️  TODO - Needs verification",
+        "entity-event-setup": "✅ PASS - State-based entities (binary_sensor, timestamp sensor)",
         "entity-unique-id": "✅ PASS - Using device IDs",
         "has-entity-name": "✅ PASS - _attr_has_entity_name = True in base entity",
         "runtime-data": "✅ PASS - Migrated to entry.runtime_data",
