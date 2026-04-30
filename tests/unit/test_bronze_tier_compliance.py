@@ -136,28 +136,37 @@ class TestBronzeTierCompliance:
                 len(entity.unique_id) > 0
             ), f"Entity {entity.entity_id} has empty unique_id"
 
-    @pytest.mark.skip(reason="has-entity-name is TODO in quality_scale.yaml")
     async def test_has_entity_name_property(self, hass, api_ok):
         """Test: has-entity-name - Entities use has_entity_name = True.
 
         Bronze tier requires entities to set has_entity_name = True for
         proper name composition with device name.
-
-        NOTE: This is currently a TODO item. The test is skipped until
-        the requirement is implemented.
         """
+        from unittest.mock import MagicMock
+
         from custom_components.imou_life.entity import ImouEntity
 
-        # Check that base entity class has the property
-        # Note: This tests the base class - individual entities inherit this
-        assert hasattr(
-            ImouEntity, "_attr_has_entity_name"
-        ), "ImouEntity missing _attr_has_entity_name attribute"
+        # Create a minimal entity instance to test
+        coordinator = MagicMock()
+        coordinator.device.get_name.return_value = "Test Device"
+        coordinator.hass = hass
+        config_entry = MagicMock()
+        config_entry.entry_id = "test"
+        sensor_instance = MagicMock()
+        sensor_instance.get_name.return_value = "test_sensor"
+        sensor_instance.get_description.return_value = "Test Sensor"
 
-        # Verify the attribute is set to True
+        entity = ImouEntity(coordinator, config_entry, sensor_instance, "sensor.{}")
+
+        # Verify has_entity_name is True
         assert (
-            ImouEntity._attr_has_entity_name is True
-        ), "ImouEntity._attr_has_entity_name should be True"
+            entity.has_entity_name is True
+        ), "Entity should have has_entity_name = True"
+
+        # Verify entity name is just the sensor description (not device + sensor)
+        assert (
+            entity.name == "Test Sensor"
+        ), f"Entity name should be just sensor description, got '{entity.name}'"
 
     async def test_service_registration_ptz(self, hass, api_ok):
         """Test: action-setup - PTZ services are registered.
@@ -283,8 +292,8 @@ async def test_bronze_tier_summary(hass):
         "docs-removal-instructions": "✅ PASS - docs/UNINSTALL.md",
         "entity-event-setup": "⚠️  TODO - Needs verification",
         "entity-unique-id": "✅ PASS - Using device IDs",
-        "has-entity-name": "✅ PASS - Base entity has attribute",
-        "runtime-data": "⚠️  TODO - Need to migrate from hass.data",
+        "has-entity-name": "✅ PASS - _attr_has_entity_name = True in base entity",
+        "runtime-data": "✅ PASS - Migrated to entry.runtime_data",
         "test-before-configure": "✅ PASS - Validates credentials",
         "test-before-setup": "✅ PASS - Validates device init",
         "unique-config-entry": "✅ PASS - Uses device_id as unique_id",

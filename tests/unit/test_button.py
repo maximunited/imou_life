@@ -45,7 +45,8 @@ class TestImouButton:
 
     def test_button_name(self, button):
         """Test button name property."""
-        assert button.name == "Test Button Restart"
+        # With has_entity_name=True, name is just the sensor description
+        assert button.name == "Restart"
 
     def test_button_unique_id(self, button):
         """Test button unique ID."""

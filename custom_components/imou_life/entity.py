@@ -14,6 +14,8 @@ _LOGGER: logging.Logger = logging.getLogger(__package__)
 class ImouEntity(CoordinatorEntity):
     """imou entity class."""
 
+    _attr_has_entity_name = True
+
     def __init__(self, coordinator, config_entry, sensor_instance, entity_format):
         """Initialize."""
         super().__init__(coordinator)
@@ -56,7 +58,7 @@ class ImouEntity(CoordinatorEntity):
     @property
     def name(self):
         """Return the name of the sensor."""
-        return f"{self.device.get_name()} {self.sensor_instance.get_description()}"
+        return self.sensor_instance.get_description()
 
     @property
     def icon(self):
