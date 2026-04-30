@@ -343,10 +343,24 @@ async def test_bronze_tier_summary(hass):
     This test documents which Bronze tier requirements are met.
     It always passes but logs the compliance status.
     """
+    from pathlib import Path
+
+    # Check if branding icons are present (data-driven status)
+    integration_dir = (
+        Path(__file__).parent.parent.parent / "custom_components" / "imou_life"
+    )
+    icons_present = (integration_dir / "icon.png").exists() and (
+        integration_dir / "icon@2x.png"
+    ).exists()
+
     bronze_requirements = {
         "action-setup": "✅ PASS - PTZ services registered in camera platform",
         "appropriate-polling": "✅ PASS - 15min default, configurable",
-        "brands": "⚠️  TODO - Need icon.png/icon@2x.png (see BRANDING.md)",
+        "brands": (
+            "✅ PASS - icon.png/icon@2x.png present"
+            if icons_present
+            else "⚠️  TODO - Need icon.png/icon@2x.png (see BRANDING.md)"
+        ),
         "common-modules": "✅ PASS - entity.py, entity_mixins.py, platform_setup.py",
         "config-flow-test-coverage": "✅ PASS - 10/10 tests passing",
         "config-flow": "✅ PASS - UI-based setup",
