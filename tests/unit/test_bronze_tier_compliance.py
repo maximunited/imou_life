@@ -345,8 +345,9 @@ async def test_bronze_tier_summary(hass):
         else:
             todo += 1
 
+    total = len(bronze_requirements)
     print("=" * 60)
-    print(f"TOTAL: {passed}/19 passed ({passed / 19 * 100:.0f}%), {todo} todo")
+    print(f"TOTAL: {passed}/{total} passed ({passed / total * 100:.0f}%), {todo} todo")
     print("=" * 60)
 
     # This test always passes - it's documentation
