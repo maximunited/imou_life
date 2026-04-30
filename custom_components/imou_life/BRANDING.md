@@ -104,7 +104,7 @@ After adding the icons, verify Bronze tier compliance by checking:
 - [ ] `icon.png` exists and is 256×256 pixels
 - [ ] `icon@2x.png` exists and is 512×512 pixels
 - [ ] Both files are PNG format with transparency
-- [ ] Images are properly compressed (< 50KB each)
+- [ ] Images are properly compressed (icon.png < 50KB, icon@2x.png < 100KB)
 - [ ] Icons display correctly in Home Assistant UI
 - [ ] Icons do not use Home Assistant branding
 

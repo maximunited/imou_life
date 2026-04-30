@@ -218,9 +218,6 @@ class TestBronzeTierCompliance:
             "DEFAULT_SCAN_INTERVAL" in source or "scan_interval" in source
         ), "Coordinator __init__ should reference scan_interval"
 
-    @pytest.mark.skip(
-        reason="Icons not yet added. See custom_components/imou_life/BRANDING.md"
-    )
     async def test_branding_assets_exist(self):
         """Test: brands - Has branding assets available.
 
@@ -243,28 +240,48 @@ class TestBronzeTierCompliance:
         icon_path = integration_dir / "icon.png"
         icon_2x_path = integration_dir / "icon@2x.png"
 
-        # Check if icon files exist
-        assert icon_path.exists(), (
-            f"Missing icon.png at {icon_path}. "
-            "See custom_components/imou_life/BRANDING.md for requirements."
-        )
-        assert icon_2x_path.exists(), (
-            f"Missing icon@2x.png at {icon_2x_path}. "
-            "See custom_components/imou_life/BRANDING.md for requirements."
-        )
+        # Skip if icons not yet added (runtime check allows test to run once added)
+        if not icon_path.exists() or not icon_2x_path.exists():
+            pytest.skip(
+                "Icons not yet added. See custom_components/imou_life/BRANDING.md"
+            )
 
-        # Verify file sizes are reasonable (not empty, not too large)
+        # Validate PNG format and dimensions using PIL
+        try:
+            from PIL import Image
+        except ImportError:
+            pytest.skip("Pillow not installed, cannot validate image format/dimensions")
+
+        # Verify icon.png
+        with Image.open(icon_path) as img:
+            assert img.format == "PNG", f"icon.png must be PNG format, got {img.format}"
+            assert img.size == (
+                256,
+                256,
+            ), f"icon.png must be 256×256 pixels, got {img.size}"
+
+        # Verify icon@2x.png
+        with Image.open(icon_2x_path) as img:
+            assert (
+                img.format == "PNG"
+            ), f"icon@2x.png must be PNG format, got {img.format}"
+            assert img.size == (
+                512,
+                512,
+            ), f"icon@2x.png must be 512×512 pixels, got {img.size}"
+
+        # Verify file sizes (compressed, optimized for web)
         icon_size = os.path.getsize(icon_path)
         icon_2x_size = os.path.getsize(icon_2x_path)
 
         assert icon_size > 1000, f"icon.png is too small ({icon_size} bytes)"
         assert (
-            icon_size < 100000
-        ), f"icon.png is too large ({icon_size} bytes), compress it"
+            icon_size < 51200
+        ), f"icon.png is too large ({icon_size} bytes), compress to < 50KB"
         assert icon_2x_size > 1000, f"icon@2x.png is too small ({icon_2x_size} bytes)"
         assert (
-            icon_2x_size < 200000
-        ), f"icon@2x.png is too large ({icon_2x_size} bytes), compress it"
+            icon_2x_size < 102400
+        ), f"icon@2x.png is too large ({icon_2x_size} bytes), compress to < 100KB"
 
     async def test_common_modules_exist(self):
         """Test: common-modules - Common patterns in shared modules.
