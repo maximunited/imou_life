@@ -4,17 +4,17 @@
 
 rules:
   # 🥉 Bronze Tier (19 rules) - Baseline quality
-  action-setup: todo  # Services registered in async_setup - needs verification
+  action-setup: done  # PTZ services registered in camera platform
   appropriate-polling: done  # 15min default, configurable
   brands: todo  # Need branding assets
   common-modules: done  # entity.py, entity_mixins.py, platform_setup.py
   config-flow-test-coverage: done  # 10/10 tests passing
   config-flow: done  # UI-based setup
-  dependency-transparency: todo  # Need to verify docs
-  docs-actions: todo  # PTZ services need documentation review
+  dependency-transparency: done  # Python dependencies documented in README
+  docs-actions: done  # docs/SERVICES.md with all services documented
   docs-high-level-description: done  # README overview exists
   docs-installation-instructions: done  # docs/INSTALLATION.md
-  docs-removal-instructions: todo  # Missing uninstall docs
+  docs-removal-instructions: done  # docs/UNINSTALL.md added
   entity-event-setup: todo  # Needs verification
   entity-unique-id: done  # Using device IDs
   has-entity-name: todo  # Needs verification across all entities
