@@ -1,5 +1,55 @@
 # Changelog
 
+## [1.3.5] - 2026-05-01
+
+### Added
+
+- **Bronze Tier 100% Complete** 🎉
+  - Official Imou branding assets (icon.png 256×256, icon@2x.png 512×512)
+  - Downloaded from Home Assistant brands repository
+  - All 19 Bronze tier requirements satisfied
+  - Quality scale updated to "bronze" in manifest.json
+
+- **API Server Region Selector** (#22)
+  - User-friendly dropdown to select optimal API server based on geographic region
+  - Predefined servers: Global, Frankfurt (EU), Singapore (Asia), Oregon (US), China
+  - Custom URL option for advanced users
+  - Performance improvement: Frankfurt server 3× faster for EU users (69ms vs 212ms)
+  - 4 new tests for server selection functionality
+
+- **Branding Assets Documentation** (#21)
+  - Complete guide: `custom_components/imou_life/BRANDING.md`
+  - Official Imou logo resources and implementation steps
+  - Technical specifications (PNG format, dimensions, compression)
+  - Verification checklist
+
+### Changed
+
+- **has_entity_name Implementation** (#19)
+  - All entities now use `_attr_has_entity_name = True`
+  - Proper name composition with device name
+  - Satisfies Bronze tier requirement
+
+- **entity-event-setup Compliance** (#20)
+  - Verified motion detection as state-based (binary_sensor)
+  - Last alarm as historical timestamp sensor
+  - No Event platform needed (polling-based integration)
+
+### Tests
+
+- **Bronze Tier Compliance Test Suite**
+  - `test_branding_assets_exist`: Validates icon format, dimensions, file size
+  - PIL validation for PNG format and exact pixel dimensions
+  - Data-driven Bronze tier summary (auto-detects icon presence)
+  - All 13 Bronze tier tests passing ✅
+
+### Documentation
+
+- Bronze tier status: 19/19 complete (100%) ✅
+- Quality scale tracking updated in `quality_scale.yaml`
+
+---
+
 ## [Unreleased] - Bronze Tier Runtime Data Migration
 
 ### Changed
