@@ -7,7 +7,6 @@ from typing import Type
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 
-from .const import DOMAIN
 from .entity import ImouEntity
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -31,7 +30,7 @@ async def setup_platform(
         entity_id_format: Format string for entity ID
         async_add_devices: Function to add devices to HA
     """
-    coordinator = hass.data[DOMAIN][entry.entry_id]
+    coordinator = entry.runtime_data
     device = coordinator.device
     entities = []
 

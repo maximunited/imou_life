@@ -50,9 +50,6 @@ async def async_setup(hass: HomeAssistant, config: ConfigType):
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up this integration using UI."""
-    if hass.data.get(DOMAIN) is None:
-        hass.data.setdefault(DOMAIN, {})
-
     # Initialize API client and device
     api_client, device = await _setup_api_client_and_device(hass, entry)
 
@@ -62,8 +59,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     # Create and configure coordinator
     coordinator = await _setup_coordinator(hass, device, entry)
 
-    # Store coordinator and setup platforms
-    hass.data[DOMAIN][entry.entry_id] = coordinator
+    # Store coordinator in runtime_data (modern HA pattern)
+    entry.runtime_data = coordinator
     await _setup_platforms(hass, entry, coordinator)
 
     # Check for rate limiting and notify user if detected
@@ -254,7 +251,7 @@ def _check_rate_limit_status(hass: HomeAssistant, entry: ConfigEntry, coordinato
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Handle removal of an entry."""
     _LOGGER.debug("Unloading entry %s", entry.entry_id)
-    coordinator = hass.data[DOMAIN][entry.entry_id]
+    coordinator = entry.runtime_data
     unloaded = all(
         await asyncio.gather(
             *[
@@ -264,8 +261,6 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             ]
         )
     )
-    if unloaded:
-        hass.data[DOMAIN].pop(entry.entry_id)
     return unloaded
 
 

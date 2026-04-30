@@ -15,7 +15,6 @@ from .const import (
     DEFAULT_MOTION_SENSITIVITY,
     DEFAULT_POWER_SAVING_MODE,
     DEFAULT_RECORDING_QUALITY,
-    DOMAIN,
 )
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -25,7 +24,7 @@ async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
     """Set up the Imou battery optimization button platform."""
-    coordinator = hass.data[DOMAIN][entry.entry_id]
+    coordinator = entry.runtime_data
 
     entities = []
 

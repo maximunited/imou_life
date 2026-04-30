@@ -53,8 +53,8 @@ class TestDiagnostics:
         self, mock_hass, mock_config_entry, mock_coordinator
     ):
         """Test config entry diagnostics."""
-        # Mock the coordinator retrieval from hass.data
-        mock_hass.data = {"imou_life": {mock_config_entry.entry_id: mock_coordinator}}
+        # Mock the coordinator retrieval from entry.runtime_data
+        mock_config_entry.runtime_data = mock_coordinator
         mock_coordinator.device.get_diagnostics.return_value = {
             "device_id": "test_device_123",
             "device_name": "Test Device",
@@ -77,11 +77,11 @@ class TestDiagnostics:
     @pytest.mark.asyncio
     async def test_diagnostics_no_coordinator(self, mock_hass, mock_config_entry):
         """Test diagnostics when no coordinator exists."""
-        # Mock empty hass.data
-        mock_hass.data = {"imou_life": {}}
+        # Mock entry.runtime_data as None (not set)
+        mock_config_entry.runtime_data = None
 
-        # This should raise a KeyError since the coordinator doesn't exist
-        with pytest.raises(KeyError):
+        # This should raise an AttributeError since runtime_data is None
+        with pytest.raises(AttributeError):
             await async_get_config_entry_diagnostics(mock_hass, mock_config_entry)
 
     @pytest.mark.asyncio
@@ -89,8 +89,8 @@ class TestDiagnostics:
         self, mock_hass, mock_config_entry, mock_coordinator
     ):
         """Test diagnostics data structure."""
-        # Mock the coordinator retrieval from hass.data
-        mock_hass.data = {"imou_life": {mock_config_entry.entry_id: mock_coordinator}}
+        # Mock the coordinator retrieval from entry.runtime_data
+        mock_config_entry.runtime_data = mock_coordinator
         mock_coordinator.device.get_diagnostics.return_value = {
             "device_id": "test_device_123",
             "device_name": "Test Device",

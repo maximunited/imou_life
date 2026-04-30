@@ -60,7 +60,7 @@ async def async_setup_entry(
         "async_service_ptz_move",
     )
 
-    coordinator = hass.data[DOMAIN][entry.entry_id]
+    coordinator = entry.runtime_data
     device = coordinator.device
     sensors = []
     for sensor_instance in device.get_sensors_by_platform("camera"):

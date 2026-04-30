@@ -18,7 +18,7 @@ async def async_setup_entry(hass, entry, async_add_devices):
     )
 
     # Add API status diagnostic sensor
-    coordinator = hass.data[DOMAIN][entry.entry_id]
+    coordinator = entry.runtime_data
     async_add_devices([ImouAPIStatusSensor(coordinator, entry)], True)
 
 

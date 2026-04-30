@@ -18,7 +18,7 @@ rules:
   entity-event-setup: todo  # Needs verification
   entity-unique-id: done  # Using device IDs
   has-entity-name: todo  # Needs verification across all entities
-  runtime-data: todo  # Currently using hass.data[DOMAIN], need to migrate to entry.runtime_data
+  runtime-data: done  # Migrated from hass.data[DOMAIN] to entry.runtime_data
   test-before-configure: done  # Validates credentials in config flow
   test-before-setup: done  # Validates device initialization
   unique-config-entry: done  # Uses device_id as unique_id

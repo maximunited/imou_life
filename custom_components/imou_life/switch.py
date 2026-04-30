@@ -7,7 +7,7 @@ from homeassistant.components.switch import ENTITY_ID_FORMAT, SwitchEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 
-from .const import DOMAIN, ENABLED_SWITCHES, OPTION_CALLBACK_URL
+from .const import ENABLED_SWITCHES, OPTION_CALLBACK_URL
 from .entity import ImouEntity
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -20,7 +20,7 @@ async def async_setup_entry(
     _LOGGER.debug("Setting up switch platform for entry %s", entry.entry_id)
 
     try:
-        coordinator = hass.data[DOMAIN][entry.entry_id]
+        coordinator = entry.runtime_data
         device = coordinator.device
         sensors = []
 
