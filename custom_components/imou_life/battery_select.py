@@ -10,7 +10,6 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .battery_entity import ImouBatteryEntity
 from .const import (
-    DOMAIN,
     MOTION_SENSITIVITY_LEVELS,
     POWER_MODES,
     RECORDING_QUALITY_OPTIONS,
@@ -24,7 +23,7 @@ async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
     """Set up the Imou battery optimization select platform."""
-    coordinator = hass.data[DOMAIN][entry.entry_id]
+    coordinator = entry.runtime_data
 
     entities = []
 

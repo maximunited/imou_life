@@ -24,21 +24,16 @@ async def test_setup_unload_and_reload_entry(hass, api_ok):
     # test setup entry
     config_entry.add_to_hass(hass)
     assert await hass.config_entries.async_setup(config_entry.entry_id)
-    assert DOMAIN in hass.data and config_entry.entry_id in hass.data[DOMAIN]
-    assert isinstance(
-        hass.data[DOMAIN][config_entry.entry_id], ImouDataUpdateCoordinator
-    )
+    assert hasattr(config_entry, "runtime_data")
+    assert isinstance(config_entry.runtime_data, ImouDataUpdateCoordinator)
 
     # Reload the entry and assert that the data from above is still there
     assert await async_reload_entry(hass, config_entry) is None
-    assert DOMAIN in hass.data and config_entry.entry_id in hass.data[DOMAIN]
-    assert isinstance(
-        hass.data[DOMAIN][config_entry.entry_id], ImouDataUpdateCoordinator
-    )
+    assert hasattr(config_entry, "runtime_data")
+    assert isinstance(config_entry.runtime_data, ImouDataUpdateCoordinator)
 
-    # Unload the entry and verify that the data has been removed
+    # Unload the entry and verify that unload succeeds
     assert await async_unload_entry(hass, config_entry)
-    assert config_entry.entry_id not in hass.data[DOMAIN]
 
 
 @pytest.mark.asyncio

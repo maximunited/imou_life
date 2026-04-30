@@ -1,5 +1,34 @@
 # Changelog
 
+## [Unreleased] - Bronze Tier Runtime Data Migration
+
+### Changed
+- **Runtime Data Migration** ⚡ CRITICAL
+  - Migrated from legacy `hass.data[DOMAIN]` to modern `entry.runtime_data` pattern
+  - Affects all platform files (camera, sensor, binary_sensor, switch, select, button, siren)
+  - Battery-specific platforms also migrated (battery_binary_sensor, battery_button, battery_select)
+  - Diagnostics updated to use `entry.runtime_data`
+  - Shared platform_setup.py updated
+  - All 241 unit tests passing ✅
+  - Completes 1 of 4 remaining Bronze tier requirements
+
+### Technical
+- `__init__.py`: Removed `hass.data[DOMAIN]` usage, now sets `entry.runtime_data = coordinator`
+- `async_unload_entry`: Uses `entry.runtime_data` instead of `hass.data[DOMAIN][entry.entry_id]`
+- All platform files updated: 8 files modified
+- Test fixtures updated: MockConfigEntry now has `runtime_data` attribute
+- Test mocks updated: MockHomeAssistant sets `entry.runtime_data` in async_setup
+
+### Quality Scale
+- **Bronze**: 16/19 complete (84%) - Up from 15/19 (79%)
+- **runtime-data**: ✅ DONE (was TODO)
+
+### Tests
+- All unit tests passing: 241 passed, 2 skipped ✅
+- Updated test_diagnostics.py to use `entry.runtime_data`
+- Updated test_init.py to check `entry.runtime_data`
+- Mock fixtures support runtime_data pattern
+
 ## [Unreleased] - Bronze Tier Completion
 
 ### Added

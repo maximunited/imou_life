@@ -74,10 +74,14 @@ class MockConfigEntry(ConfigEntry):
 
         self._hass = None
         self._options = kwargs.get("options", {})
+        self.runtime_data = None  # Initialize runtime_data attribute
 
     def add_to_hass(self, hass):
         """Add this config entry to hass."""
         self._hass = hass
+        # Register this entry in config_entries for mock_async_setup
+        if hasattr(hass.config_entries, "_entries"):
+            hass.config_entries._entries[self.entry_id] = self
         return self
 
     @property
@@ -210,10 +214,6 @@ class MockHomeAssistant:
         """Set up entry setup mocks."""
 
         def mock_async_setup(entry_id):
-            # Store the entry in hass.data for testing
-            if "imou_life" not in self.data:
-                self.data["imou_life"] = {}
-
             # Create a mock coordinator that can pass isinstance checks
             from custom_components.imou_life.coordinator import (
                 ImouDataUpdateCoordinator,
@@ -233,7 +233,11 @@ class MockHomeAssistant:
             mock_device.get_name.return_value = "device_name"
             mock_coordinator.device = mock_device
 
-            self.data["imou_life"][entry_id] = mock_coordinator
+            # Find the config entry and set runtime_data
+            for entry in self.config_entries._entries.values():
+                if entry.entry_id == entry_id:
+                    entry.runtime_data = mock_coordinator
+                    break
 
             # Set up platforms
             from custom_components.imou_life.const import PLATFORMS
@@ -244,6 +248,7 @@ class MockHomeAssistant:
             return True
 
         self.config_entries.async_setup = AsyncMock(side_effect=mock_async_setup)
+        self.config_entries._entries = {}
 
         # Mock async_forward_entry_setups
         def mock_async_forward_entry_setups(entry, platforms):
@@ -258,9 +263,9 @@ class MockHomeAssistant:
                 mock_switch.async_turn_on = AsyncMock()
                 mock_switch.async_turn_off = AsyncMock()
 
-                # Add to coordinator entities
-                coordinator = self.data["imou_life"][entry.entry_id]
-                coordinator.entities.append(mock_switch)
+                # Add to coordinator entities (use runtime_data)
+                if hasattr(entry, "runtime_data") and entry.runtime_data:
+                    entry.runtime_data.entities.append(mock_switch)
 
             return True
 
