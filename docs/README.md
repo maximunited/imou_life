@@ -1,73 +1,42 @@
-# Imou Life Documentation
+# Documentation Index
 
-Welcome to the Imou Life Home Assistant integration documentation. This guide will help you understand the project structure and find the information you need.
+This directory contains all documentation for the Imou Life integration.
 
-## 📚 Documentation Index
+## User Documentation
 
-### 🚀 Getting Started
-- **[Installation Guide](INSTALLATION.md)** - Complete setup and installation instructions
-- **[Quick Start](QUICK_START.md)** - Get up and running in minutes
+- [INSTALLATION.md](INSTALLATION.md) - Installation instructions for HACS and manual installation
+- [CONFIGURATION.md](CONFIGURATION.md) - Configuration options and settings
+- [PERFORMANCE_TROUBLESHOOTING.md](PERFORMANCE_TROUBLESHOOTING.md) - Performance optimization guide
+- [QUALITY_SCALE.md](QUALITY_SCALE.md) - Integration quality assessment
+- [RELEASE_PROCESS.md](RELEASE_PROCESS.md) - Release workflow and procedures
 
-### 🛠️ Development
-- **[Development Guide](DEVELOPMENT.md)** - Contributing guidelines and development setup
-- **[Testing Guide](TESTING.md)** - How to run tests and ensure code quality
-- **[Performance Guide](PERFORMANCE_TROUBLESHOOTING.md)** - Optimization tips and troubleshooting
+## Development Documentation
 
-### 🔧 Configuration
-- **[HACS Guide](HACS_ENHANCEMENTS.md)** - HACS-specific features and configuration
-- **[Requirements](REQUIREMENTS.md)** - Dependencies and system requirements
-- **[Configuration](CONFIGURATION.md)** - Integration configuration options
+Located in [development/](development/):
 
-### 📖 Reference
-- **[Changelog](CHANGELOG.md)** - Version history and changes
-- **[API Reference](API_REFERENCE.md)** - Integration API documentation
-- **[FAQ](FAQ.md)** - Frequently asked questions
+- [DEVELOPMENT.md](../DEVELOPMENT.md) - Development guide (at root)
+- [BATTERY_CODE_REVIEW.md](development/BATTERY_CODE_REVIEW.md) - Battery optimization code review
+- [BATTERY_IMPROVEMENTS_SUMMARY.md](development/BATTERY_IMPROVEMENTS_SUMMARY.md) - Battery feature improvements
+- [COVERAGE_ANALYSIS.md](development/COVERAGE_ANALYSIS.md) - Test coverage analysis
+- [CRITICAL_FIXES_APPLIED.md](development/CRITICAL_FIXES_APPLIED.md) - Critical bug fixes
+- [CRITICAL_ISSUES_REPORT.md](development/CRITICAL_ISSUES_REPORT.md) - Critical issues report
+- [HOOK_ANALYSIS.md](development/HOOK_ANALYSIS.md) - Pre-commit hook analysis
 
-## 🏗️ Project Structure
+## Testing Documentation
 
-```
-imou_life/
-├── 📁 custom_components/imou_life/    # Home Assistant integration
-├── 📁 tools/                          # Development and utility tools
-│   ├── 📁 scripts/                    # PowerShell/Batch scripts
-│   ├── 📁 docker/                     # Docker testing files
-│   └── 📁 validation/                 # Setup validation tools
-├── 📁 tests/                          # Test suite
-│   ├── 📁 unit/                       # Unit tests
-│   ├── 📁 integration/                # Integration tests
-│   └── 📁 fixtures/                   # Test data and fixtures
-├── 📁 docs/                           # Documentation (this directory)
-├── 📁 scripts/                        # Build and deployment scripts
-└── 📁 config/                         # Configuration files
-```
+Located in [testing/](testing/):
 
-## 🔍 Quick Navigation
+- [TESTING.md](TESTING.md) - Testing guide and procedures
+- [INTEGRATION_TESTS_SUMMARY.md](testing/INTEGRATION_TESTS_SUMMARY.md) - Integration test summary
+- [TEST_RESULTS_INTEGRATION.md](testing/TEST_RESULTS_INTEGRATION.md) - Detailed test results
 
-### For Users
-- Start with [Installation Guide](INSTALLATION.md)
-- Check [HACS Guide](HACS_ENHANCEMENTS.md) if using HACS
-- Refer to [Configuration](CONFIGURATION.md) for setup options
+## Changelog
 
-### For Developers
-- Read [Development Guide](DEVELOPMENT.md) first
-- Set up testing with [Testing Guide](TESTING.md)
-- Check [Performance Guide](PERFORMANCE_TROUBLESHOOTING.md) for optimization
+See [../CHANGELOG.md](../CHANGELOG.md) for version history and release notes.
 
-### For Contributors
-- Follow [Development Guide](DEVELOPMENT.md) guidelines
-- Ensure tests pass with [Testing Guide](TESTING.md)
-- Update [Changelog](CHANGELOG.md) for changes
+## Quick Links
 
-## 📞 Getting Help
-
-- **Issues**: [GitHub Issues](https://github.com/maximunited/imou_life/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/maximunited/imou_life/discussions)
-- **Documentation**: [Project Wiki](https://github.com/maximunited/imou_life/wiki)
-
-## 🤝 Contributing
-
-We welcome contributions! Please see our [Development Guide](DEVELOPMENT.md) for details on how to contribute to the project.
-
----
-
-**Need help?** Check our [FAQ](FAQ.md) or open an [issue](https://github.com/maximunited/imou_life/issues) on GitHub.
+- **Installation**: Start with [INSTALLATION.md](INSTALLATION.md)
+- **Development**: See [../CLAUDE.md](../CLAUDE.md) for AI assistant guidance
+- **Testing**: See [TESTING.md](TESTING.md)
+- **Issues**: https://github.com/maximunited/imou_life/issues

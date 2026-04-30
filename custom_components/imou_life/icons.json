@@ -1,0 +1,124 @@
+{
+  "entity": {
+    "sensor": {
+      "storage_used": {
+        "default": "mdi:harddisk"
+      },
+      "status": {
+        "default": "mdi:lan-connect",
+        "state": {
+          "online": "mdi:check-network",
+          "offline": "mdi:close-network",
+          "sleep": "mdi:sleep",
+          "upgrading": "mdi:cloud-arrow-up"
+        }
+      },
+      "callback_url": {
+        "default": "mdi:webhook"
+      },
+      "api_status": {
+        "default": "mdi:api",
+        "state": {
+          "ok": "mdi:check-circle",
+          "rate_limited": "mdi:speedometer-slow",
+          "error": "mdi:alert-circle",
+          "unknown": "mdi:help-circle"
+        }
+      },
+      "battery": {
+        "default": "mdi:battery"
+      }
+    },
+    "binary_sensor": {
+      "online": {
+        "default": "mdi:lan-connect",
+        "state": {
+          "on": "mdi:check-network",
+          "off": "mdi:close-network"
+        }
+      },
+      "motion_alarm": {
+        "default": "mdi:motion-sensor",
+        "state": {
+          "on": "mdi:motion-sensor-alert",
+          "off": "mdi:motion-sensor"
+        }
+      }
+    },
+    "select": {
+      "night_vision_mode": {
+        "default": "mdi:weather-night"
+      },
+      "recording_quality": {
+        "default": "mdi:quality-high"
+      },
+      "motion_sensitivity": {
+        "default": "mdi:motion-sensor"
+      },
+      "power_mode": {
+        "default": "mdi:power"
+      },
+      "sleep_schedule": {
+        "default": "mdi:sleep"
+      }
+    },
+    "switch": {
+      "motion_detect": {
+        "default": "mdi:motion-sensor"
+      },
+      "close_camera": {
+        "default": "mdi:camera-off"
+      },
+      "white_light": {
+        "default": "mdi:light-flood-down"
+      },
+      "audio_encode_control": {
+        "default": "mdi:audio-input-rca"
+      },
+      "human_detect": {
+        "default": "mdi:human"
+      },
+      "push_notifications": {
+        "default": "mdi:bell-ring"
+      },
+      "linkage_white_light": {
+        "default": "mdi:lightbulb-on"
+      }
+    },
+    "button": {
+      "refresh_data": {
+        "default": "mdi:refresh"
+      },
+      "refresh_alarm": {
+        "default": "mdi:alarm-bell"
+      },
+      "restart_device": {
+        "default": "mdi:restart"
+      },
+      "enter_sleep_mode": {
+        "default": "mdi:sleep"
+      },
+      "exit_sleep_mode": {
+        "default": "mdi:sleep-off"
+      }
+    },
+    "camera": {
+      "camera": {
+        "default": "mdi:video"
+      }
+    },
+    "siren": {
+      "siren": {
+        "default": "mdi:alarm-light"
+      }
+    }
+  },
+  "services": {
+    "ptz_location": {
+      "service": "mdi:crosshairs-gps"
+    },
+    "ptz_move": {
+      "service": "mdi:cursor-move"
+    }
+  }
+}
