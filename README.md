@@ -26,6 +26,14 @@ A Home Assistant integration for Imou Life cameras and devices, providing compre
 - **Python**: 3.11, 3.12, 3.13
 - **Operating System**: Any platform supported by Home Assistant
 
+### Python Dependencies
+- **imouapi**: 1.0.15 (automatically installed with the integration)
+  - Official Python library for Imou API communication
+  - Handles device discovery, authentication, and control
+  - See [imouapi on PyPI](https://pypi.org/project/imouapi/)
+
+> **Note**: The imouapi library is automatically installed by Home Assistant when you add the integration. No manual installation required.
+
 ### Account Requirements
 - **Imou Account**: Valid Imou Life account with registered devices
 - **Developer Account**: App ID and App Secret from [Imou Open Platform](https://open.imoulife.com)
