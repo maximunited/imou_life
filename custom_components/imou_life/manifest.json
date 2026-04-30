@@ -12,7 +12,7 @@
     "documentation":  "https://github.com/maximunited/imou_life",
     "iot_class":  "cloud_polling",
     "issue_tracker":  "https://github.com/maximunited/imou_life/issues",
-    "quality_scale":  "platinum",
+    "quality_scale":  "bronze",
     "requirements":  [
                          "imouapi==1.0.15"
                      ],

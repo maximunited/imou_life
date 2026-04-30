@@ -1,25 +1,70 @@
+# Integration Quality Scale Tracking
+# Based on official Home Assistant quality scale rules
+# https://developers.home-assistant.io/docs/core/integration-quality-scale/rules/
+
 rules:
-  # Bronze Tier Requirements
-  config_flow: done
-  tests: done
-  codeowners: done
+  # 🥉 Bronze Tier (19 rules) - Baseline quality
+  action-setup: todo  # Services registered in async_setup - needs verification
+  appropriate-polling: done  # 15min default, configurable
+  brands: todo  # Need branding assets
+  common-modules: done  # entity.py, entity_mixins.py, platform_setup.py
+  config-flow-test-coverage: done  # 10/10 tests passing
+  config-flow: done  # UI-based setup
+  dependency-transparency: todo  # Need to verify docs
+  docs-actions: todo  # PTZ services need documentation review
+  docs-high-level-description: done  # README overview exists
+  docs-installation-instructions: done  # docs/INSTALLATION.md
+  docs-removal-instructions: todo  # Missing uninstall docs
+  entity-event-setup: todo  # Needs verification
+  entity-unique-id: done  # Using device IDs
+  has-entity-name: todo  # Needs verification across all entities
+  runtime-data: todo  # Currently using hass.data[DOMAIN], need to migrate to entry.runtime_data
+  test-before-configure: done  # Validates credentials in config flow
+  test-before-setup: done  # Validates device initialization
+  unique-config-entry: done  # Uses device_id as unique_id
 
-  # Silver Tier Requirements
-  error_recovery: done
-  offline_handling: done
-  logging: done
-  troubleshooting_docs: done
+  # 🥈 Silver Tier (10 rules) - Stable user experience
+  action-exceptions: todo  # Service exception handling needs verification
+  config-entry-unloading: done  # async_unload_entry implemented
+  docs-configuration-parameters: done  # docs/CONFIGURATION.md
+  docs-installation-parameters: done  # docs/INSTALLATION.md
+  entity-unavailable: done  # Sets unavailable when offline
+  integration-owner: done  # CODEOWNERS file
+  log-when-unavailable: todo  # Logging needs verification
+  parallel-updates: todo  # Not specified in platforms
+  reauthentication-flow: todo  # Not implemented
+  test-coverage: todo  # ~70% currently, need 95%
 
-  # Gold Tier Requirements
-  device_discovery: done
-  entity_naming: done
-  translations: done
-  comprehensive_docs: done
-  test_coverage: done
-  firmware_updates: exempt
-  # exempt: This integration doesn't support firmware updates through Home Assistant
+  # 🥇 Gold Tier (23 rules) - Comprehensive support
+  devices: done  # Creates devices
+  diagnostics: done  # diagnostics.py implemented
+  discovery-update-info: todo  # Needs verification
+  discovery: done  # Device discovery in config flow
+  docs-data-update: todo  # Needs documentation
+  docs-examples: todo  # No automation examples yet
+  docs-known-limitations: todo  # Needs documentation
+  docs-supported-devices: todo  # No device compatibility list
+  docs-supported-functions: todo  # Needs comprehensive entity documentation
+  docs-troubleshooting: done  # docs/PERFORMANCE_TROUBLESHOOTING.md
+  docs-use-cases: todo  # No use case examples
+  dynamic-devices: todo  # Cannot add devices after setup
+  entity-category: done  # API status sensor uses diagnostic category
+  entity-device-class: todo  # Needs verification
+  entity-disabled-by-default: todo  # Needs verification
+  entity-translations: done  # 8 languages supported
+  exception-translations: todo  # Needs verification
+  icon-translations: done  # icons.json added
+  reconfiguration-flow: todo  # Not implemented
+  repair-issues: todo  # No repair flows
+  stale-devices: todo  # No stale device cleanup
 
-  # Platinum Tier Requirements
-  type_annotations: done
-  async_code: done
-  performance: done
+  # 🏆 Platinum Tier (3 rules) - Technical excellence
+  async-dependency: exempt  # imouapi library is synchronous, cannot fix without new library
+  inject-websession: exempt  # imouapi doesn't accept websession, library limitation
+  strict-typing: todo  # Have type hints but not strict mode
+
+# Exemption Notes:
+# - async-dependency: The imouapi library (1.0.15) is synchronous. Migration to async would
+#   require either switching to pyimouapi (different API) or wrapping all calls.
+# - inject-websession: imouapi library doesn't support passing aiohttp ClientSession.
+#   This is a library limitation that cannot be fixed in the integration code.
