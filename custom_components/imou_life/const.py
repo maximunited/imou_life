@@ -67,9 +67,19 @@ API_SERVER_OPTIONS = {
     "global": "https://openapi.easy4ip.com/openapi",
     "frankfurt": "https://openapi-fk.easy4ip.com/openapi",
     "singapore": "https://openapi-sg.easy4ip.com/openapi",
-    "virginia": "https://openapi-or.easy4ip.com/openapi",
+    "oregon": "https://openapi-or.easy4ip.com/openapi",
     "china": "https://openapi.lechange.cn/openapi",
     "custom": "custom",  # Special value to indicate custom URL
+}
+
+# UI labels for API server selector
+API_SERVER_LABELS = {
+    "global": "Global Default",
+    "frankfurt": "Europe - Frankfurt [Recommended for EU]",
+    "singapore": "Asia Pacific - Singapore",
+    "oregon": "North America - Oregon",
+    "china": "China Mainland",
+    "custom": "Custom URL",
 }
 
 DEFAULT_API_SERVER = "global"

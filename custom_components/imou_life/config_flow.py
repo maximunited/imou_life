@@ -11,6 +11,7 @@ from imouapi.device import ImouDevice, ImouDiscoverService
 from imouapi.exceptions import ImouException
 
 from .const import (
+    API_SERVER_LABELS,
     API_SERVER_OPTIONS,
     CONF_API_SERVER,
     CONF_API_URL,
@@ -112,41 +113,15 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
                     else:
                         return await self.async_step_manual()
 
-        # Determine the API URL to show based on previous selection or default
-        selected_server = (
-            user_input.get(CONF_API_SERVER, DEFAULT_API_SERVER)
-            if user_input
-            else DEFAULT_API_SERVER
-        )
-
-        # Auto-populate URL based on selected server
-        if selected_server == "custom":
-            # For custom, show empty field (required)
-            display_url = user_input.get(CONF_API_URL, "") if user_input else ""
-            url_field = vol.Required(CONF_API_URL, default=display_url)
-        else:
-            # For preset servers, show the URL (read-only via description)
-            display_url = API_SERVER_OPTIONS.get(
-                selected_server, API_SERVER_OPTIONS["global"]
-            )
-            url_field = vol.Optional(CONF_API_URL, default=display_url)
-
         # by default show up the form
         return self.async_show_form(
             step_id="login",
             data_schema=vol.Schema(
                 {
-                    vol.Required(CONF_API_SERVER, default=selected_server): vol.In(
-                        {
-                            "global": "Global (openapi.easy4ip.com)",
-                            "frankfurt": "Frankfurt (Germany)",
-                            "singapore": "Singapore",
-                            "virginia": "Virginia (USA)",
-                            "china": "China",
-                            "custom": "Custom",
-                        }
+                    vol.Required(CONF_API_SERVER, default=DEFAULT_API_SERVER): vol.In(
+                        API_SERVER_LABELS
                     ),
-                    url_field: str,
+                    vol.Optional(CONF_API_URL, default=""): str,
                     vol.Required(CONF_APP_ID): str,
                     vol.Required(CONF_APP_SECRET): str,
                     vol.Required(CONF_ENABLE_DISCOVER, default=True): bool,
