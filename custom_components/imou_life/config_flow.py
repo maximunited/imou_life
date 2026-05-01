@@ -304,7 +304,7 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
 
                 # Map common exceptions to translation keys
                 # Check rate limiting first
-                if "OP1013" in error_str or "exceed limit" in error_str_lower:
+                if "op1013" in error_str_lower or "exceed limit" in error_str_lower:
                     errors["base"] = "rate_limit_exceeded"
                 # Check authentication/authorization errors
                 elif any(
@@ -340,7 +340,7 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
             ),
             errors=errors,
             description_placeholders={
-                "device_name": self.entry.data.get(CONF_DEVICE_NAME, "Unknown")
+                "device_name": self.entry.data.get(CONF_DEVICE_NAME, self.entry.title)
             },
         )
 
