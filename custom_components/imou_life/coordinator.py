@@ -4,6 +4,7 @@ import logging
 from datetime import datetime, timedelta
 
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.util import dt as dt_util
 from imouapi.device import ImouDevice
@@ -74,6 +75,20 @@ class ImouDataUpdateCoordinator(DataUpdateCoordinator):
 
         except ImouException as exception:
             error_str = str(exception)
+
+            # Check for authentication errors first
+            auth_error_patterns = [
+                "authentication failed",
+                "invalid credentials",
+                "invalid app",
+                "token expired",
+                "unauthorized",
+                "OP1002",  # Common auth error code in Imou API
+            ]
+            if any(pattern in error_str.lower() for pattern in auth_error_patterns):
+                raise ConfigEntryAuthFailed(
+                    "Invalid credentials, please reauthenticate"
+                ) from exception
 
             # Check if this is a rate limit error
             if "OP1013" in error_str or "exceed limit" in error_str.lower():
