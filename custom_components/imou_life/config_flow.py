@@ -300,16 +300,31 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
 
             except ImouException as exception:
                 error_str = str(exception)
+                error_str_lower = error_str.lower()
+
                 # Map common exceptions to translation keys
-                if "OP1013" in error_str or "exceed limit" in error_str.lower():
+                # Check rate limiting first
+                if "OP1013" in error_str or "exceed limit" in error_str_lower:
                     errors["base"] = "rate_limit_exceeded"
-                elif (
-                    "not_authorized" in error_str
-                    or "invalid device" in error_str.lower()
+                # Check authentication/authorization errors
+                elif any(
+                    pattern in error_str_lower
+                    for pattern in [
+                        "authentication failed",
+                        "invalid credentials",
+                        "invalid app",
+                        "token expired",
+                        "unauthorized",
+                        "not_authorized",
+                        "invalid device",
+                        "op1002",
+                    ]
                 ):
                     errors["base"] = "not_authorized"
-                elif "connection" in error_str.lower():
+                # Check connection errors
+                elif "connection" in error_str_lower:
                     errors["base"] = "connection_failed"
+                # Generic API error fallback
                 else:
                     errors["base"] = "api_error"
                 _LOGGER.error("Reauth failed: %s", error_str)
