@@ -330,6 +330,7 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
                     )
             except Exception as exception:
                 _LOGGER.error("Error entering sleep mode: %s", str(exception))
+                raise
 
     async def exit_sleep_mode(self):
         """Exit sleep mode - public API method."""
@@ -351,6 +352,7 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
                     )
             except Exception as exception:
                 _LOGGER.error("Error exiting sleep mode: %s", str(exception))
+                raise
 
     def is_sleep_mode_active(self) -> bool:
         """Check if sleep mode is currently active - public API method."""
@@ -372,6 +374,7 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
                 )
         except Exception as exception:
             _LOGGER.error("Error setting motion sensitivity: %s", str(exception))
+            raise
 
     async def _set_recording_quality(self, quality: str):
         """Set recording quality."""
@@ -389,6 +392,7 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
                 )
         except Exception as exception:
             _LOGGER.error("Error setting recording quality: %s", str(exception))
+            raise
 
     async def _set_led_indicators(self, enabled: bool):
         """Set LED indicators on/off."""
@@ -405,6 +409,7 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
                 )
         except Exception as exception:
             _LOGGER.error("Error setting LED indicators: %s", str(exception))
+            raise
 
     async def _set_power_mode(self, mode: str):
         """Set power mode."""
@@ -422,6 +427,7 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
                 )
         except Exception as exception:
             _LOGGER.error("Error setting power mode: %s", str(exception))
+            raise
 
     # Public methods for external use
     async def set_power_mode(self, mode: str):
@@ -458,6 +464,7 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
 
         except Exception as exception:
             _LOGGER.error("Error applying battery optimization: %s", str(exception))
+            raise
 
     async def set_sleep_schedule(
         self,

@@ -6,6 +6,7 @@ from typing import Optional
 from homeassistant.components.select import SelectEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .battery_entity import ImouBatteryEntity
@@ -163,6 +164,9 @@ class ImouBatterySelect(ImouBatteryEntity, SelectEntity):
             _LOGGER.error(
                 "Error setting %s to %s: %s", self._description, option, str(exception)
             )
+            raise HomeAssistantError(
+                f"Failed to set {self._description} to {option}: {exception}"
+            ) from exception
 
         # Always update config entry options
         try:
@@ -182,3 +186,6 @@ class ImouBatterySelect(ImouBatteryEntity, SelectEntity):
             _LOGGER.error(
                 "Error updating config for %s: %s", self._description, str(exception)
             )
+            raise HomeAssistantError(
+                f"Failed to update config for {self._description}: {exception}"
+            ) from exception

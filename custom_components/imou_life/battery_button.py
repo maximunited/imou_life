@@ -5,6 +5,7 @@ import logging
 from homeassistant.components.button import ButtonEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .battery_entity import ImouBatteryEntity
@@ -146,6 +147,9 @@ class ImouBatteryButton(ImouBatteryEntity, ButtonEntity):
             _LOGGER.error(
                 "Error executing %s action: %s", self._description, str(exception)
             )
+            raise HomeAssistantError(
+                f"Failed to execute {self._description}: {exception}"
+            ) from exception
 
     async def _reset_power_settings(self):
         """Reset power settings to defaults."""
@@ -172,4 +176,6 @@ class ImouBatteryButton(ImouBatteryEntity, ButtonEntity):
 
         except Exception as exception:
             _LOGGER.error("Error resetting power settings: %s", str(exception))
-            raise
+            raise HomeAssistantError(
+                f"Failed to reset power settings: {exception}"
+            ) from exception

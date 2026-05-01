@@ -12,8 +12,10 @@ from homeassistant.components.camera import (
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import entity_platform
 from imouapi.const import PTZ_OPERATIONS
+from imouapi.exceptions import ImouException
 
 from .const import (
     ATTR_PTZ_DURATION,
@@ -193,11 +195,16 @@ class ImouCamera(Camera):
             vertical,
             zoom,
         )
-        await self._sensor_instance.async_service_ptz_location(
-            horizontal,
-            vertical,
-            zoom,
-        )
+        try:
+            await self._sensor_instance.async_service_ptz_location(
+                horizontal,
+                vertical,
+                zoom,
+            )
+        except ImouException as err:
+            raise HomeAssistantError(
+                f"Failed to move camera to location: {err}"
+            ) from err
 
     async def async_service_ptz_move(self, operation, duration):
         """Perform PTZ move action."""
@@ -207,7 +214,10 @@ class ImouCamera(Camera):
             operation,
             duration,
         )
-        await self._sensor_instance.async_service_ptz_move(
-            operation,
-            duration,
-        )
+        try:
+            await self._sensor_instance.async_service_ptz_move(
+                operation,
+                duration,
+            )
+        except ImouException as err:
+            raise HomeAssistantError(f"Failed to move camera: {err}") from err

@@ -208,13 +208,15 @@ class TestImouBatteryButton:
         self, enter_sleep_button, mock_coordinator
     ):
         """Test button press exception handling."""
+        from homeassistant.exceptions import HomeAssistantError
+
         mock_coordinator.enter_sleep_mode = AsyncMock(
             side_effect=Exception("Test error")
         )
 
-        # Should handle exception gracefully
-        await enter_sleep_button.async_press()
-        # Should not raise exception, just log error
+        # Should raise HomeAssistantError (Silver tier requirement)
+        with pytest.raises(HomeAssistantError):
+            await enter_sleep_button.async_press()
 
     def test_button_available(self, enter_sleep_button):
         """Test button entity availability."""
@@ -311,13 +313,17 @@ class TestImouBatteryButton:
     async def test_button_press_error_logging(
         self, enter_sleep_button, mock_coordinator
     ):
-        """Test that button press errors are logged."""
+        """Test that button press errors are logged and raised."""
+        from homeassistant.exceptions import HomeAssistantError
+
         mock_coordinator.enter_sleep_mode = AsyncMock(
             side_effect=Exception("Test error")
         )
 
         with patch("custom_components.imou_life.battery_button._LOGGER") as mock_logger:
-            await enter_sleep_button.async_press()
+            # Should raise HomeAssistantError (Silver tier requirement)
+            with pytest.raises(HomeAssistantError):
+                await enter_sleep_button.async_press()
 
             # Check that error message was logged
             mock_logger.error.assert_called_once()
