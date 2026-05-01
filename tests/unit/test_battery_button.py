@@ -209,9 +209,10 @@ class TestImouBatteryButton:
     ):
         """Test button press exception handling."""
         from homeassistant.exceptions import HomeAssistantError
+        from imouapi.exceptions import ImouException
 
         mock_coordinator.enter_sleep_mode = AsyncMock(
-            side_effect=Exception("Test error")
+            side_effect=ImouException("Test error")
         )
 
         # Should raise HomeAssistantError (Silver tier requirement)
@@ -315,9 +316,10 @@ class TestImouBatteryButton:
     ):
         """Test that button press errors are logged and raised."""
         from homeassistant.exceptions import HomeAssistantError
+        from imouapi.exceptions import ImouException
 
         mock_coordinator.enter_sleep_mode = AsyncMock(
-            side_effect=Exception("Test error")
+            side_effect=ImouException("Test error")
         )
 
         with patch("custom_components.imou_life.battery_button._LOGGER") as mock_logger:

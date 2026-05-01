@@ -278,6 +278,12 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
                 # Validate credentials
                 await api_client.async_connect()
 
+                # Verify device access
+                device_id = self.entry.data.get(CONF_DEVICE_ID)
+                if device_id:
+                    device = ImouDevice(api_client, device_id)
+                    await device.async_initialize()
+
                 # Update config entry with new credentials
                 new_data = {
                     **self.entry.data,
@@ -293,8 +299,20 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
                 return self.async_abort(reason="reauth_successful")
 
             except ImouException as exception:
-                errors["base"] = exception.get_title()
-                _LOGGER.error("Reauth failed: %s", str(exception))
+                error_str = str(exception)
+                # Map common exceptions to translation keys
+                if "OP1013" in error_str or "exceed limit" in error_str.lower():
+                    errors["base"] = "rate_limit_exceeded"
+                elif (
+                    "not_authorized" in error_str
+                    or "invalid device" in error_str.lower()
+                ):
+                    errors["base"] = "not_authorized"
+                elif "connection" in error_str.lower():
+                    errors["base"] = "connection_failed"
+                else:
+                    errors["base"] = "api_error"
+                _LOGGER.error("Reauth failed: %s", error_str)
 
         # Show reauth form
         return self.async_show_form(

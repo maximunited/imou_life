@@ -83,9 +83,14 @@ class ImouDataUpdateCoordinator(DataUpdateCoordinator):
                 "invalid app",
                 "token expired",
                 "unauthorized",
-                "OP1002",  # Common auth error code in Imou API
+                "op1002",  # Common auth error code in Imou API
             ]
             if any(pattern in error_str.lower() for pattern in auth_error_patterns):
+                # Set error tracking fields before raising
+                self.is_rate_limited = False
+                self.last_error_type = "auth_error"
+                self.last_error_message = error_str
+
                 raise ConfigEntryAuthFailed(
                     "Invalid credentials, please reauthenticate"
                 ) from exception

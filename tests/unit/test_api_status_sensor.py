@@ -20,7 +20,6 @@ class TestImouAPIStatusSensor:
         """Create a mock coordinator."""
         coordinator = MagicMock()
         coordinator.device = MagicMock()
-        coordinator.device.get_device_id.return_value = "test_device_123"
         coordinator.device.get_name.return_value = "Test Camera"
         coordinator.device.get_model.return_value = "IPC-TestModel"
 

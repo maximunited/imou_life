@@ -120,12 +120,12 @@ class TestImouEntity:
         self, entity, mock_coordinator
     ):
         """Test that entity doesn't log when staying unavailable."""
-        # Initially unavailable
+        # Set device to unavailable
         mock_coordinator.device.get_status.return_value = False
-        assert entity.available is False
 
-        # Stay unavailable - should not log
+        # Both reads should be silent
         with patch("custom_components.imou_life.entity._LOGGER") as mock_logger:
+            assert entity.available is False
             assert entity.available is False
             mock_logger.warning.assert_not_called()
 
@@ -133,12 +133,14 @@ class TestImouEntity:
         self, entity, mock_coordinator
     ):
         """Test that entity doesn't log when becoming available."""
-        # Initially unavailable
-        mock_coordinator.device.get_status.return_value = False
-        assert entity.available is False
-
-        # Become available - should not log
-        mock_coordinator.device.get_status.return_value = True
         with patch("custom_components.imou_life.entity._LOGGER") as mock_logger:
+            # Initially unavailable
+            mock_coordinator.device.get_status.return_value = False
+            assert entity.available is False
+
+            # Become available - should not log
+            mock_coordinator.device.get_status.return_value = True
             assert entity.available is True
+
+            # Both reads should be silent
             mock_logger.warning.assert_not_called()
