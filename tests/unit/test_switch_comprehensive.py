@@ -77,7 +77,7 @@ class TestImouSwitch:
     ):
         """Test switch enabled by default for switches in ENABLED_SWITCHES."""
         # Set sensor name to one that's enabled by default
-        mock_sensor_instance.get_name.return_value = list(ENABLED_SWITCHES)[0]
+        mock_sensor_instance.get_name.return_value = next(iter(ENABLED_SWITCHES))
         switch = ImouSwitch(
             mock_coordinator,
             mock_config_entry,

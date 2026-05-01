@@ -15,24 +15,28 @@ from custom_components.imou_life.const import (
     CONF_DEVICE_ID,
     CONF_DEVICE_NAME,
     DEFAULT_API_SERVER,
+    DOMAIN,
 )
+from tests.fixtures.mocks import MockConfigEntry
 
 
 @pytest.fixture
 def mock_config_entry():
     """Create a mock config entry for reauth."""
-    entry = MagicMock()
-    entry.entry_id = "test_entry_123"
-    entry.title = "Test Camera"
-    entry.data = {
-        CONF_APP_ID: "old_app_id",
-        CONF_APP_SECRET: "old_app_secret",
-        CONF_DEVICE_ID: "test_device_123",
-        CONF_DEVICE_NAME: "Test Camera",
-        CONF_API_URL: "https://api.example.com",
-        CONF_API_SERVER: DEFAULT_API_SERVER,
-    }
-    return entry
+    return MockConfigEntry(
+        domain=DOMAIN,
+        data={
+            CONF_APP_ID: "old_app_id",
+            CONF_APP_SECRET: "old_app_secret",
+            CONF_DEVICE_ID: "test_device_123",
+            CONF_DEVICE_NAME: "Test Camera",
+            CONF_API_URL: "https://api.example.com",
+            CONF_API_SERVER: DEFAULT_API_SERVER,
+        },
+        entry_id="test_entry_123",
+        title="Test Camera",
+        version=3,
+    )
 
 
 @pytest.fixture
@@ -279,12 +283,26 @@ class TestReauthFlow:
             device_instance.async_initialize.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_reauth_empty_device_name_fallback(
-        self, mock_hass, mock_config_entry
-    ):
+    async def test_reauth_empty_device_name_fallback(self, mock_hass):
         """Test that empty device name falls back to entry title."""
-        # Set device name to empty string
-        mock_config_entry.data[CONF_DEVICE_NAME] = ""
+        # Create entry with empty device name
+        entry_empty_name = MockConfigEntry(
+            domain=DOMAIN,
+            data={
+                CONF_APP_ID: "old_app_id",
+                CONF_APP_SECRET: "old_app_secret",
+                CONF_DEVICE_ID: "test_device_123",
+                CONF_DEVICE_NAME: "",  # Empty string
+                CONF_API_URL: "https://api.example.com",
+                CONF_API_SERVER: DEFAULT_API_SERVER,
+            },
+            entry_id="test_entry_123",
+            title="Test Camera",
+            version=3,
+        )
+        mock_hass.config_entries.async_get_entry = MagicMock(
+            return_value=entry_empty_name
+        )
 
         flow = ImouFlowHandler()
         flow.hass = mock_hass
@@ -299,10 +317,26 @@ class TestReauthFlow:
         assert result["description_placeholders"]["device_name"] == "Test Camera"
 
     @pytest.mark.asyncio
-    async def test_reauth_none_device_name_fallback(self, mock_hass, mock_config_entry):
+    async def test_reauth_none_device_name_fallback(self, mock_hass):
         """Test that None device name falls back to entry title."""
-        # Set device name to None
-        mock_config_entry.data[CONF_DEVICE_NAME] = None
+        # Create entry with None device name
+        entry_none_name = MockConfigEntry(
+            domain=DOMAIN,
+            data={
+                CONF_APP_ID: "old_app_id",
+                CONF_APP_SECRET: "old_app_secret",
+                CONF_DEVICE_ID: "test_device_123",
+                CONF_DEVICE_NAME: None,  # None
+                CONF_API_URL: "https://api.example.com",
+                CONF_API_SERVER: DEFAULT_API_SERVER,
+            },
+            entry_id="test_entry_123",
+            title="Test Camera",
+            version=3,
+        )
+        mock_hass.config_entries.async_get_entry = MagicMock(
+            return_value=entry_none_name
+        )
 
         flow = ImouFlowHandler()
         flow.hass = mock_hass
