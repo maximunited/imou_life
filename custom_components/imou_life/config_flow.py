@@ -245,6 +245,105 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
         await self.async_set_unique_id(device.get_device_id())
         return self.async_create_entry(title=name, data=data)
 
+    async def async_step_reauth(self, entry_data):
+        """Handle reauthentication."""
+        self.entry = self.hass.config_entries.async_get_entry(self.context["entry_id"])
+        return await self.async_step_reauth_confirm()
+
+    async def async_step_reauth_confirm(self, user_input=None):
+        """Confirm reauthentication."""
+        errors = {}
+
+        if user_input is not None:
+            try:
+                # Create API client with new credentials
+                # Use existing API URL from config entry
+                existing_api_url = self.entry.data.get(CONF_API_URL)
+                if existing_api_url is None:
+                    # Fallback: determine from server selection or use global default
+                    existing_server = self.entry.data.get(
+                        CONF_API_SERVER, DEFAULT_API_SERVER
+                    )
+                    existing_api_url = API_SERVER_OPTIONS.get(
+                        existing_server, API_SERVER_OPTIONS[DEFAULT_API_SERVER]
+                    )
+
+                api_client = ImouAPIClient(
+                    user_input[CONF_APP_ID],
+                    user_input[CONF_APP_SECRET],
+                    async_create_clientsession(self.hass),
+                )
+                api_client.set_base_url(existing_api_url)
+
+                # Validate credentials
+                await api_client.async_connect()
+
+                # Verify device access
+                device_id = self.entry.data.get(CONF_DEVICE_ID)
+                if device_id:
+                    device = ImouDevice(api_client, device_id)
+                    await device.async_initialize()
+
+                # Update config entry with new credentials
+                new_data = {
+                    **self.entry.data,
+                    CONF_APP_ID: user_input[CONF_APP_ID],
+                    CONF_APP_SECRET: user_input[CONF_APP_SECRET],
+                }
+
+                self.hass.config_entries.async_update_entry(self.entry, data=new_data)
+
+                # Reload the integration
+                await self.hass.config_entries.async_reload(self.entry.entry_id)
+
+                return self.async_abort(reason="reauth_successful")
+
+            except ImouException as exception:
+                error_str = str(exception)
+                error_str_lower = error_str.lower()
+
+                # Map common exceptions to translation keys
+                # Check rate limiting first
+                if "op1013" in error_str_lower or "exceed limit" in error_str_lower:
+                    errors["base"] = "rate_limit_exceeded"
+                # Check authentication/authorization errors
+                elif any(
+                    pattern in error_str_lower
+                    for pattern in [
+                        "authentication failed",
+                        "invalid credentials",
+                        "invalid app",
+                        "token expired",
+                        "unauthorized",
+                        "not_authorized",
+                        "invalid device",
+                        "op1002",
+                    ]
+                ):
+                    errors["base"] = "not_authorized"
+                # Check connection errors
+                elif "connection" in error_str_lower:
+                    errors["base"] = "connection_failed"
+                # Generic API error fallback
+                else:
+                    errors["base"] = "api_error"
+                _LOGGER.error("Reauth failed: %s", error_str)
+
+        # Show reauth form
+        return self.async_show_form(
+            step_id="reauth_confirm",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(CONF_APP_ID): str,
+                    vol.Required(CONF_APP_SECRET): str,
+                }
+            ),
+            errors=errors,
+            description_placeholders={
+                "device_name": self.entry.data.get(CONF_DEVICE_NAME, self.entry.title)
+            },
+        )
+
     @staticmethod
     @callback
     def async_get_options_flow(config_entry):

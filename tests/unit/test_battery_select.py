@@ -309,14 +309,16 @@ class TestImouBatterySelect:
     @pytest.mark.asyncio
     async def test_select_option_exception_handling(self, power_mode_select):
         """Test exception handling when selecting option."""
+        from homeassistant.exceptions import HomeAssistantError
+
         # Mock coordinator method to raise exception
         power_mode_select.coordinator.set_power_mode = AsyncMock(
             side_effect=Exception("Test error")
         )
 
-        # Should handle exception gracefully
-        await power_mode_select.async_select_option("power_saving")
-        # Should not raise exception, just log error
+        # Should raise HomeAssistantError (Silver tier requirement)
+        with pytest.raises(HomeAssistantError):
+            await power_mode_select.async_select_option("power_saving")
 
     def test_select_device_info(self, power_mode_select):
         """Test select entity device info."""

@@ -1,7 +1,7 @@
 """Unit tests for battery coordinator device settings and validation."""
 
 import asyncio
-from unittest.mock import patch
+from unittest.mock import AsyncMock
 
 import pytest
 
@@ -12,8 +12,8 @@ class TestBatteryCoordinatorSettings:
     @pytest.mark.asyncio
     async def test_set_motion_sensitivity_valid(self, coordinator):
         """Test setting valid motion sensitivity."""
-        with patch.object(coordinator, "device"):
-            await coordinator._set_motion_sensitivity("low")
+        coordinator.device.async_set_motion_sensitivity = AsyncMock()
+        await coordinator._set_motion_sensitivity("low")
 
     def test_set_motion_sensitivity_invalid(self, coordinator):
         """Test setting invalid motion sensitivity."""
@@ -23,8 +23,8 @@ class TestBatteryCoordinatorSettings:
     @pytest.mark.asyncio
     async def test_set_recording_quality_valid(self, coordinator):
         """Test setting valid recording quality."""
-        with patch.object(coordinator, "device"):
-            await coordinator._set_recording_quality("low")
+        coordinator.device.async_set_recording_quality = AsyncMock()
+        await coordinator._set_recording_quality("low")
 
     def test_set_recording_quality_invalid(self, coordinator):
         """Test setting invalid recording quality."""
@@ -34,8 +34,8 @@ class TestBatteryCoordinatorSettings:
     @pytest.mark.asyncio
     async def test_set_power_mode_valid(self, coordinator):
         """Test setting valid power mode."""
-        with patch.object(coordinator, "device"):
-            await coordinator._set_power_mode("power_saving")
+        coordinator.device.async_set_power_mode = AsyncMock()
+        await coordinator._set_power_mode("power_saving")
 
     def test_set_power_mode_invalid(self, coordinator):
         """Test setting invalid power mode."""
@@ -45,9 +45,9 @@ class TestBatteryCoordinatorSettings:
     @pytest.mark.asyncio
     async def test_set_led_indicators(self, coordinator):
         """Test setting LED indicators."""
-        with patch.object(coordinator, "device"):
-            await coordinator._set_led_indicators(False)
-            await coordinator._set_led_indicators(True)
+        coordinator.device.async_set_led_indicators = AsyncMock()
+        await coordinator._set_led_indicators(False)
+        await coordinator._set_led_indicators(True)
 
     def test_get_battery_optimization_status(self, coordinator):
         """Test getting battery optimization status."""

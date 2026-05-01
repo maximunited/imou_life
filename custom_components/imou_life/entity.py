@@ -28,6 +28,7 @@ class ImouEntity(CoordinatorEntity):
             hass=coordinator.hass,
         )
         self.entity_available = None
+        self._last_available = None
 
     @property
     def unique_id(self):
@@ -51,9 +52,23 @@ class ImouEntity(CoordinatorEntity):
         """Entity available."""
         # if the availability of the sensor is set, return it
         if self.entity_available is not None:
-            return self.entity_available
-        # otherwise return the availability of the device
-        return self.coordinator.device.get_status()
+            current_available = self.entity_available
+        else:
+            # otherwise return the availability of the device
+            current_available = self.coordinator.device.get_status()
+
+        # Track availability changes and log when entity becomes unavailable
+        if (
+            self._last_available is not None
+            and self._last_available
+            and not current_available
+        ):
+            _LOGGER.warning(
+                "%s became unavailable (device offline or API error)", self.name
+            )
+
+        self._last_available = current_available
+        return current_available
 
     @property
     def name(self):

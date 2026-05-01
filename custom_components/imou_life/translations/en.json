@@ -29,6 +29,14 @@
           "device_id": "Device ID",
           "device_name": "Rename as"
         }
+      },
+      "reauth_confirm": {
+        "title": "Reauthenticate Imou Life",
+        "description": "Your Imou credentials have expired or are invalid. Please enter your App ID and App Secret to reauthenticate.",
+        "data": {
+          "app_id": "Imou App ID",
+          "app_secret": "Imou App Secret"
+        }
       }
     },
     "error": {
@@ -43,6 +51,9 @@
       "custom_url_required": "Custom URL is required when 'Custom' server is selected",
       "rate_limit_exceeded": "API rate limit exceeded. Please wait a few minutes before retrying, or enter your device ID manually below.",
       "rate_limit_discovery": "API rate limit exceeded. Please uncheck 'Enable Device Discovery' above and enter your device ID manually in the next step."
+    },
+    "abort": {
+      "reauth_successful": "Reauthentication successful! Your credentials have been updated."
     }
   },
   "options": {

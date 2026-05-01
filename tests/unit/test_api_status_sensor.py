@@ -20,7 +20,6 @@ class TestImouAPIStatusSensor:
         """Create a mock coordinator."""
         coordinator = MagicMock()
         coordinator.device = MagicMock()
-        coordinator.device.get_device_id.return_value = "test_device_123"
         coordinator.device.get_name.return_value = "Test Camera"
         coordinator.device.get_model.return_value = "IPC-TestModel"
 
@@ -67,7 +66,7 @@ class TestImouAPIStatusSensor:
         sensor = ImouAPIStatusSensor(mock_coordinator, config_entry)
         device_info = sensor.device_info
 
-        assert device_info["identifiers"] == {(DOMAIN, "test_device_123")}
+        assert device_info["identifiers"] == {(DOMAIN, "test_entry")}
         assert device_info["name"] == "Test Camera"
         assert device_info["manufacturer"] == "Imou"
         assert device_info["model"] == "IPC-TestModel"
