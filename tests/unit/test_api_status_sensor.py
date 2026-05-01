@@ -67,7 +67,7 @@ class TestImouAPIStatusSensor:
         sensor = ImouAPIStatusSensor(mock_coordinator, config_entry)
         device_info = sensor.device_info
 
-        assert device_info["identifiers"] == {(DOMAIN, "test_device_123")}
+        assert device_info["identifiers"] == {(DOMAIN, "test_entry")}
         assert device_info["name"] == "Test Camera"
         assert device_info["manufacturer"] == "Imou"
         assert device_info["model"] == "IPC-TestModel"

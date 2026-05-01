@@ -10,6 +10,9 @@ from .platform_setup import setup_platform
 ENTITY_ID_FORMAT = "siren" + ".{}"
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
+# Serialize entity updates to prevent API rate limiting
+PARALLEL_UPDATES = 1
+
 
 async def async_setup_entry(hass, entry, async_add_devices):
     """Configure platform."""

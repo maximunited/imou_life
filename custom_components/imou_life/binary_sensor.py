@@ -6,6 +6,9 @@ from .entity import ImouEntity
 from .entity_mixins import DeviceClassMixin
 from .platform_setup import setup_platform
 
+# Serialize entity updates to prevent API rate limiting
+PARALLEL_UPDATES = 1
+
 
 async def async_setup_entry(hass, entry, async_add_devices):
     """Configure platform."""

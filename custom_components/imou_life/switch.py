@@ -12,6 +12,9 @@ from .entity import ImouEntity
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
+# Serialize entity updates to prevent API rate limiting
+PARALLEL_UPDATES = 1
+
 
 async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_devices: Callable
