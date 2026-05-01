@@ -32,6 +32,25 @@ BATTERY_SPECS: Dict[str, BatterySpec] = {
         "is_rechargeable": True,
         "typical_life_days": None,
     },
+    # Cell 2 series - 5200mAh rechargeable (FRB20 battery)
+    "IPC-B46L": {
+        "battery_type": "Rechargeable Li-ion 5200mAh",
+        "battery_quantity": 1,
+        "is_rechargeable": True,
+        "typical_life_days": None,
+    },
+    "IPC-B46LP": {
+        "battery_type": "Rechargeable Li-ion 5200mAh",
+        "battery_quantity": 1,
+        "is_rechargeable": True,
+        "typical_life_days": None,
+    },
+    "IPC-B46LN": {
+        "battery_type": "Rechargeable Li-ion 5200mAh",
+        "battery_quantity": 1,
+        "is_rechargeable": True,
+        "typical_life_days": None,
+    },
     # Cell Pro series
     "IPC-A28HWP": {
         "battery_type": "Rechargeable Li-ion 10400mAh",

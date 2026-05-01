@@ -21,6 +21,11 @@ For **supported camera models**, the Imou Life integration automatically exposes
   - IPC-A26HP (Li-ion 5200mAh)
   - IPC-A26Z (Li-ion 5200mAh)
 
+- **Cell 2 Series** (Rechargeable):
+  - IPC-B46L (Li-ion 5200mAh, FRB20 battery)
+  - IPC-B46LP (Li-ion 5200mAh, FRB20 battery)
+  - IPC-B46LN (Li-ion 5200mAh, FRB20 battery)
+
 - **Cell Pro Series** (Rechargeable):
   - IPC-A28HWP (Li-ion 10400mAh)
 
@@ -69,6 +74,7 @@ For cameras not yet in our database, or to override automatic detection:
 |-------|--------------|----------|---------------------|
 | IPC-A26HP | Li-ion | 5200mAh | 1-3 months* |
 | IPC-A26Z | Li-ion | 5200mAh | 1-3 months* |
+| IPC-B46L / IPC-B46LP / IPC-B46LN (Cell 2) | Li-ion (FRB20) | 5200mAh | 3-6 months* |
 | IPC-A28HWP | Li-ion | 10400mAh | 3-6 months* |
 
 *Depends on usage: motion events, live viewing frequency, WiFi signal strength, temperature
