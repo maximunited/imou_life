@@ -1,6 +1,6 @@
 """Tests for the Imou Life Entity base class."""
 
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -100,3 +100,45 @@ class TestImouEntity:
         """Test entity removed from hass."""
         await entity.async_will_remove_from_hass()
         entity.sensor_instance.set_enabled.assert_called_once_with(False)
+
+    def test_entity_availability_logging_on_unavailable(self, entity, mock_coordinator):
+        """Test that entity logs warning when becoming unavailable."""
+        # Initially available
+        mock_coordinator.device.get_status.return_value = True
+        assert entity.available is True
+
+        # Become unavailable - should log warning
+        mock_coordinator.device.get_status.return_value = False
+        with patch("custom_components.imou_life.entity._LOGGER") as mock_logger:
+            assert entity.available is False
+            # Check that warning was logged
+            mock_logger.warning.assert_called_once()
+            log_message = mock_logger.warning.call_args[0][0]
+            assert "became unavailable" in log_message
+
+    def test_entity_availability_no_logging_when_staying_unavailable(
+        self, entity, mock_coordinator
+    ):
+        """Test that entity doesn't log when staying unavailable."""
+        # Initially unavailable
+        mock_coordinator.device.get_status.return_value = False
+        assert entity.available is False
+
+        # Stay unavailable - should not log
+        with patch("custom_components.imou_life.entity._LOGGER") as mock_logger:
+            assert entity.available is False
+            mock_logger.warning.assert_not_called()
+
+    def test_entity_availability_no_logging_when_becoming_available(
+        self, entity, mock_coordinator
+    ):
+        """Test that entity doesn't log when becoming available."""
+        # Initially unavailable
+        mock_coordinator.device.get_status.return_value = False
+        assert entity.available is False
+
+        # Become available - should not log
+        mock_coordinator.device.get_status.return_value = True
+        with patch("custom_components.imou_life.entity._LOGGER") as mock_logger:
+            assert entity.available is True
+            mock_logger.warning.assert_not_called()
