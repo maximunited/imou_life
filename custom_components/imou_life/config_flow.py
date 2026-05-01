@@ -1,10 +1,12 @@
 """Config flow for Imou."""
 
 import logging
+from typing import Any
 
 import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import callback
+from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 from imouapi.api import ImouAPIClient
 from imouapi.device import ImouDevice, ImouDiscoverService
@@ -245,12 +247,14 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
         await self.async_set_unique_id(device.get_device_id())
         return self.async_create_entry(title=name, data=data)
 
-    async def async_step_reauth(self, entry_data):
+    async def async_step_reauth(self, entry_data: dict[str, Any]) -> FlowResult:
         """Handle reauthentication."""
         self.entry = self.hass.config_entries.async_get_entry(self.context["entry_id"])
         return await self.async_step_reauth_confirm()
 
-    async def async_step_reauth_confirm(self, user_input=None):
+    async def async_step_reauth_confirm(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
         """Confirm reauthentication."""
         errors = {}
 
@@ -340,7 +344,7 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
             ),
             errors=errors,
             description_placeholders={
-                "device_name": self.entry.data.get(CONF_DEVICE_NAME, self.entry.title)
+                "device_name": self.entry.data.get(CONF_DEVICE_NAME) or self.entry.title
             },
         )
 
