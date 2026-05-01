@@ -83,7 +83,7 @@ class ImouAPIStatusSensor(CoordinatorEntity, SensorEntity):
     def device_info(self):
         """Return device information."""
         return {
-            "identifiers": {(DOMAIN, self.coordinator.device.get_device_id())},
+            "identifiers": {(DOMAIN, self._config_entry.entry_id)},
             "name": self.coordinator.device.get_name(),
             "manufacturer": "Imou",
             "model": self.coordinator.device.get_model(),
