@@ -4,6 +4,7 @@ from homeassistant.components.sensor import ENTITY_ID_FORMAT, SensorEntity
 from homeassistant.const import EntityCategory
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
+from .battery_types import get_battery_spec
 from .const import DOMAIN
 from .entity import ImouEntity
 from .entity_mixins import DeviceClassMixin
@@ -63,6 +64,33 @@ class ImouSensor(ImouEntity, DeviceClassMixin):
         if self.sensor_instance.get_state() is None:
             self.entity_available = False
         return self.sensor_instance.get_state()
+
+    @property
+    def extra_state_attributes(self):
+        """Return additional state attributes."""
+        attrs = super().extra_state_attributes or {}
+
+        # Add battery type information for Battery Notes integration
+        if self.device_class == "battery":
+            model = self.device.get_model()
+            battery_spec = get_battery_spec(model)
+
+            if battery_spec:
+                # Add attributes that Battery Notes integration looks for
+                attrs["battery_type"] = battery_spec["battery_type"]
+                attrs["battery_quantity"] = battery_spec["battery_quantity"]
+                attrs["is_rechargeable"] = battery_spec["is_rechargeable"]
+
+                # Add typical battery life for replaceable batteries
+                if (
+                    not battery_spec["is_rechargeable"]
+                    and battery_spec["typical_life_days"]
+                ):
+                    attrs["typical_battery_life_days"] = battery_spec[
+                        "typical_life_days"
+                    ]
+
+        return attrs
 
 
 class ImouAPIStatusSensor(CoordinatorEntity, SensorEntity):
