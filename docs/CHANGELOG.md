@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.3.6] - 2026-05-01
+
+### Fixed
+
+- **API Status Sensor Duplicate Device**
+  - API Status sensor was creating a separate device instead of grouping with main device
+  - Root cause: Used `device.get_device_id()` instead of `config_entry.entry_id` as device identifier
+  - Fix: Changed to use same identifier as other entities
+  - Result: All 23 entities now appear under single device (not 22 + 1 separate)
+
 ## [1.3.5] - 2026-05-01
 
 ### Added
