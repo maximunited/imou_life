@@ -246,7 +246,7 @@
    - Cosmetic switches (breathing light, link features, smart track)
 
 ### ✅ Completed - Stale Device Detection (3 hours)
-3. ✅ **stale-devices** - Automatic stale device detection and cleanup:
+3. ✅ **stale-devices** - Automatic stale device detection with user-confirmed removal:
    - Detects "device not found" errors (3-failure threshold)
    - Creates repair issue for user confirmation
    - User options: Remove, Retry, or Ignore
@@ -282,7 +282,7 @@
      - 2 battery binary sensors (power saving, sleep mode)
      - 4 cosmetic switches (breathing light, link features)
 
-3. ✅ **Stale device cleanup** - COMPLETED
+3. ✅ **Stale device detection with user-confirmed removal** - COMPLETED
    - Automatic detection via `_is_stale_device_error()` in coordinator
    - 3-failure threshold to prevent false positives
    - Repair issue flow for user-confirmed removal
