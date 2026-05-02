@@ -81,7 +81,7 @@ class TestReauthFlow:
                 "custom_components.imou_life.config_flow.ImouAPIClient"
             ) as mock_api_client,
             patch("custom_components.imou_life.config_flow.ImouDevice") as mock_device,
-            patch("custom_components.imou_life.config_flow.async_create_clientsession"),
+            patch("custom_components.imou_life.config_flow.async_get_clientsession"),
         ):
             # Set up mocks
             api_instance = mock_api_client.return_value
@@ -135,7 +135,7 @@ class TestReauthFlow:
             patch(
                 "custom_components.imou_life.config_flow.ImouAPIClient"
             ) as mock_api_client,
-            patch("custom_components.imou_life.config_flow.async_create_clientsession"),
+            patch("custom_components.imou_life.config_flow.async_get_clientsession"),
         ):
             # Mock authentication failure
             api_instance = mock_api_client.return_value
@@ -169,7 +169,7 @@ class TestReauthFlow:
             patch(
                 "custom_components.imou_life.config_flow.ImouAPIClient"
             ) as mock_api_client,
-            patch("custom_components.imou_life.config_flow.async_create_clientsession"),
+            patch("custom_components.imou_life.config_flow.async_get_clientsession"),
         ):
             # Mock rate limit error
             api_instance = mock_api_client.return_value
@@ -201,7 +201,7 @@ class TestReauthFlow:
             patch(
                 "custom_components.imou_life.config_flow.ImouAPIClient"
             ) as mock_api_client,
-            patch("custom_components.imou_life.config_flow.async_create_clientsession"),
+            patch("custom_components.imou_life.config_flow.async_get_clientsession"),
         ):
             # Mock connection failure
             api_instance = mock_api_client.return_value
@@ -233,7 +233,7 @@ class TestReauthFlow:
             patch(
                 "custom_components.imou_life.config_flow.ImouAPIClient"
             ) as mock_api_client,
-            patch("custom_components.imou_life.config_flow.async_create_clientsession"),
+            patch("custom_components.imou_life.config_flow.async_get_clientsession"),
         ):
             # Mock generic API error
             api_instance = mock_api_client.return_value
@@ -268,7 +268,7 @@ class TestReauthFlow:
                 "custom_components.imou_life.config_flow.ImouAPIClient"
             ) as mock_api_client,
             patch("custom_components.imou_life.config_flow.ImouDevice") as mock_device,
-            patch("custom_components.imou_life.config_flow.async_create_clientsession"),
+            patch("custom_components.imou_life.config_flow.async_get_clientsession"),
         ):
             # Set up mocks
             api_instance = mock_api_client.return_value
@@ -379,7 +379,7 @@ class TestReauthFlow:
                     "custom_components.imou_life.config_flow.ImouAPIClient"
                 ) as mock_api_client,
                 patch(
-                    "custom_components.imou_life.config_flow.async_create_clientsession"
+                    "custom_components.imou_life.config_flow.async_get_clientsession"
                 ),
             ):
                 api_instance = mock_api_client.return_value

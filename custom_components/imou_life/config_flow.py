@@ -7,7 +7,7 @@ import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
-from homeassistant.helpers.aiohttp_client import async_create_clientsession
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from imouapi.api import ImouAPIClient
 from imouapi.device import ImouDevice, ImouDiscoverService
 from imouapi.exceptions import ImouException
@@ -70,7 +70,7 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
 
     async def async_step_user(self, user_input=None):
         """Handle a flow initialized by the user."""
-        self._session = async_create_clientsession(self.hass)
+        self._session = async_get_clientsession(self.hass)
         return await self.async_step_login()
 
     # Step: login
@@ -276,7 +276,7 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
                 api_client = ImouAPIClient(
                     user_input[CONF_APP_ID],
                     user_input[CONF_APP_SECRET],
-                    async_create_clientsession(self.hass),
+                    async_get_clientsession(self.hass),
                 )
                 api_client.set_base_url(existing_api_url)
 
@@ -375,7 +375,7 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
             new_app_id = user_input[CONF_APP_ID]
             new_app_secret = user_input[CONF_APP_SECRET]
             new_api_server = user_input.get(CONF_API_SERVER)
-            new_api_url = user_input.get(CONF_API_URL)
+            new_api_url = (user_input.get(CONF_API_URL) or "").strip()
 
             # Resolve API URL (user may have selected a server)
             if new_api_server and new_api_server != "custom":
@@ -386,7 +386,7 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
             if not errors:
                 try:
                     # Validate credentials with actual API call
-                    session = async_create_clientsession(self.hass)
+                    session = async_get_clientsession(self.hass)
                     api_client = ImouAPIClient(new_app_id, new_app_secret, session)
                     api_client.set_base_url(new_api_url)
 
@@ -443,22 +443,33 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
 
                     return self.async_abort(reason="reconfigure_successful")
 
-        # Get current values as defaults
-        current_app_id = self.entry.data.get(CONF_APP_ID, "")
-        current_api_url = self.entry.data.get(CONF_API_URL, DEFAULT_API_URL)
-
-        # Find which server option matches current URL (for dropdown)
-        current_api_server = next(
-            (key for key, url in API_SERVER_OPTIONS.items() if url == current_api_url),
-            "custom",
-        )
+        # Get values for form defaults
+        # On retry (when errors exist), preserve user input; otherwise use entry data
+        if user_input is not None and errors:
+            # Preserve user's attempted values on retry
+            default_app_id = user_input.get(CONF_APP_ID, "")
+            default_api_server = user_input.get(CONF_API_SERVER, "global")
+            default_api_url = (user_input.get(CONF_API_URL) or "").strip()
+        else:
+            # First load: use existing entry data
+            default_app_id = self.entry.data.get(CONF_APP_ID, "")
+            default_api_url = self.entry.data.get(CONF_API_URL, DEFAULT_API_URL)
+            # Find which server option matches current URL (for dropdown)
+            default_api_server = next(
+                (
+                    key
+                    for key, url in API_SERVER_OPTIONS.items()
+                    if url == default_api_url
+                ),
+                "custom",
+            )
 
         # Build form schema
         data_schema = vol.Schema(
             {
-                vol.Required(CONF_APP_ID, default=current_app_id): str,
+                vol.Required(CONF_APP_ID, default=default_app_id): str,
                 vol.Required(CONF_APP_SECRET): str,  # No default for security
-                vol.Required(CONF_API_SERVER, default=current_api_server): vol.In(
+                vol.Required(CONF_API_SERVER, default=default_api_server): vol.In(
                     API_SERVER_LABELS
                 ),
             }
@@ -468,13 +479,13 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
         if user_input and user_input.get(CONF_API_SERVER) == "custom":
             data_schema = data_schema.extend(
                 {
-                    vol.Required(CONF_API_URL, default=current_api_url): str,
+                    vol.Required(CONF_API_URL, default=default_api_url): str,
                 }
             )
-        elif current_api_server == "custom":
+        elif default_api_server == "custom":
             data_schema = data_schema.extend(
                 {
-                    vol.Optional(CONF_API_URL, default=current_api_url): str,
+                    vol.Optional(CONF_API_URL, default=default_api_url): str,
                 }
             )
 
