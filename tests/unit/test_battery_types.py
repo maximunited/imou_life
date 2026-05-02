@@ -107,7 +107,7 @@ class TestBatteryTypes:
 
     def test_battery_specs_types(self):
         """Test that battery spec values have correct types."""
-        for model, spec in BATTERY_SPECS.items():
+        for _model, spec in BATTERY_SPECS.items():
             assert isinstance(spec["battery_type"], str)
             assert isinstance(spec["battery_quantity"], int)
             assert isinstance(spec["is_rechargeable"], bool)

@@ -75,6 +75,11 @@ class TestConfigFlowLogin:
         flow = ImouFlowHandler()
         flow.hass = MagicMock()
 
+        # Create a mock discovered device
+        mock_device = MagicMock()
+        mock_device.get_name.return_value = "Test Camera"
+        mock_device.get_device_id.return_value = "device_123"
+
         with (
             patch("custom_components.imou_life.config_flow.async_create_clientsession"),
             patch("custom_components.imou_life.config_flow.ImouAPIClient") as mock_api,
@@ -86,7 +91,10 @@ class TestConfigFlowLogin:
             api_instance.async_connect = AsyncMock()
 
             discover_instance = mock_discover.return_value
-            discover_instance.async_discover_devices = AsyncMock(return_value={})
+            # Return non-empty discovery result to test discover path
+            discover_instance.async_discover_devices = AsyncMock(
+                return_value={"device_123": mock_device}
+            )
 
             result = await flow.async_step_login(
                 {
@@ -98,7 +106,7 @@ class TestConfigFlowLogin:
             )
 
         assert result["type"] == FlowResultType.FORM
-        assert result["step_id"] == "manual"  # No devices found, redirects to manual
+        assert result["step_id"] == "discover"  # Devices found, shows discover step
 
     @pytest.mark.asyncio
     async def test_async_step_login_success_with_manual(self):
