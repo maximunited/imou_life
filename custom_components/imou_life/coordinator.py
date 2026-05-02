@@ -10,7 +10,7 @@ from homeassistant.util import dt as dt_util
 from imouapi.device import ImouDevice
 from imouapi.exceptions import ImouException
 
-from .const import DOMAIN
+from .const import DOMAIN, STALE_DEVICE_ERROR_PATTERNS
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -23,6 +23,7 @@ class ImouDataUpdateCoordinator(DataUpdateCoordinator):
         hass: HomeAssistant,
         device: ImouDevice,
         scan_interval: int,
+        config_entry=None,
     ) -> None:
         """Initialize."""
         self.device = device
@@ -43,15 +44,36 @@ class ImouDataUpdateCoordinator(DataUpdateCoordinator):
         self._original_scan_interval: int = scan_interval
         self._is_interval_adjusted: bool = False
 
+        # Stale device tracking
+        self.stale_device_suspected: bool = False
+        self.stale_device_failure_count: int = 0
+        self.stale_device_last_error: str | None = None
+
         super().__init__(
             hass,
             _LOGGER,
             name=DOMAIN,
             update_interval=timedelta(seconds=self.scan_inteval),
         )
+
+        # Set config_entry AFTER super().__init__() to avoid it being reset
+        self.config_entry = config_entry
+
         _LOGGER.debug(
             "Initialized coordinator. Scan interval %d seconds", self.scan_inteval
         )
+
+    def _is_stale_device_error(self, error_str: str) -> bool:
+        """Check if error indicates device no longer exists."""
+        error_lower = error_str.lower()
+
+        # Must NOT be an auth error (those go to reauth)
+        auth_patterns = ["authentication failed", "token expired", "invalid app"]
+        if any(p in error_lower for p in auth_patterns):
+            return False
+
+        # Check for stale device patterns
+        return any(pattern in error_lower for pattern in STALE_DEVICE_ERROR_PATTERNS)
 
     async def _async_update_data(self):
         """HA calls this every DEFAULT_SCAN_INTERVAL to run the update."""
@@ -64,6 +86,11 @@ class ImouDataUpdateCoordinator(DataUpdateCoordinator):
             self.last_error_type = None
             self.last_error_message = None
             self.last_successful_update = dt_util.utcnow()
+
+            # Reset stale device tracking on successful update
+            self.stale_device_suspected = False
+            self.stale_device_failure_count = 0
+            self.stale_device_last_error = None
 
             # Restore original scan interval if it was adjusted
             if was_rate_limited and self._is_interval_adjusted:
@@ -94,6 +121,30 @@ class ImouDataUpdateCoordinator(DataUpdateCoordinator):
                 raise ConfigEntryAuthFailed(
                     "Invalid credentials, please reauthenticate"
                 ) from exception
+
+            # Check for stale device errors (device no longer exists on account)
+            if self._is_stale_device_error(error_str):
+                from .const import STALE_DEVICE_FAILURE_THRESHOLD
+
+                self.stale_device_failure_count += 1
+                self.stale_device_last_error = error_str
+
+                if self.stale_device_failure_count >= STALE_DEVICE_FAILURE_THRESHOLD:
+                    self.stale_device_suspected = True
+                    # Trigger repair issue creation via event
+                    if self.config_entry is not None:
+                        self.hass.bus.async_fire(
+                            f"{DOMAIN}_stale_device_detected",
+                            {"entry_id": self.config_entry.entry_id},
+                        )
+
+                error_msg = (
+                    f"Device may no longer exist on account "
+                    f"(failure {self.stale_device_failure_count}/{STALE_DEVICE_FAILURE_THRESHOLD}): "
+                    f"{error_str}"
+                )
+                _LOGGER.warning(error_msg)
+                raise UpdateFailed(error_msg) from exception
 
             # Check if this is a rate limit error
             if "OP1013" in error_str or "exceed limit" in error_str.lower():

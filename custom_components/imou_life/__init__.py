@@ -61,6 +61,20 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     # Store coordinator in runtime_data (modern HA pattern)
     entry.runtime_data = coordinator
+
+    # Set up stale device detection handler
+    async def handle_stale_device(event):
+        """Handle stale device detection."""
+        if event.data.get("entry_id") == entry.entry_id:
+            await _create_stale_device_repair_issue(hass, entry, coordinator)
+
+    entry.async_on_unload(
+        hass.bus.async_listen(
+            f"{DOMAIN}_stale_device_detected",
+            handle_stale_device,
+        )
+    )
+
     await _setup_platforms(hass, entry, coordinator)
 
     # Check for rate limiting and notify user if detected
@@ -192,7 +206,10 @@ async def _setup_coordinator(
 ):
     """Set up and initialize coordinator."""
     coordinator = ImouDataUpdateCoordinator(
-        hass, device, entry.options.get(OPTION_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
+        hass,
+        device,
+        entry.options.get(OPTION_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL),
+        entry,
     )
 
     # Fetch initial data with timeout protection
@@ -246,6 +263,35 @@ def _check_rate_limit_status(hass: HomeAssistant, entry: ConfigEntry, coordinato
             "Rate limiting detected for %s during setup. Notification created.",
             device_name,
         )
+
+
+async def _create_stale_device_repair_issue(
+    hass: HomeAssistant,
+    entry: ConfigEntry,
+    coordinator: ImouDataUpdateCoordinator,
+) -> None:
+    """Create a repair issue for stale device."""
+    device_name = coordinator.device.get_name()
+    device_id = coordinator.device.get_device_id()
+
+    # Create repair flow
+    await hass.config_entries.flow.async_init(
+        DOMAIN,
+        context={"source": "repair_stale_device"},
+        data={
+            "entry_id": entry.entry_id,
+            "device_name": device_name,
+            "device_id": device_id,
+            "error_message": coordinator.stale_device_last_error,
+        },
+    )
+
+    _LOGGER.warning(
+        "Device '%s' (%s) appears to no longer exist on account. "
+        "Repair issue created for user action.",
+        device_name,
+        device_id,
+    )
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:

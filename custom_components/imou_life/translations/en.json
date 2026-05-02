@@ -37,6 +37,13 @@
           "app_id": "Imou App ID",
           "app_secret": "Imou App Secret"
         }
+      },
+      "repair_stale_device": {
+        "title": "Device No Longer Available",
+        "description": "The device '{device_name}' (ID: {device_id}) appears to no longer exist on your Imou account.\n\nError: {error_message}\n\nWhat would you like to do?",
+        "data": {
+          "action": "Action"
+        }
       }
     },
     "error": {
@@ -53,7 +60,12 @@
       "rate_limit_discovery": "API rate limit exceeded. Please uncheck 'Enable Device Discovery' above and enter your device ID manually in the next step."
     },
     "abort": {
-      "reauth_successful": "Reauthentication successful! Your credentials have been updated."
+      "reauth_successful": "Reauthentication successful! Your credentials have been updated.",
+      "device_removed": "Device has been removed from Home Assistant.",
+      "retrying": "Retrying connection to device. The integration will reload.",
+      "ignored": "Warning ignored. The integration will continue trying to connect.",
+      "entry_not_found": "Configuration entry not found.",
+      "invalid_data": "Invalid repair data."
     }
   },
   "options": {

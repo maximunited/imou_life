@@ -141,7 +141,12 @@ class ImouAPIStatusSensor(CoordinatorEntity, SensorEntity):
             "rate_limit_count": self.coordinator.rate_limit_count,
             "scan_interval": int(self.coordinator.update_interval.total_seconds()),
             "scan_interval_adjusted": self.coordinator._is_interval_adjusted,
+            "stale_device_suspected": self.coordinator.stale_device_suspected,
+            "stale_device_failure_count": self.coordinator.stale_device_failure_count,
         }
+
+        if self.coordinator.stale_device_last_error:
+            attrs["stale_device_last_error"] = self.coordinator.stale_device_last_error
 
         if self.coordinator.last_error_type:
             attrs["last_error_type"] = self.coordinator.last_error_type

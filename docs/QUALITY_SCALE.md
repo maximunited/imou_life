@@ -35,6 +35,11 @@ The Gold tier represents the gold standard in integration user experience, provi
 - ✅ **Comprehensive Documentation**: Extensive documentation aimed at end-users
 - ✅ **Full Test Coverage**: Automated tests covering the entire integration
 - ✅ **User-Friendly**: Streamlined and intuitive user experience
+- ✅ **Stale Device Detection**: Automatically detects and handles devices removed from service
+  - Monitors for "device not found" API errors
+  - 3-failure threshold to prevent false positives
+  - User-controlled removal via repair issue flow
+  - See [Stale Device Detection](STALE_DEVICE_DETECTION.md) for details
 
 ### 🏆 Platinum Tier (Technical Excellence)
 - ✅ **Type Annotations**: Full type hints throughout the codebase
