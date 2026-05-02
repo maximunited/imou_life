@@ -134,7 +134,7 @@ The Imou API has rate limits to protect their service:
 - **Rate Limit Detection**: Automatic detection of `OP1013` rate limit errors
 - **Error Handling**: Failed requests don't crash the integration
 - **User Notification**: Persistent notification shown if rate-limited during setup
-- **Retry Strategy**: Next update attempt waits for the configured interval
+- **Retry Strategy**: Next update attempt waits for the current effective interval (temporarily increased while rate-limited)
 - **Monitoring**: Check the API Status diagnostic sensor (disabled by default) for rate limit status
 
 ### Customizing Update Frequency
