@@ -90,6 +90,13 @@ class ImouBatteryBinarySensor(ImouBatteryEntity, BinarySensorEntity):
         self._attribute_name = attribute_name
 
     @property
+    def entity_registry_enabled_default(self) -> bool:
+        """If the entity is enabled by default."""
+        # Disable noisy/diagnostic binary sensors by default
+        disabled_sensors = ["power_saving_active", "sleep_mode_active"]
+        return self._attribute_name not in disabled_sensors
+
+    @property
     def is_on(self) -> bool:
         """Return true if the binary sensor is on."""
         try:

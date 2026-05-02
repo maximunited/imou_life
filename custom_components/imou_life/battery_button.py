@@ -102,6 +102,12 @@ class ImouBatteryButton(ImouBatteryEntity, ButtonEntity):
         )
         self._action_name = action_name
 
+    @property
+    def entity_registry_enabled_default(self) -> bool:
+        """If the entity is enabled by default."""
+        # Disable all battery buttons by default (advanced/manual controls)
+        return False
+
     async def async_press(self) -> None:
         """Handle the button press."""
         try:

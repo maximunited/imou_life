@@ -107,6 +107,12 @@ class ImouBatterySelect(ImouBatteryEntity, SelectEntity):
         self._attribute_name = attribute_name
 
     @property
+    def entity_registry_enabled_default(self) -> bool:
+        """If the entity is enabled by default."""
+        # Disable all battery select entities by default (advanced settings)
+        return False
+
+    @property
     def options(self) -> list[str]:
         """Return a list of options."""
         return self._options

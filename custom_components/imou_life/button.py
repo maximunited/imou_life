@@ -27,6 +27,13 @@ class ImouButton(ImouEntity, ButtonEntity, DeviceClassMixin):
     # Device class mapping
     DEVICE_CLASS_MAPPING = {"restartDevice": "restart"}
 
+    @property
+    def entity_registry_enabled_default(self) -> bool:
+        """If the entity is enabled by default."""
+        # Disable manual/advanced buttons by default
+        disabled_buttons = ["refreshData", "refreshAlarm", "restartDevice"]
+        return self.sensor_instance.get_name() not in disabled_buttons
+
     async def async_press(self) -> None:
         """Handle the button press."""
         # press the button
