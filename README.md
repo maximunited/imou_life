@@ -112,28 +112,30 @@ The integration uses a **coordinator-based polling system** to keep device data 
 3. **Parallel Updates Control**: Platform updates are serialized (`PARALLEL_UPDATES = 1`) to prevent API rate limiting
 4. **Automatic Recovery**: Failed updates are logged and retried on the next interval
 
-### Update Intervals by Device Type
+### Update Intervals
 
-| Device Type | Default Interval | Configurable | Purpose |
-|-------------|------------------|--------------|---------|
-| **Standard Devices** | 15 minutes (900s) | ✅ Yes (Options) | Balance freshness vs API calls |
-| **Battery Devices** | 5 minutes (300s) | ✅ Yes (Options) | Optimized for battery monitoring |
+| Setting | Default Value | Configurable | Purpose |
+|---------|---------------|--------------|---------|
+| **Scan Interval** | 15 minutes (900s) | ✅ Yes (Options) | Balance freshness vs API calls |
+
+**Note**: All devices (standard and battery-powered) use the same configurable scan interval. Battery-powered cameras have additional optimization features (sleep schedules, power-saving modes) but share the same polling frequency.
 
 ### Battery Device Optimization
 
-Battery-powered cameras use a separate **Battery Optimization Coordinator** with:
-- **Faster polling**: 5-minute default interval for battery status
+Battery-powered cameras support additional features:
 - **Smart scheduling**: Configurable sleep schedules (daily, weekly, custom, battery-based)
 - **Power-saving modes**: Automatic optimization when battery is low
-- **Reduced API calls**: Intelligent caching to minimize battery drain
+- **LED control**: Manage LED indicators to conserve power
+- **Motion sensitivity**: Adjustable detection levels to reduce wake events
 
 ### API Rate Limiting
 
 The Imou API has rate limits to protect their service:
 - **Rate Limit Detection**: Automatic detection of `OP1013` rate limit errors
 - **Error Handling**: Failed requests don't crash the integration
-- **User Notification**: Persistent notification shown when rate-limited
+- **User Notification**: Persistent notification shown if rate-limited during setup
 - **Retry Strategy**: Next update attempt waits for the configured interval
+- **Monitoring**: Check the API Status diagnostic sensor (disabled by default) for rate limit status
 
 ### Customizing Update Frequency
 
@@ -143,7 +145,7 @@ To change polling intervals:
 2. **Click Configure** on your device
 3. **Adjust Options**:
    - `Scan Interval`: Seconds between updates (minimum: 60, recommended: 300-900)
-   - `Battery Scan Interval`: Seconds for battery device updates (minimum: 60)
+   - Applies to all device data including battery status
 4. **Save and Reload**
 
 > **⚠️ Rate Limit Warning**: Setting intervals too low (< 5 minutes for multiple devices) may trigger API rate limits. The Imou developer account is limited to reasonable API call frequencies.
