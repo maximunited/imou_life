@@ -382,9 +382,11 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
                 return self.async_abort(reason="retrying")
 
             elif action == "ignore":
-                # Reset counter but don't reload
+                # Reset all stale tracking state but don't reload
                 coordinator = entry.runtime_data
                 coordinator.stale_device_failure_count = 0
+                coordinator.stale_device_suspected = False
+                coordinator.stale_device_last_error = None
                 return self.async_abort(reason="ignored")
 
         return self.async_show_form(

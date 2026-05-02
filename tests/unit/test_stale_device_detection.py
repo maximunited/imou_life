@@ -181,26 +181,28 @@ async def test_stale_device_vs_rate_limit(
 
 
 async def test_stale_device_mixed_errors(hass: HomeAssistant, coordinator, mock_device):
-    """Test that only consecutive stale errors increment counter."""
+    """Test that non-stale errors reset counter (ensures consecutive failures)."""
     # First: stale device error
     mock_device.async_get_data.side_effect = ImouException("Device not found")
     with pytest.raises(UpdateFailed):
         await coordinator._async_update_data()
     assert coordinator.stale_device_failure_count == 1
 
-    # Second: rate limit error (different error type)
+    # Second: rate limit error (non-stale error resets counter)
     mock_device.async_get_data.side_effect = ImouException("OP1013")
     with pytest.raises(UpdateFailed):
         await coordinator._async_update_data()
-    # Counter should still be 1 (rate limit doesn't increment)
-    assert coordinator.stale_device_failure_count == 1
+    # Counter should be reset to 0 (non-stale error breaks the streak)
+    assert coordinator.stale_device_failure_count == 0
+    assert coordinator.stale_device_suspected is False
+    assert coordinator.stale_device_last_error is None
 
-    # Third: stale device error again
+    # Third: stale device error again (starts new streak)
     mock_device.async_get_data.side_effect = ImouException("Invalid device")
     with pytest.raises(UpdateFailed):
         await coordinator._async_update_data()
-    # Counter increments
-    assert coordinator.stale_device_failure_count == 2
+    # Counter restarts from 1
+    assert coordinator.stale_device_failure_count == 1
 
 
 async def test_stale_device_suspected_only_at_threshold(

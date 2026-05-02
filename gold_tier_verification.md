@@ -166,27 +166,32 @@
 - Configuration changes require re-setup or options flow
 - **Action:** Implement reconfigure flow for changing API credentials without deleting entry
 
-### ❌ 20. repair-issues
+### ✅ 20. repair-issues
 **Requirement:** Repair issues and repair flows are used when user intervention is needed
-**Status:** NOT IMPLEMENTED
+**Status:** IMPLEMENTED
 **Evidence:**
-- No `repairs.py` module
-- No repair flows for common issues (rate limits, offline devices)
-- **Action:** Implement repairs for recoverable issues requiring user action
+- Stale device repair flow in `config_flow.py` (`async_step_repair_stale_device()`)
+- Repair issue created when device no longer exists on account
+- User options: Remove, Retry, or Ignore via Settings → System → Repairs
+- Event-driven repair flow triggered by coordinator detection
+- See `docs/STALE_DEVICE_DETECTION.md` for details
 
-### ❌ 21. stale-devices
+### ✅ 21. stale-devices
 **Requirement:** Stale devices are removed
-**Status:** NOT IMPLEMENTED
+**Status:** IMPLEMENTED
 **Evidence:**
-- No automatic removal of devices no longer on account
-- Stale devices remain until manual removal
-- **Action:** Implement cleanup logic to remove devices no longer accessible via API
+- Automatic detection in `coordinator.py` (`_is_stale_device_error()`)
+- Monitors for "device not found" API errors
+- 3-failure threshold prevents false positives
+- Creates repair issue for user-confirmed removal
+- Differentiates stale device from auth/rate limit/network errors
+- See `docs/STALE_DEVICE_DETECTION.md` for implementation details
 
 ---
 
 ## 📊 Gold Tier Summary
 
-### Compliance: **15/21** ✅ (71.4%)
+### Compliance: **17/21** ✅ (81.0%)
 
 **Passing (15):**
 - ✅ devices

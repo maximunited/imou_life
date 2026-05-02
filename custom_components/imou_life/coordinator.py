@@ -129,7 +129,11 @@ class ImouDataUpdateCoordinator(DataUpdateCoordinator):
                 self.stale_device_failure_count += 1
                 self.stale_device_last_error = error_str
 
-                if self.stale_device_failure_count >= STALE_DEVICE_FAILURE_THRESHOLD:
+                # Fire event only when first reaching threshold (prevent spam)
+                if (
+                    self.stale_device_failure_count >= STALE_DEVICE_FAILURE_THRESHOLD
+                    and not self.stale_device_suspected
+                ):
                     self.stale_device_suspected = True
                     # Trigger repair issue creation via event
                     if self.config_entry is not None:
@@ -145,6 +149,11 @@ class ImouDataUpdateCoordinator(DataUpdateCoordinator):
                 )
                 _LOGGER.warning(error_msg)
                 raise UpdateFailed(error_msg) from exception
+
+            # Non-stale error: reset stale tracking (ensures consecutive failures)
+            self.stale_device_failure_count = 0
+            self.stale_device_suspected = False
+            self.stale_device_last_error = None
 
             # Check if this is a rate limit error
             if "OP1013" in error_str or "exceed limit" in error_str.lower():

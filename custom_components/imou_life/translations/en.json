@@ -43,6 +43,9 @@
         "description": "The device '{device_name}' (ID: {device_id}) appears to no longer exist on your Imou account.\n\nError: {error_message}\n\nWhat would you like to do?",
         "data": {
           "action": "Action"
+        },
+        "data_description": {
+          "action": "Choose how to handle this device"
         }
       }
     },

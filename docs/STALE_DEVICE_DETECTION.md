@@ -18,7 +18,7 @@ Stale device detection automatically identifies when a device registered in Home
 
 ### State Machine
 
-```
+```text
 NORMAL
   └─> "Device not found" error
       └─> SUSPECTED_STALE (count = 1)
@@ -59,7 +59,7 @@ The system distinguishes between different error types:
 **Title**: "Device No Longer Available"
 
 **Message**:
-```
+```text
 The device 'Camera Name' (ID: device_123) appears to no longer exist on your Imou account.
 
 Error: Device not found
@@ -165,7 +165,7 @@ No user configuration needed. The feature is automatic and uses these defaults:
 ## Logging
 
 **Warning level** (visible in logs):
-```
+```text
 Device may no longer exist on account (failure 1/3): Device not found
 Device may no longer exist on account (failure 2/3): Device not found
 Device may no longer exist on account (failure 3/3): Device not found
