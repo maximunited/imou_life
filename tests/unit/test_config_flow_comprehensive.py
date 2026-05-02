@@ -39,9 +39,7 @@ class TestConfigFlowLogin:
         flow = ImouFlowHandler()
         flow.hass = MagicMock()
 
-        with patch(
-            "custom_components.imou_life.config_flow.async_create_clientsession"
-        ):
+        with patch("custom_components.imou_life.config_flow.async_get_clientsession"):
             result = await flow.async_step_user()
 
         assert result["type"] == FlowResultType.FORM
@@ -53,9 +51,7 @@ class TestConfigFlowLogin:
         flow = ImouFlowHandler()
         flow.hass = MagicMock()
 
-        with patch(
-            "custom_components.imou_life.config_flow.async_create_clientsession"
-        ):
+        with patch("custom_components.imou_life.config_flow.async_get_clientsession"):
             result = await flow.async_step_login(
                 {
                     CONF_APP_ID: "test_id",
@@ -81,7 +77,7 @@ class TestConfigFlowLogin:
         mock_device.get_device_id.return_value = "device_123"
 
         with (
-            patch("custom_components.imou_life.config_flow.async_create_clientsession"),
+            patch("custom_components.imou_life.config_flow.async_get_clientsession"),
             patch("custom_components.imou_life.config_flow.ImouAPIClient") as mock_api,
             patch(
                 "custom_components.imou_life.config_flow.ImouDiscoverService"
@@ -115,7 +111,7 @@ class TestConfigFlowLogin:
         flow.hass = MagicMock()
 
         with (
-            patch("custom_components.imou_life.config_flow.async_create_clientsession"),
+            patch("custom_components.imou_life.config_flow.async_get_clientsession"),
             patch("custom_components.imou_life.config_flow.ImouAPIClient") as mock_api,
             patch("custom_components.imou_life.config_flow.ImouDiscoverService"),
         ):
@@ -141,7 +137,7 @@ class TestConfigFlowLogin:
         flow.hass = MagicMock()
 
         with (
-            patch("custom_components.imou_life.config_flow.async_create_clientsession"),
+            patch("custom_components.imou_life.config_flow.async_get_clientsession"),
             patch("custom_components.imou_life.config_flow.ImouAPIClient") as mock_api,
         ):
             api_instance = mock_api.return_value

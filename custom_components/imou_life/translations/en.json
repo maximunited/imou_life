@@ -47,6 +47,22 @@
         "data_description": {
           "action": "Choose how to handle this device"
         }
+      },
+      "reconfigure_confirm": {
+        "title": "Reconfigure Imou Life",
+        "description": "Update the configuration for {device_name}. You can change your API credentials or select a different API server region.\n\nNote: Your app secret will not be shown for security reasons. Enter your current or new app secret below.",
+        "data": {
+          "app_id": "Imou App ID",
+          "app_secret": "Imou App Secret",
+          "api_server": "API Server Region",
+          "api_url": "Custom API URL"
+        },
+        "data_description": {
+          "app_id": "Your Imou developer App ID from open.imoulife.com",
+          "app_secret": "Your Imou developer App Secret (will not be shown for security)",
+          "api_server": "Select your geographic region for optimal performance",
+          "api_url": "Only required when 'Custom' server is selected"
+        }
       }
     },
     "error": {
@@ -64,6 +80,7 @@
     },
     "abort": {
       "reauth_successful": "Reauthentication successful! Your credentials have been updated.",
+      "reconfigure_successful": "Configuration updated successfully! The integration has been reloaded with your new settings.",
       "device_removed": "Device has been removed from Home Assistant.",
       "retrying": "Retrying connection to device. The integration will reload.",
       "ignored": "Warning ignored. The integration will continue trying to connect.",

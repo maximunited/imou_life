@@ -158,13 +158,19 @@
 - No dynamic icon translation based on state
 - **Action:** Would require implementing `_attr_translation_key` with icon variations
 
-### ❌ 19. reconfiguration-flow
+### ✅ 19. reconfiguration-flow
 **Requirement:** Integrations should have a reconfigure flow
-**Status:** NOT IMPLEMENTED
+**Status:** IMPLEMENTED
 **Evidence:**
-- No `async_step_reconfigure()` in config_flow.py
-- Configuration changes require re-setup or options flow
-- **Action:** Implement reconfigure flow for changing API credentials without deleting entry
+- `async_step_reconfigure()` entry point in `config_flow.py` (line 352)
+- `async_step_reconfigure_confirm()` main logic in `config_flow.py` (line 367)
+- Users can update API credentials (app_id, app_secret)
+- Users can change API server/region
+- Custom API URL supported
+- Credentials validated before accepting changes
+- Entry data updated and integration reloaded automatically
+- Comprehensive error handling (auth failed, rate limit, connection errors)
+- User-friendly translations in `translations/en.json`
 
 ### ✅ 20. repair-issues
 **Requirement:** Repair issues and repair flows are used when user intervention is needed
@@ -191,9 +197,9 @@
 
 ## 📊 Gold Tier Summary
 
-### Compliance: **17/21** ✅ (81.0%)
+### Compliance: **18/21** ✅ (85.7%)
 
-**Passing (17):**
+**Passing (18):**
 - ✅ devices
 - ✅ diagnostics
 - ✅ discovery
@@ -208,6 +214,7 @@
 - ✅ entity-device-class
 - ✅ entity-disabled-by-default
 - ✅ entity-translations
+- ✅ reconfiguration-flow
 - ✅ repair-issues
 - ✅ stale-devices
 
@@ -217,20 +224,19 @@
 **Partial (0):**
 - None
 
-**Not Implemented (4):**
+**Not Implemented (3):**
 - ❌ dynamic-devices - No automatic detection of new devices
 - ❌ exception-translations - Error messages not translatable
 - ❌ icon-translations - Icons not dynamic/translatable
-- ❌ reconfiguration-flow - No reconfigure flow
 
 ---
 
 ## 🎯 Gold Tier Achievement Status
 
-**Adjusted Score:** 17/20 passing of applicable rules = **85%**
+**Adjusted Score:** 18/20 passing of applicable rules = **90%**
 
 **Current Tier:** **Silver** 🥈 (100% compliant)
-**Gold Tier:** **Near Completion** (85% of requirements met)
+**Gold Tier:** **Excellent Progress** (90% of requirements met)
 
 ---
 
@@ -256,10 +262,17 @@
    - Event-driven repair issue creation
    - Full user control over device removal
 
-### Priority 2 - Medium Effort (8-12 hours)
-5. **reconfiguration-flow** - Implement `async_step_reconfigure()`
+### ✅ Completed - Reconfiguration Flow (2-3 hours)
+5. ✅ **reconfiguration-flow** - Proactive configuration updates:
+   - `async_step_reconfigure()` and `async_step_reconfigure_confirm()` in config_flow
+   - Users can update API credentials (app_id, app_secret) without re-setup
+   - Users can change API server/region
+   - Custom API URL supported
+   - Credentials validated before changes applied
+   - Entry data updated and integration reloaded automatically
+   - Comprehensive error handling
 
-### Priority 3 - Advanced Features (16-20 hours)
+### Priority 3 - Advanced Features (16-20 hours each)
 6. **dynamic-devices** - Background polling for new devices
 7. **exception-translations** - Translatable error messages
 8. **icon-translations** - Dynamic icons based on state
@@ -268,7 +281,7 @@
 
 ## 💡 Recommendations
 
-### ✅ Completed Improvements (85% Gold Tier)
+### ✅ Completed Improvements (90% Gold Tier)
 1. ✅ **Document data updates** - COMPLETED
    - Added comprehensive "Data Updates & Polling" section to README
    - Documents coordinator system, intervals, battery optimization, rate limiting
@@ -293,8 +306,16 @@
    - User options: Remove, Retry, or Ignore
    - Event-driven repair issue creation
 
-### Next Priority for Gold Tier Certification (1 more item needed for 90%)
-5. 🔧 **Implement reconfigure flow** - Allow credential updates without re-setup
+5. ✅ **Reconfigure flow** - COMPLETED
+   - `async_step_reconfigure()` and `async_step_reconfigure_confirm()` in config_flow
+   - Users can update API credentials without re-setup
+   - API server/region changes supported
+   - Full validation and error handling
+
+### Remaining Items for Full Gold Tier Certification (Advanced Features)
+6. 🔧 **Dynamic device discovery** - Background polling for new devices added to account
+7. 🔧 **Exception translations** - Translatable error messages for international users
+8. 🔧 **Icon translations** - Dynamic icon changes based on entity state
 
 ### Long-term Enhancements
 - **Dynamic device discovery** for seamless new device addition
@@ -309,10 +330,10 @@
 |------|--------|------------|
 | 🥉 Bronze | ✅ Certified | 19/19 (100%) |
 | 🥈 Silver | ✅ Certified | 10/10 (100%) |
-| 🥇 Gold | ⚠️ Near Completion | 17/21 (81%) |
+| 🥇 Gold | ⚠️ Excellent Progress | 18/21 (86%) |
 | 💎 Platinum | 🔵 Not Assessed | - |
 
-**The Imou Life integration is fully Silver tier certified and implements 85% of Gold tier requirements (17 of 20 applicable rules).**
+**The Imou Life integration is fully Silver tier certified and implements 90% of Gold tier requirements (18 of 20 applicable rules).**
 
 ---
 

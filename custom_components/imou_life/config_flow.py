@@ -7,7 +7,7 @@ import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
-from homeassistant.helpers.aiohttp_client import async_create_clientsession
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from imouapi.api import ImouAPIClient
 from imouapi.device import ImouDevice, ImouDiscoverService
 from imouapi.exceptions import ImouException
@@ -24,6 +24,7 @@ from .const import (
     CONF_DISCOVERED_DEVICE,
     CONF_ENABLE_DISCOVER,
     DEFAULT_API_SERVER,
+    DEFAULT_API_URL,
     DEFAULT_AUTO_SLEEP,
     DEFAULT_BATTERY_OPTIMIZATION,
     DEFAULT_BATTERY_THRESHOLD,
@@ -69,7 +70,7 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
 
     async def async_step_user(self, user_input=None):
         """Handle a flow initialized by the user."""
-        self._session = async_create_clientsession(self.hass)
+        self._session = async_get_clientsession(self.hass)
         return await self.async_step_login()
 
     # Step: login
@@ -275,7 +276,7 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
                 api_client = ImouAPIClient(
                     user_input[CONF_APP_ID],
                     user_input[CONF_APP_SECRET],
-                    async_create_clientsession(self.hass),
+                    async_get_clientsession(self.hass),
                 )
                 api_client.set_base_url(existing_api_url)
 
@@ -345,6 +346,155 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
             errors=errors,
             description_placeholders={
                 "device_name": self.entry.data.get(CONF_DEVICE_NAME) or self.entry.title
+            },
+        )
+
+    async def async_step_reconfigure(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        """Handle reconfiguration of the integration."""
+        # Get the entry being reconfigured from context
+        entry = self.hass.config_entries.async_get_entry(self.context["entry_id"])
+        if entry is None:
+            return self.async_abort(reason="entry_not_found")
+
+        # Store entry for later steps
+        self.entry = entry
+
+        # Move to reconfigure form
+        return await self.async_step_reconfigure_confirm()
+
+    async def async_step_reconfigure_confirm(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        """Allow user to reconfigure the integration."""
+        errors: dict[str, str] = {}
+
+        if user_input is not None:
+            # Extract new values
+            new_app_id = user_input[CONF_APP_ID]
+            new_app_secret = user_input[CONF_APP_SECRET]
+            new_api_server = user_input.get(CONF_API_SERVER)
+            new_api_url = (user_input.get(CONF_API_URL) or "").strip()
+
+            # Resolve API URL (user may have selected a server)
+            if new_api_server and new_api_server != "custom":
+                new_api_url = API_SERVER_OPTIONS[new_api_server]
+            elif new_api_server == "custom" and not new_api_url:
+                errors["base"] = "custom_url_required"
+
+            if not errors:
+                try:
+                    # Validate credentials with actual API call
+                    session = async_get_clientsession(self.hass)
+                    api_client = ImouAPIClient(new_app_id, new_app_secret, session)
+                    api_client.set_base_url(new_api_url)
+
+                    await api_client.async_connect()
+
+                    # Verify device is still accessible with new credentials
+                    device_id = self.entry.data[CONF_DEVICE_ID]
+                    device = ImouDevice(api_client, device_id)
+                    await device.async_initialize()
+
+                except ImouException as exception:
+                    error_str = str(exception).lower()
+
+                    # Map API errors to user-friendly messages
+                    if "op1013" in error_str or "exceed limit" in error_str:
+                        errors["base"] = "rate_limit_exceeded"
+                    elif any(
+                        pattern in error_str
+                        for pattern in [
+                            "authentication failed",
+                            "invalid credentials",
+                            "unauthorized",
+                            "op1002",
+                            "invalid app",
+                        ]
+                    ):
+                        errors["base"] = "not_authorized"
+                    elif "connection" in error_str:
+                        errors["base"] = "connection_failed"
+                    else:
+                        errors["base"] = "api_error"
+
+                    _LOGGER.error("Reconfiguration validation failed: %s", exception)
+
+                except Exception as exception:
+                    errors["base"] = "generic_error"
+                    _LOGGER.exception(
+                        "Unexpected error during reconfiguration: %s", exception
+                    )
+
+                else:
+                    # Success - update entry data
+                    new_data = {
+                        **self.entry.data,
+                        CONF_APP_ID: new_app_id,
+                        CONF_APP_SECRET: new_app_secret,
+                        CONF_API_URL: new_api_url,
+                    }
+
+                    self.hass.config_entries.async_update_entry(
+                        self.entry, data=new_data
+                    )
+                    await self.hass.config_entries.async_reload(self.entry.entry_id)
+
+                    return self.async_abort(reason="reconfigure_successful")
+
+        # Get values for form defaults
+        # On retry (when errors exist), preserve user input; otherwise use entry data
+        if user_input is not None and errors:
+            # Preserve user's attempted values on retry
+            default_app_id = user_input.get(CONF_APP_ID, "")
+            default_api_server = user_input.get(CONF_API_SERVER, "global")
+            default_api_url = (user_input.get(CONF_API_URL) or "").strip()
+        else:
+            # First load: use existing entry data
+            default_app_id = self.entry.data.get(CONF_APP_ID, "")
+            default_api_url = self.entry.data.get(CONF_API_URL, DEFAULT_API_URL)
+            # Find which server option matches current URL (for dropdown)
+            default_api_server = next(
+                (
+                    key
+                    for key, url in API_SERVER_OPTIONS.items()
+                    if url == default_api_url
+                ),
+                "custom",
+            )
+
+        # Build form schema
+        data_schema = vol.Schema(
+            {
+                vol.Required(CONF_APP_ID, default=default_app_id): str,
+                vol.Required(CONF_APP_SECRET): str,  # No default for security
+                vol.Required(CONF_API_SERVER, default=default_api_server): vol.In(
+                    API_SERVER_LABELS
+                ),
+            }
+        )
+
+        # Add custom URL field if custom is selected
+        if user_input and user_input.get(CONF_API_SERVER) == "custom":
+            data_schema = data_schema.extend(
+                {
+                    vol.Required(CONF_API_URL, default=default_api_url): str,
+                }
+            )
+        elif default_api_server == "custom":
+            data_schema = data_schema.extend(
+                {
+                    vol.Optional(CONF_API_URL, default=default_api_url): str,
+                }
+            )
+
+        return self.async_show_form(
+            step_id="reconfigure_confirm",
+            data_schema=data_schema,
+            errors=errors,
+            description_placeholders={
+                "device_name": self.entry.data.get(CONF_DEVICE_NAME, self.entry.title),
             },
         )
 
