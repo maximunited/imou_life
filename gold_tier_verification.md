@@ -193,7 +193,7 @@
 
 ### Compliance: **17/21** ✅ (81.0%)
 
-**Passing (15):**
+**Passing (17):**
 - ✅ devices
 - ✅ diagnostics
 - ✅ discovery
@@ -208,6 +208,8 @@
 - ✅ entity-device-class
 - ✅ entity-disabled-by-default
 - ✅ entity-translations
+- ✅ repair-issues
+- ✅ stale-devices
 
 **Not Applicable (1):**
 - 🔵 discovery-update-info (cloud-based integration, no local network)
@@ -215,22 +217,20 @@
 **Partial (0):**
 - None
 
-**Not Implemented (6):**
+**Not Implemented (4):**
 - ❌ dynamic-devices - No automatic detection of new devices
 - ❌ exception-translations - Error messages not translatable
 - ❌ icon-translations - Icons not dynamic/translatable
 - ❌ reconfiguration-flow - No reconfigure flow
-- ❌ repair-issues - No repair flows implemented
-- ❌ stale-devices - No automatic stale device cleanup
 
 ---
 
 ## 🎯 Gold Tier Achievement Status
 
-**Adjusted Score:** 15/20 passing of applicable rules = **75%**
+**Adjusted Score:** 17/20 passing of applicable rules = **85%**
 
 **Current Tier:** **Silver** 🥈 (100% compliant)
-**Gold Tier:** **Significant Progress** (75% of requirements met)
+**Gold Tier:** **Near Completion** (85% of requirements met)
 
 ---
 
@@ -245,10 +245,19 @@
    - Noisy binary sensors (power saving, sleep mode)
    - Cosmetic switches (breathing light, link features, smart track)
 
+### ✅ Completed - Stale Device Detection (3 hours)
+3. ✅ **stale-devices** - Automatic stale device detection and cleanup:
+   - Detects "device not found" errors (3-failure threshold)
+   - Creates repair issue for user confirmation
+   - User options: Remove, Retry, or Ignore
+   - See `docs/STALE_DEVICE_DETECTION.md` for details
+4. ✅ **repair-issues** - Repair flow implementation:
+   - `async_step_repair_stale_device()` in config_flow
+   - Event-driven repair issue creation
+   - Full user control over device removal
+
 ### Priority 2 - Medium Effort (8-12 hours)
-3. **reconfiguration-flow** - Implement `async_step_reconfigure()`
-4. **stale-devices** - Add device cleanup logic
-5. **repair-issues** - Create repair flows for rate limits, offline devices
+5. **reconfiguration-flow** - Implement `async_step_reconfigure()`
 
 ### Priority 3 - Advanced Features (16-20 hours)
 6. **dynamic-devices** - Background polling for new devices
@@ -259,7 +268,7 @@
 
 ## 💡 Recommendations
 
-### ✅ Completed Improvements (75% Gold Tier)
+### ✅ Completed Improvements (85% Gold Tier)
 1. ✅ **Document data updates** - COMPLETED
    - Added comprehensive "Data Updates & Polling" section to README
    - Documents coordinator system, intervals, battery optimization, rate limiting
@@ -273,10 +282,19 @@
      - 2 battery binary sensors (power saving, sleep mode)
      - 4 cosmetic switches (breathing light, link features)
 
-### Next Priority for Gold Tier Certification (3 more items needed)
-3. 🔧 **Implement reconfigure flow** - Allow credential updates without re-setup
-4. 🔧 **Stale device cleanup** - Remove devices no longer on account
-5. 🔧 **Repair flows** - Guide users through rate limits and offline devices
+3. ✅ **Stale device cleanup** - COMPLETED
+   - Automatic detection via `_is_stale_device_error()` in coordinator
+   - 3-failure threshold to prevent false positives
+   - Repair issue flow for user-confirmed removal
+   - See `docs/STALE_DEVICE_DETECTION.md` for implementation
+
+4. ✅ **Repair flows** - COMPLETED
+   - `async_step_repair_stale_device()` in config_flow
+   - User options: Remove, Retry, or Ignore
+   - Event-driven repair issue creation
+
+### Next Priority for Gold Tier Certification (1 more item needed for 90%)
+5. 🔧 **Implement reconfigure flow** - Allow credential updates without re-setup
 
 ### Long-term Enhancements
 - **Dynamic device discovery** for seamless new device addition
@@ -291,10 +309,10 @@
 |------|--------|------------|
 | 🥉 Bronze | ✅ Certified | 19/19 (100%) |
 | 🥈 Silver | ✅ Certified | 10/10 (100%) |
-| 🥇 Gold | ⚠️ Significant Progress | 15/21 (71%) |
+| 🥇 Gold | ⚠️ Near Completion | 17/21 (81%) |
 | 💎 Platinum | 🔵 Not Assessed | - |
 
-**The Imou Life integration is fully Silver tier certified and implements 75% of Gold tier requirements (15 of 20 applicable rules).**
+**The Imou Life integration is fully Silver tier certified and implements 85% of Gold tier requirements (17 of 20 applicable rules).**
 
 ---
 
