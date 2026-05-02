@@ -105,6 +105,14 @@ class TestReauthFlow:
             assert result["type"] == FlowResultType.ABORT
             assert result["reason"] == "reauth_successful"
 
+            # Verify ImouAPIClient was instantiated with new credentials
+            mock_api_client.assert_called()
+            call_args = mock_api_client.call_args
+            assert call_args[0][0] == "new_app_id"  # First positional arg is app_id
+            assert (
+                call_args[0][1] == "new_app_secret"
+            )  # Second positional arg is app_secret
+
             # Verify config entry was updated
             mock_hass.config_entries.async_update_entry.assert_called_once()
             update_call = mock_hass.config_entries.async_update_entry.call_args
