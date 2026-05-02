@@ -137,6 +137,17 @@ The Imou API has rate limits to protect their service:
 - **Retry Strategy**: Next update attempt waits for the current effective interval (temporarily increased while rate-limited)
 - **Monitoring**: Check the API Status diagnostic sensor (disabled by default) for rate limit status
 
+### Stale Device Detection
+
+The integration automatically detects when a device no longer exists on your Imou account:
+- **Automatic Detection**: Monitors for "device not found" API errors
+- **Smart Threshold**: Requires 3 consecutive failures to avoid false positives
+- **User Control**: Presents a repair issue in Settings → System → Repairs
+- **Flexible Options**: Choose to Remove, Retry, or Ignore the warning
+- **No Silent Deletion**: Device is only removed after explicit user confirmation
+
+See [Stale Device Detection](docs/STALE_DEVICE_DETECTION.md) for detailed information.
+
 ### Customizing Update Frequency
 
 To change polling intervals:

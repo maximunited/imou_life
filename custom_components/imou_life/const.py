@@ -120,6 +120,14 @@ RECORDING_QUALITY_DISPLAY = {
 # Sleep schedule options
 SLEEP_SCHEDULE_OPTIONS = ["never", "night_only", "custom", "battery_based"]
 
+# Stale device detection
+STALE_DEVICE_FAILURE_THRESHOLD = 3
+STALE_DEVICE_ERROR_PATTERNS = [
+    "device not found",
+    "invalid device",
+    "not authorized to operate on the device",
+]
+
 # switches which are enabled by default
 ENABLED_SWITCHES = [
     "motionDetect",

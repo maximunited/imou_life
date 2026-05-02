@@ -348,6 +348,67 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
             },
         )
 
+    async def async_step_repair_stale_device(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        """Handle stale device repair."""
+        if not isinstance(self.init_data, dict):
+            return self.async_abort(reason="invalid_data")
+
+        entry_id = self.init_data.get("entry_id")
+        entry = self.hass.config_entries.async_get_entry(entry_id)
+
+        if not entry:
+            return self.async_abort(reason="entry_not_found")
+
+        device_name = self.init_data.get("device_name", "Unknown")
+        device_id = self.init_data.get("device_id", "Unknown")
+        error_message = self.init_data.get("error_message", "")
+
+        if user_input is not None:
+            action = user_input.get("action")
+
+            if action == "remove":
+                # Remove the config entry
+                await self.hass.config_entries.async_remove(entry_id)
+                return self.async_abort(reason="device_removed")
+
+            elif action == "retry":
+                # Reset counter and reload the entry
+                coordinator = entry.runtime_data
+                coordinator.stale_device_failure_count = 0
+                coordinator.stale_device_suspected = False
+                await self.hass.config_entries.async_reload(entry_id)
+                return self.async_abort(reason="retrying")
+
+            elif action == "ignore":
+                # Reset all stale tracking state but don't reload
+                coordinator = entry.runtime_data
+                coordinator.stale_device_failure_count = 0
+                coordinator.stale_device_suspected = False
+                coordinator.stale_device_last_error = None
+                return self.async_abort(reason="ignored")
+
+        return self.async_show_form(
+            step_id="repair_stale_device",
+            data_schema=vol.Schema(
+                {
+                    vol.Required("action"): vol.In(
+                        {
+                            "remove": "Remove device from Home Assistant",
+                            "retry": "Retry connection (device may be temporarily unavailable)",
+                            "ignore": "Ignore warning and continue",
+                        }
+                    )
+                }
+            ),
+            description_placeholders={
+                "device_name": device_name,
+                "device_id": device_id,
+                "error_message": error_message,
+            },
+        )
+
     @staticmethod
     @callback
     def async_get_options_flow(config_entry):
