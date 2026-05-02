@@ -100,6 +100,7 @@ class ImouAPIStatusSensor(CoordinatorEntity, SensorEntity):
     """Diagnostic sensor showing API connection and rate limit status."""
 
     _attr_entity_category = EntityCategory.DIAGNOSTIC
+    _attr_entity_registry_enabled_default = False
     _attr_icon = "mdi:api"
     _attr_has_entity_name = True
     _attr_translation_key = "api_status"

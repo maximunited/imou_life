@@ -101,6 +101,61 @@ After adding a device, you can configure advanced options:
 - **API Timeout**: API call timeout in seconds (default: 10 seconds)
 - **Callback URL**: For push notifications (requires internet exposure)
 
+## 📊 Data Updates & Polling
+
+The integration uses a **coordinator-based polling system** to keep device data up-to-date while respecting API rate limits.
+
+### How Data Updates Work
+
+1. **Data Update Coordinator**: Each device has a coordinator that manages data fetching and distribution to all entities
+2. **Polling Interval**: Configurable update frequency (default: 900 seconds / 15 minutes)
+3. **Parallel Updates Control**: Platform updates are serialized (`PARALLEL_UPDATES = 1`) to prevent API rate limiting
+4. **Automatic Recovery**: Failed updates are logged and retried on the next interval
+
+### Update Intervals by Device Type
+
+| Device Type | Default Interval | Configurable | Purpose |
+|-------------|------------------|--------------|---------|
+| **Standard Devices** | 15 minutes (900s) | ✅ Yes (Options) | Balance freshness vs API calls |
+| **Battery Devices** | 5 minutes (300s) | ✅ Yes (Options) | Optimized for battery monitoring |
+
+### Battery Device Optimization
+
+Battery-powered cameras use a separate **Battery Optimization Coordinator** with:
+- **Faster polling**: 5-minute default interval for battery status
+- **Smart scheduling**: Configurable sleep schedules (daily, weekly, custom, battery-based)
+- **Power-saving modes**: Automatic optimization when battery is low
+- **Reduced API calls**: Intelligent caching to minimize battery drain
+
+### API Rate Limiting
+
+The Imou API has rate limits to protect their service:
+- **Rate Limit Detection**: Automatic detection of `OP1013` rate limit errors
+- **Error Handling**: Failed requests don't crash the integration
+- **User Notification**: Persistent notification shown when rate-limited
+- **Retry Strategy**: Next update attempt waits for the configured interval
+
+### Customizing Update Frequency
+
+To change polling intervals:
+
+1. **Go to Settings** → Devices & Services → Imou Life
+2. **Click Configure** on your device
+3. **Adjust Options**:
+   - `Scan Interval`: Seconds between updates (minimum: 60, recommended: 300-900)
+   - `Battery Scan Interval`: Seconds for battery device updates (minimum: 60)
+4. **Save and Reload**
+
+> **⚠️ Rate Limit Warning**: Setting intervals too low (< 5 minutes for multiple devices) may trigger API rate limits. The Imou developer account is limited to reasonable API call frequencies.
+
+### Real-time Updates (Alternative)
+
+For instant motion detection updates instead of polling:
+- Use **Push Notifications** (see section below)
+- Requires internet-accessible Home Assistant instance
+- Bypasses polling for motion events only
+- Other sensor data still uses polling
+
 ## 🔔 Push Notifications Setup
 
 For real-time motion detection updates:
