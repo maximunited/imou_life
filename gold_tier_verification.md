@@ -189,14 +189,19 @@
 
 ### ✅ 21. stale-devices
 **Requirement:** Stale devices are removed
-**Status:** IMPLEMENTED
+**Status:** FULLY IMPLEMENTED
 **Evidence:**
-- Automatic detection in `coordinator.py` (`_is_stale_device_error()`)
-- Monitors for "device not found" API errors
-- 3-failure threshold prevents false positives
-- Creates repair issue for user-confirmed removal
-- Differentiates stale device from auth/rate limit/network errors
-- See `docs/STALE_DEVICE_DETECTION.md` for implementation details
+- **Automatic detection** in `coordinator.py` (`_is_stale_device_error()`)
+  - Monitors for "device not found" API errors
+  - 3-failure threshold prevents false positives
+  - Creates repair issue for user-confirmed removal
+  - Differentiates stale device from auth/rate limit/network errors
+- **Manual deletion support** via `async_remove_config_entry_device()` in `__init__.py`
+  - Enables UI delete button in Settings → Devices & Services
+  - Validates device belongs to config entry before allowing removal
+  - Returns True for safe removal, False otherwise
+  - 4 comprehensive unit tests in `test_device_removal.py`
+- See `docs/STALE_DEVICE_DETECTION.md` for full implementation details
 
 ---
 

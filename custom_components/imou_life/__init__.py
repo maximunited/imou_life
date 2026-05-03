@@ -10,6 +10,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.device_registry import DeviceEntry
 from homeassistant.helpers.typing import ConfigType
 from imouapi.api import ImouAPIClient
 from imouapi.device import ImouDevice
@@ -314,6 +315,45 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         )
     )
     return unloaded
+
+
+async def async_remove_config_entry_device(
+    hass: HomeAssistant, config_entry: ConfigEntry, device_entry: DeviceEntry
+) -> bool:
+    """Remove a device from the integration.
+
+    Called when the user clicks the delete button on a device.
+    Returns True if the device can be removed, False otherwise.
+
+    Since each config entry corresponds to exactly one device in our integration,
+    we allow removal of the device. This will also remove the config entry if
+    it's the only one associated with this device.
+    """
+    device_id = config_entry.data.get(CONF_DEVICE_ID)
+    device_name = config_entry.data.get(CONF_DEVICE_NAME, "Unknown")
+
+    _LOGGER.info(
+        "User requested deletion of device '%s' (ID: %s) from config entry %s",
+        device_name,
+        device_id,
+        config_entry.entry_id,
+    )
+
+    # Check if this device belongs to this config entry by comparing identifiers
+    for identifier in device_entry.identifiers:
+        if identifier[0] == DOMAIN and identifier[1] == device_id:
+            _LOGGER.debug(
+                "Device '%s' belongs to this config entry, allowing removal",
+                device_name,
+            )
+            return True
+
+    # If the device doesn't match this config entry, don't allow removal
+    _LOGGER.debug(
+        "Device does not belong to config entry %s, preventing removal",
+        config_entry.entry_id,
+    )
+    return False
 
 
 async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
