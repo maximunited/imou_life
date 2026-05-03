@@ -1,10 +1,10 @@
 """Test imou_life switch."""
 
-from unittest.mock import patch
+from typing import Generator
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from homeassistant.components.switch import SERVICE_TURN_OFF, SERVICE_TURN_ON
-from homeassistant.const import ATTR_ENTITY_ID
+from homeassistant.core import HomeAssistant
 
 from custom_components.imou_life.const import DOMAIN
 from tests.fixtures.const import MOCK_CONFIG_ENTRY
@@ -13,7 +13,7 @@ from tests.fixtures.mocks import MockConfigEntry
 
 # This fixture bypasses the actual setup of the integration
 @pytest.fixture(autouse=True)
-def bypass_added_to_hass():
+def bypass_added_to_hass() -> Generator[None, None, None]:
     """Prevent added to hass."""
     with (
         patch(
@@ -28,58 +28,81 @@ def bypass_added_to_hass():
         yield
 
 
-@pytest.mark.skip(reason="Temporarily disabled due to complex mocking requirements")
 @pytest.mark.asyncio
-async def test_switch(hass, api_ok):
+async def test_switch(hass: HomeAssistant) -> None:
     """Test switch services."""
-    # Create a mock entry so we don't have to go through config flow
+    # Create mock switch sensor with tracked methods
+    mock_sensor = MagicMock()
+    mock_sensor.get_name.return_value = "motionDetect"
+    mock_sensor.get_description.return_value = "Motion Detection"
+    mock_sensor.get_attributes.return_value = {}
+    mock_sensor.is_on.return_value = False
+    mock_sensor.async_turn_on = AsyncMock()
+    mock_sensor.async_turn_off = AsyncMock()
+    mock_sensor.set_enabled = MagicMock()
+    mock_sensor.async_update = AsyncMock()
+
+    # Create mock device
+    mock_device = MagicMock()
+    mock_device.get_name.return_value = "device_name"
+    mock_device.get_device_id.return_value = "device_id"
+    mock_device.get_model.return_value = "Test Model"
+    mock_device.get_manufacturer.return_value = "Imou"
+    mock_device.get_firmware.return_value = "1.0.0"
+    mock_device.get_status.return_value = True
+
+    def mock_get_sensors(platform):
+        if platform == "switch":
+            return [mock_sensor]
+        return []
+
+    mock_device.get_sensors_by_platform = mock_get_sensors
+
+    # Create mock coordinator
+    mock_coordinator = MagicMock()
+    mock_coordinator.device = mock_device
+    mock_coordinator.entities = []
+    mock_coordinator.last_update_success = True
+    mock_coordinator.hass = hass
+
+    # Create config entry
     config_entry = MockConfigEntry(
         domain=DOMAIN, data=MOCK_CONFIG_ENTRY, entry_id="test", version=3
     )
     config_entry.add_to_hass(hass)
-    await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
-    # check if the turn_on function is called when turning on the switch
-    with (
-        patch(
-            "custom_components.imou_life.switch.ImouSwitch"
-            ".entity_registry_enabled_default",
-            return_value=True,
-        ),
-        patch(
-            "custom_components.imou_life.entity.ImouEntity.available",
-            return_value=True,
-        ),
-        patch(
-            "custom_components.imou_life.switch.ImouSwitch.async_turn_on"
-        ) as turn_on_func,
-    ):
-        await hass.services.async_call(
-            "switch",
-            SERVICE_TURN_ON,
-            service_data={ATTR_ENTITY_ID: "switch.device_name_motiondetect"},
-            blocking=True,
+
+    # Patch to use our mock coordinator
+    with patch.object(config_entry, "runtime_data", mock_coordinator):
+        # Manually set up switch platform
+        from custom_components.imou_life.switch import async_setup_entry
+
+        async_add_devices = MagicMock()
+        await async_setup_entry(hass, config_entry, async_add_devices)
+        await hass.async_block_till_done()
+
+        # Get the created switch entity
+        async_add_devices.assert_called_once()
+        switch_entities = async_add_devices.call_args[0][0]
+        assert len(switch_entities) == 1
+        switch_entity = switch_entities[0]
+
+        # Add entity to hass manually
+        switch_entity.hass = hass
+        await switch_entity.async_added_to_hass()
+
+        # Register the entity with hass
+        hass.states.async_set(
+            switch_entity.entity_id,
+            "off",
+            switch_entity.extra_state_attributes,
         )
-    assert turn_on_func.called
-    # check if the turn_off function is called when turning off the switch
-    with (
-        patch(
-            "custom_components.imou_life.switch.ImouSwitch"
-            ".entity_registry_enabled_default",
-            return_value=True,
-        ),
-        patch(
-            "custom_components.imou_life.entity.ImouEntity.available",
-            return_value=True,
-        ),
-        patch(
-            "custom_components.imou_life.switch.ImouSwitch.async_turn_off"
-        ) as turn_off_func,
-    ):
-        await hass.services.async_call(
-            "switch",
-            SERVICE_TURN_OFF,
-            service_data={ATTR_ENTITY_ID: "switch.device_name_motiondetect"},
-            blocking=True,
-        )
-    assert turn_off_func.called
+
+        # Test turn_on (patch async_write_ha_state to avoid HA internal complexity)
+        with patch.object(switch_entity, "async_write_ha_state"):
+            await switch_entity.async_turn_on()
+        assert mock_sensor.async_turn_on.called
+
+        # Test turn_off
+        with patch.object(switch_entity, "async_write_ha_state"):
+            await switch_entity.async_turn_off()
+        assert mock_sensor.async_turn_off.called
