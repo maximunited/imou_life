@@ -23,7 +23,7 @@ A Home Assistant integration for Imou Life cameras and devices, providing compre
 
 ### System Requirements
 - **Home Assistant**: 2024.2.0 or later
-- **Python**: 3.11, 3.12, 3.13
+- **Python**: 3.11, 3.12, 3.13, 3.14 (experimental)
 - **Operating System**: Any platform supported by Home Assistant
 
 ### Python Dependencies
@@ -245,17 +245,18 @@ Download diagnostics from the device page in Home Assistant for detailed informa
 | **3.11** | 2023.3+ | ✅ **Fully Supported** (2024.2.0+) |
 | **3.12** | 2024.2+ | ✅ **Fully Supported** (2024.2.0+) |
 | **3.13** | 2024.12+ | ✅ **Fully Supported** (2024.2.0+) |
+| **3.14** | 2025.6+ (estimated) | ✅ **Tested** (experimental) |
 
-**Note**: Our integration requires Home Assistant 2024.2.0+ which automatically provides Python 3.11-3.13 compatibility.
+**Note**: Our integration requires Home Assistant 2024.2.0+ which automatically provides Python 3.11-3.13 compatibility. Python 3.14 support is tested in CI but may require Home Assistant 2025.6+ or later.
 
 ### Tested Environments
 - **Home Assistant**: 2024.2.0 → 2025.8.3+ (latest)
-- **Python**: 3.11, 3.12, 3.13
+- **Python**: 3.11, 3.12, 3.13, 3.14 (experimental)
 - **Platforms**: Windows, macOS, Linux, Docker, Home Assistant OS
 - **Architectures**: x86_64, ARM64, ARM32
 
 ### CI/CD Testing
-- **GitHub Actions**: Automated testing on Python 3.11, 3.12, 3.13
+- **GitHub Actions**: Automated testing on Python 3.11, 3.12, 3.13, 3.14
 - **Coverage**: Maintains >60% test coverage across all versions
 - **Quality**: Scrutinizer CI integration for code quality monitoring
 
