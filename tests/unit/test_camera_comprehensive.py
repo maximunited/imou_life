@@ -172,13 +172,14 @@ class TestCameraEntity:
         mock_coordinator.device.get_status.return_value = False
         assert camera.available is False
 
-    def test_icon_default_fallback(self, camera, mock_sensor_instance):
+    def test_icon_default_fallback(self, mock_coordinator, mock_sensor_instance):
         """Test icon translation key is set based on sensor name."""
         mock_sensor_instance.get_name.return_value = "unknownSensor"
-        # Need to re-create camera with the updated sensor name
-        camera._sensor_instance = mock_sensor_instance
+        # Re-create camera with the updated sensor name so constructor runs
+        camera = ImouCamera(
+            mock_coordinator, MOCK_CONFIG_ENTRY, mock_sensor_instance, "camera.{}"
+        )
         # Translation key should be snake_case version of sensor name
-        camera._attr_translation_key = "unknown_sensor"
         assert camera._attr_translation_key == "unknown_sensor"
 
     @pytest.mark.asyncio

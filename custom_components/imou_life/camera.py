@@ -35,6 +35,8 @@ _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 def _camel_to_snake(name: str) -> str:
     """Convert camelCase to snake_case for translation keys."""
+    if not isinstance(name, str):
+        return str(name)
     return re.sub(r"(?<!^)(?=[A-Z])", "_", name).lower()
 
 
