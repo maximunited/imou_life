@@ -201,7 +201,9 @@
 
 ## 📊 Gold Tier Summary
 
-### Compliance: **19/21** ✅ (90.5%)
+### Compliance: **19/20** ✅ (95% of applicable requirements)
+
+*Total including non-applicable: 19/21 (90.5%)*
 
 **Passing (19):**
 - ✅ devices
@@ -346,10 +348,10 @@
 |------|--------|------------|
 | 🥉 Bronze | ✅ Certified | 19/19 (100%) |
 | 🥈 Silver | ✅ Certified | 10/10 (100%) |
-| 🥇 Gold | ⚠️ Excellent Progress | 19/21 (90.5%) |
+| 🥇 Gold | ⚠️ Excellent Progress | 19/20 (95%) |
 | 💎 Platinum | 🔵 Not Assessed | - |
 
-**The Imou Life integration is fully Silver tier certified and implements 95% of Gold tier requirements (19 of 20 applicable rules).**
+**The Imou Life integration is fully Silver tier certified and implements 95% of Gold tier requirements (19 of 20 applicable rules). Total compliance including non-applicable rules: 19/21 (90.5%).**
 
 ---
 
