@@ -76,7 +76,6 @@ class TestImouBatterySelect:
             "powerMode",
             "Power Mode",
             POWER_MODES,
-            "mdi:battery-settings",
             "power_mode",
         )
 
@@ -91,7 +90,6 @@ class TestImouBatterySelect:
             "motionSensitivityLevel",
             "Motion Sensitivity",
             MOTION_SENSITIVITY_LEVELS,
-            "mdi:tune-vertical",
             "motion_sensitivity",
         )
 
@@ -106,7 +104,6 @@ class TestImouBatterySelect:
             "recordingQuality",
             "Recording Quality",
             RECORDING_QUALITY_OPTIONS,
-            "mdi:video-quality",
             "recording_quality",
         )
 
@@ -121,7 +118,6 @@ class TestImouBatterySelect:
             "sleepSchedule",
             "Sleep Schedule",
             SLEEP_SCHEDULE_OPTIONS,
-            "mdi:clock-outline",
             "sleep_schedule",
         )
 
@@ -130,7 +126,7 @@ class TestImouBatterySelect:
         assert power_mode_select.select_type == "powerMode"
         assert power_mode_select._description == "Power Mode"
         assert power_mode_select._options == POWER_MODES
-        assert power_mode_select._icon == "mdi:battery-settings"
+        assert power_mode_select._attr_translation_key == "power_mode"
         assert power_mode_select._attribute_name == "power_mode"
 
     def test_select_name(self, power_mode_select):
@@ -143,8 +139,8 @@ class TestImouBatterySelect:
         assert power_mode_select.unique_id == expected_id
 
     def test_select_icon(self, power_mode_select):
-        """Test select entity icon."""
-        assert power_mode_select.icon == "mdi:battery-settings"
+        """Test select entity has translation key for dynamic icons."""
+        assert power_mode_select._attr_translation_key == "power_mode"
 
     def test_select_options(self, power_mode_select):
         """Test select entity options."""
@@ -288,21 +284,24 @@ class TestImouBatterySelect:
     def test_motion_sensitivity_select_properties(self, motion_sensitivity_select):
         """Test motion sensitivity select entity properties."""
         assert motion_sensitivity_select.name == "Test Device Motion Sensitivity"
-        assert motion_sensitivity_select.icon == "mdi:tune-vertical"
+        assert (
+            motion_sensitivity_select._attr_translation_key
+            == "motion_sensitivity_level"
+        )
         assert motion_sensitivity_select.options == MOTION_SENSITIVITY_LEVELS
         assert motion_sensitivity_select._attribute_name == "motion_sensitivity"
 
     def test_recording_quality_select_properties(self, recording_quality_select):
         """Test recording quality select entity properties."""
         assert recording_quality_select.name == "Test Device Recording Quality"
-        assert recording_quality_select.icon == "mdi:video-quality"
+        assert recording_quality_select._attr_translation_key == "recording_quality"
         assert recording_quality_select.options == RECORDING_QUALITY_OPTIONS
         assert recording_quality_select._attribute_name == "recording_quality"
 
     def test_sleep_schedule_select_properties(self, sleep_schedule_select):
         """Test sleep schedule select entity properties."""
         assert sleep_schedule_select.name == "Test Device Sleep Schedule"
-        assert sleep_schedule_select.icon == "mdi:clock-outline"
+        assert sleep_schedule_select._attr_translation_key == "sleep_schedule"
         assert sleep_schedule_select.options == SLEEP_SCHEDULE_OPTIONS
         assert sleep_schedule_select._attribute_name == "sleep_schedule"
 

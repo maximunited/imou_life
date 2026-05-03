@@ -42,7 +42,6 @@ class TestImouBatteryBinarySensor:
             mock_config_entry,
             "lowBattery",
             "Low Battery",
-            "mdi:battery-alert",
             "low_battery",
         )
 
@@ -54,7 +53,6 @@ class TestImouBatteryBinarySensor:
             mock_config_entry,
             "charging",
             "Charging",
-            "mdi:battery-charging",
             "charging",
         )
 
@@ -66,7 +64,6 @@ class TestImouBatteryBinarySensor:
             mock_config_entry,
             "powerSavingActive",
             "Power Saving Active",
-            "mdi:battery-saver",
             "power_saving_active",
         )
 
@@ -78,7 +75,6 @@ class TestImouBatteryBinarySensor:
             mock_config_entry,
             "sleepModeActive",
             "Sleep Mode Active",
-            "mdi:power-sleep",
             "sleep_mode_active",
         )
 
@@ -86,7 +82,7 @@ class TestImouBatteryBinarySensor:
         """Test binary sensor entity initialization."""
         assert low_battery_sensor.sensor_type == "lowBattery"
         assert low_battery_sensor._description == "Low Battery"
-        assert low_battery_sensor._icon == "mdi:battery-alert"
+        assert low_battery_sensor._attr_translation_key == "low_battery"
         assert low_battery_sensor._attribute_name == "low_battery"
 
     def test_sensor_name(self, low_battery_sensor):
@@ -99,8 +95,8 @@ class TestImouBatteryBinarySensor:
         assert low_battery_sensor.unique_id == expected_id
 
     def test_sensor_icon(self, low_battery_sensor):
-        """Test binary sensor entity icon."""
-        assert low_battery_sensor.icon == "mdi:battery-alert"
+        """Test binary sensor entity has translation key for dynamic icons."""
+        assert low_battery_sensor._attr_translation_key == "low_battery"
 
     def test_low_battery_sensor_below_threshold(
         self, low_battery_sensor, mock_coordinator
@@ -237,35 +233,24 @@ class TestImouBatteryBinarySensor:
     def test_all_sensor_types(self, mock_coordinator, mock_config_entry):
         """Test all sensor types have correct properties."""
         sensor_configs = [
-            ("lowBattery", "Low Battery", "mdi:battery-alert", "low_battery"),
-            ("charging", "Charging", "mdi:battery-charging", "charging"),
-            (
-                "powerSavingActive",
-                "Power Saving Active",
-                "mdi:battery-saver",
-                "power_saving_active",
-            ),
-            (
-                "sleepModeActive",
-                "Sleep Mode Active",
-                "mdi:power-sleep",
-                "sleep_mode_active",
-            ),
+            ("lowBattery", "Low Battery", "low_battery"),
+            ("charging", "Charging", "charging"),
+            ("powerSavingActive", "Power Saving Active", "power_saving_active"),
+            ("sleepModeActive", "Sleep Mode Active", "sleep_mode_active"),
         ]
 
-        for sensor_type, description, icon, attribute_name in sensor_configs:
+        for sensor_type, description, attribute_name in sensor_configs:
             sensor = ImouBatteryBinarySensor(
                 mock_coordinator,
                 mock_config_entry,
                 sensor_type,
                 description,
-                icon,
                 attribute_name,
             )
 
             assert sensor.sensor_type == sensor_type
             assert sensor._description == description
-            assert sensor._icon == icon
+            assert sensor._attr_translation_key == attribute_name
             assert sensor._attribute_name == attribute_name
             assert sensor.name == f"Test Device {description}"
 

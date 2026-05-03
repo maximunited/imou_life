@@ -37,7 +37,6 @@ async def async_setup_entry(
         entry,
         "enterSleepMode",
         "Enter Sleep Mode",
-        "mdi:power-sleep",
         "enter_sleep_mode",
     )
     entities.append(enter_sleep_button)
@@ -48,7 +47,6 @@ async def async_setup_entry(
         entry,
         "exitSleepMode",
         "Exit Sleep Mode",
-        "mdi:power-sleep",
         "exit_sleep_mode",
     )
     entities.append(exit_sleep_button)
@@ -59,7 +57,6 @@ async def async_setup_entry(
         entry,
         "optimizeBattery",
         "Optimize Battery",
-        "mdi:battery-settings",
         "optimize_battery",
     )
     entities.append(optimize_battery_button)
@@ -70,7 +67,6 @@ async def async_setup_entry(
         entry,
         "resetPowerSettings",
         "Reset Power Settings",
-        "mdi:refresh-circle",
         "reset_power_settings",
     )
     entities.append(reset_power_button)
@@ -89,7 +85,6 @@ class ImouBatteryButton(ImouBatteryEntity, ButtonEntity):
         config_entry,
         button_type: str,
         description: str,
-        icon: str,
         action_name: str,
     ):
         """Initialize the battery optimization button entity."""
@@ -98,7 +93,6 @@ class ImouBatteryButton(ImouBatteryEntity, ButtonEntity):
             config_entry,
             "button",
             description,
-            icon,
             button_type,
         )
         self._action_name = action_name

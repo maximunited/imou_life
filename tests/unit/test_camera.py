@@ -73,8 +73,8 @@ class TestImouCamera:
         assert stream_url == "rtsp://test.com/stream"
 
     def test_camera_icon(self, camera):
-        """Test camera icon property."""
-        assert camera.icon == "mdi:video"
+        """Test camera has translation key for dynamic icons."""
+        assert camera._attr_translation_key == "camera"
 
     def test_camera_available(self, camera):
         """Test camera available property."""

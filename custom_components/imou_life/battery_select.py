@@ -36,7 +36,6 @@ async def async_setup_entry(
         "powerMode",
         "Power Mode",
         POWER_MODES,
-        "mdi:battery-settings",
         "power_mode",
     )
     entities.append(power_mode_select)
@@ -48,7 +47,6 @@ async def async_setup_entry(
         "motionSensitivityLevel",
         "Motion Sensitivity",
         MOTION_SENSITIVITY_LEVELS,
-        "mdi:tune-vertical",
         "motion_sensitivity",
     )
     entities.append(motion_sensitivity_select)
@@ -60,7 +58,6 @@ async def async_setup_entry(
         "recordingQuality",
         "Recording Quality",
         RECORDING_QUALITY_OPTIONS,
-        "mdi:video-quality",
         "recording_quality",
     )
     entities.append(recording_quality_select)
@@ -72,7 +69,6 @@ async def async_setup_entry(
         "sleepSchedule",
         "Sleep Schedule",
         SLEEP_SCHEDULE_OPTIONS,
-        "mdi:clock-outline",
         "sleep_schedule",
     )
     entities.append(sleep_schedule_select)
@@ -92,7 +88,6 @@ class ImouBatterySelect(ImouBatteryEntity, SelectEntity):
         select_type: str,
         description: str,
         options: list,
-        icon: str,
         attribute_name: str,
     ):
         """Initialize the battery optimization select entity."""
@@ -101,7 +96,6 @@ class ImouBatterySelect(ImouBatteryEntity, SelectEntity):
             config_entry,
             "select",
             description,
-            icon,
             select_type,
         )
         self._options = options

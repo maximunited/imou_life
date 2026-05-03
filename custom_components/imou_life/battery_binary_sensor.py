@@ -26,14 +26,13 @@ async def async_setup_entry(
         entry,
         "lowBattery",
         "Low Battery",
-        "mdi:battery-alert",
         "low_battery",
     )
     entities.append(low_battery_sensor)
 
     # Charging Binary Sensor
     charging_sensor = ImouBatteryBinarySensor(
-        coordinator, entry, "charging", "Charging", "mdi:battery-charging", "charging"
+        coordinator, entry, "charging", "Charging", "charging"
     )
     entities.append(charging_sensor)
 
@@ -43,7 +42,6 @@ async def async_setup_entry(
         entry,
         "powerSavingActive",
         "Power Saving Active",
-        "mdi:battery-saver",
         "power_saving_active",
     )
     entities.append(power_saving_sensor)
@@ -54,7 +52,6 @@ async def async_setup_entry(
         entry,
         "sleepModeActive",
         "Sleep Mode Active",
-        "mdi:power-sleep",
         "sleep_mode_active",
     )
     entities.append(sleep_mode_sensor)
@@ -75,7 +72,6 @@ class ImouBatteryBinarySensor(ImouBatteryEntity, BinarySensorEntity):
         config_entry,
         sensor_type: str,
         description: str,
-        icon: str,
         attribute_name: str,
     ):
         """Initialize the battery optimization binary sensor entity."""
@@ -84,7 +80,6 @@ class ImouBatteryBinarySensor(ImouBatteryEntity, BinarySensorEntity):
             config_entry,
             "binary_sensor",
             description,
-            icon,
             sensor_type,
         )
         self._attribute_name = attribute_name

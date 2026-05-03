@@ -28,8 +28,10 @@ from .const import (
     SERVIZE_PTZ_LOCATION,
     SERVIZE_PTZ_MOVE,
 )
+from .helpers import camel_to_snake
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
+
 
 # Serialize entity updates to prevent API rate limiting
 PARALLEL_UPDATES = 1
@@ -105,6 +107,9 @@ class ImouCamera(Camera):
         # Entity availability tracking
         self._entity_available = None
 
+        # Set translation key for dynamic icons
+        self._attr_translation_key = camel_to_snake(self._sensor_instance.get_name())
+
     @property
     def entity_registry_enabled_default(self) -> bool:
         """If the entity is enabled by default."""
@@ -140,15 +145,6 @@ class ImouCamera(Camera):
     def name(self):
         """Return the name of the sensor."""
         return f"{self._device.get_name()} {self._sensor_instance.get_description()}"
-
-    @property
-    def icon(self):
-        """Return the icon of this sensor."""
-        from .const import SENSOR_ICONS
-
-        if self._sensor_instance.get_name() in SENSOR_ICONS:
-            return SENSOR_ICONS[self._sensor_instance.get_name()]
-        return SENSOR_ICONS["__default__"]
 
     @property
     def extra_state_attributes(self):

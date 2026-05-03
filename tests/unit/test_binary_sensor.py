@@ -66,8 +66,8 @@ class TestImouBinarySensor:
         assert binary_sensor.device_class == "motion"
 
     def test_binary_sensor_icon(self, binary_sensor):
-        """Test binary sensor icon."""
-        assert binary_sensor.icon == "mdi:motion-sensor"
+        """Test binary sensor has translation key for dynamic icons."""
+        assert binary_sensor._attr_translation_key == "motion_alarm"
 
     def test_binary_sensor_available(self, binary_sensor):
         """Test binary sensor available property."""
