@@ -101,15 +101,6 @@
     "invalid_credentials": {
       "message": "Invalid credentials, please reauthenticate"
     },
-    "stale_device_suspected": {
-      "message": "Device may no longer exist on account (failure {count}/{threshold}): {error}"
-    },
-    "api_error": {
-      "message": "Imou API error: {error}"
-    },
-    "rate_limit_exceeded": {
-      "message": "Imou API rate limit exceeded (#{count}). Polling paused until {reset_time}"
-    },
     "camera_move_location_failed": {
       "message": "Failed to move camera to location: {error}"
     },

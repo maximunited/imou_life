@@ -146,12 +146,13 @@
 **Requirement:** Exception messages are translatable
 **Status:** IMPLEMENTED
 **Evidence:**
-- All 18 exception messages now use Home Assistant's translation pattern
+- All user-facing exceptions now use Home Assistant's translation pattern (15 total)
 - `strings.json` created with exception translation schema
 - `translations/en.json` updated with exception translations
 - Exceptions use `translation_domain`, `translation_key`, and `translation_placeholders`
-- Covers ConfigEntryNotReady, ConfigEntryAuthFailed, UpdateFailed, and HomeAssistantError exceptions
-- Files updated: `__init__.py` (3), `coordinator.py` (4), `camera.py` (2), `battery_button.py` (2), `battery_select.py` (2), `battery_coordinator.py` (4), `switch.py` (1)
+- Covers ConfigEntryNotReady (3), ConfigEntryAuthFailed (1), and HomeAssistantError (11) exceptions
+- Note: UpdateFailed exceptions remain as plain strings (coordinator internal errors, not user-facing)
+- Files updated: `__init__.py` (3), `coordinator.py` (1), `camera.py` (2), `battery_button.py` (2), `battery_select.py` (2), `battery_coordinator.py` (4), `switch.py` (1)
 - All 392 unit tests passing after conversion
 
 ### ❌ 18. icon-translations
@@ -280,9 +281,11 @@
 
 ### ✅ Completed - Exception Translations (3-4 hours)
 6. ✅ **exception-translations** - Translatable error messages for international users:
-   - Created `strings.json` with all 18 exception translation keys
+   - Created `strings.json` with 15 exception translation keys
    - Updated `translations/en.json` with exception translations section
-   - Converted all exceptions to use `translation_domain`, `translation_key`, and `translation_placeholders`
+   - Converted all user-facing exceptions to use `translation_domain`, `translation_key`, and `translation_placeholders`
+   - Covers ConfigEntryNotReady (3), ConfigEntryAuthFailed (1), and HomeAssistantError (11) exceptions
+   - UpdateFailed exceptions remain as plain strings (coordinator internal errors)
    - Updated 7 files: `__init__.py`, `coordinator.py`, `camera.py`, `battery_button.py`, `battery_select.py`, `battery_coordinator.py`, `switch.py`
    - All 392 unit tests passing
    - Ready for community translations to other languages
@@ -327,9 +330,10 @@
    - Full validation and error handling
 
 6. ✅ **Exception translations** - COMPLETED
-   - Created `strings.json` with all 18 exception translation keys
+   - Created `strings.json` with 15 exception translation keys
    - Updated `translations/en.json` with exception translations
-   - All exceptions now use Home Assistant's translation pattern
+   - All user-facing exceptions now use Home Assistant's translation pattern
+   - Covers ConfigEntryNotReady, ConfigEntryAuthFailed, and HomeAssistantError
    - Ready for community translations to other languages
 
 ### Remaining Items for Full Gold Tier Certification (Advanced Features)
