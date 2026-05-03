@@ -70,13 +70,7 @@ async def test_switch(hass):
     config_entry.add_to_hass(hass)
 
     # Patch to use our mock coordinator
-    with (
-        patch(
-            "custom_components.imou_life.async_setup_entry",
-            return_value=True,
-        ),
-        patch.object(config_entry, "runtime_data", mock_coordinator),
-    ):
+    with patch.object(config_entry, "runtime_data", mock_coordinator):
         # Manually set up switch platform
         from custom_components.imou_life.switch import async_setup_entry
 
@@ -85,6 +79,7 @@ async def test_switch(hass):
         await hass.async_block_till_done()
 
         # Get the created switch entity
+        async_add_devices.assert_called_once()
         switch_entities = async_add_devices.call_args[0][0]
         assert len(switch_entities) == 1
         switch_entity = switch_entities[0]
