@@ -72,8 +72,8 @@ class TestImouSelect:
         assert "off" in options
 
     def test_select_icon(self, select):
-        """Test select icon."""
-        assert select.icon == "mdi:weather-night"
+        """Test select has translation key for dynamic icons."""
+        assert select._attr_translation_key == "night_vision_mode"
 
     def test_select_available(self, select):
         """Test select available property."""

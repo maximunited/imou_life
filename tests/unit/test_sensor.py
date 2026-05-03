@@ -68,8 +68,8 @@ class TestImouSensor:
         assert sensor.device_class == "battery"
 
     def test_sensor_icon(self, sensor):
-        """Test sensor icon."""
-        assert sensor.icon == "mdi:battery"
+        """Test sensor has translation key for dynamic icons."""
+        assert sensor._attr_translation_key == "battery"
 
     def test_sensor_available(self, sensor):
         """Test sensor available property."""

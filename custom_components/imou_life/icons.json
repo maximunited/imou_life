@@ -1,8 +1,14 @@
 {
   "entity": {
     "sensor": {
+      "last_alarm": {
+        "default": "mdi:timer"
+      },
       "storage_used": {
         "default": "mdi:harddisk"
+      },
+      "callback_url": {
+        "default": "mdi:webhook"
       },
       "status": {
         "default": "mdi:lan-connect",
@@ -13,8 +19,36 @@
           "upgrading": "mdi:cloud-arrow-up"
         }
       },
-      "callback_url": {
-        "default": "mdi:webhook"
+      "battery": {
+        "default": "mdi:battery"
+      },
+      "battery_level": {
+        "default": "mdi:battery",
+        "range": {
+          "0": "mdi:battery-outline",
+          "10": "mdi:battery-10",
+          "20": "mdi:battery-20",
+          "30": "mdi:battery-30",
+          "40": "mdi:battery-40",
+          "50": "mdi:battery-50",
+          "60": "mdi:battery-60",
+          "70": "mdi:battery-70",
+          "80": "mdi:battery-80",
+          "90": "mdi:battery-90",
+          "100": "mdi:battery"
+        }
+      },
+      "battery_voltage": {
+        "default": "mdi:flash"
+      },
+      "power_consumption": {
+        "default": "mdi:lightning-bolt"
+      },
+      "sleep_mode": {
+        "default": "mdi:power-sleep"
+      },
+      "power_saving_status": {
+        "default": "mdi:battery-saver"
       },
       "api_status": {
         "default": "mdi:api",
@@ -24,9 +58,6 @@
           "error": "mdi:alert-circle",
           "unknown": "mdi:help-circle"
         }
-      },
-      "battery": {
-        "default": "mdi:battery"
       }
     },
     "binary_sensor": {
@@ -43,73 +74,156 @@
           "on": "mdi:motion-sensor-alert",
           "off": "mdi:motion-sensor"
         }
+      },
+      "low_battery": {
+        "default": "mdi:battery",
+        "state": {
+          "on": "mdi:battery-alert",
+          "off": "mdi:battery"
+        }
+      },
+      "charging": {
+        "default": "mdi:battery",
+        "state": {
+          "on": "mdi:battery-charging",
+          "off": "mdi:battery"
+        }
+      },
+      "power_saving_active": {
+        "default": "mdi:battery-saver",
+        "state": {
+          "on": "mdi:battery-saver",
+          "off": "mdi:battery-saver-outline"
+        }
+      },
+      "sleep_mode_active": {
+        "default": "mdi:power-sleep",
+        "state": {
+          "on": "mdi:power-sleep",
+          "off": "mdi:sleep-off"
+        }
       }
     },
     "select": {
       "night_vision_mode": {
         "default": "mdi:weather-night"
       },
+      "power_mode": {
+        "default": "mdi:battery-settings"
+      },
       "recording_quality": {
         "default": "mdi:quality-high"
       },
-      "motion_sensitivity": {
-        "default": "mdi:motion-sensor"
+      "motion_sensitivity_level": {
+        "default": "mdi:tune-vertical"
       },
-      "power_mode": {
-        "default": "mdi:power"
+      "motion_sensitivity": {
+        "default": "mdi:tune-vertical"
       },
       "sleep_schedule": {
-        "default": "mdi:sleep"
+        "default": "mdi:clock-outline"
       }
     },
     "switch": {
       "motion_detect": {
-        "default": "mdi:motion-sensor"
+        "default": "mdi:motion-sensor",
+        "state": {
+          "on": "mdi:motion-sensor",
+          "off": "mdi:motion-sensor-off"
+        }
       },
-      "close_camera": {
-        "default": "mdi:camera-off"
-      },
-      "white_light": {
-        "default": "mdi:light-flood-down"
-      },
-      "audio_encode_control": {
-        "default": "mdi:audio-input-rca"
+      "header_detect": {
+        "default": "mdi:human"
       },
       "human_detect": {
         "default": "mdi:human"
       },
-      "push_notifications": {
-        "default": "mdi:bell-ring"
+      "ab_alarm_sound": {
+        "default": "mdi:account-voice"
+      },
+      "breathing_light": {
+        "default": "mdi:television-ambient-light"
+      },
+      "close_camera": {
+        "default": "mdi:camera-off"
+      },
+      "link_dev_alarm": {
+        "default": "mdi:bell"
+      },
+      "white_light": {
+        "default": "mdi:light-flood-down"
+      },
+      "smart_track": {
+        "default": "mdi:radar"
+      },
+      "linkagewhitelight": {
+        "default": "mdi:light-flood-down"
       },
       "linkage_white_light": {
         "default": "mdi:lightbulb-on"
+      },
+      "audio_encode_control": {
+        "default": "mdi:audio-input-rca"
+      },
+      "push_notifications": {
+        "default": "mdi:bell-ring",
+        "state": {
+          "on": "mdi:webhook",
+          "off": "mdi:webhook-off"
+        }
+      },
+      "power_saving_mode": {
+        "default": "mdi:battery-saver"
+      },
+      "auto_sleep": {
+        "default": "mdi:power-sleep"
+      },
+      "led_indicators": {
+        "default": "mdi:led-variant-outline",
+        "state": {
+          "on": "mdi:led-variant-on",
+          "off": "mdi:led-variant-off"
+        }
       }
     },
     "button": {
+      "restart_device": {
+        "default": "mdi:restart"
+      },
       "refresh_data": {
         "default": "mdi:refresh"
       },
       "refresh_alarm": {
         "default": "mdi:alarm-bell"
       },
-      "restart_device": {
-        "default": "mdi:restart"
-      },
       "enter_sleep_mode": {
         "default": "mdi:sleep"
       },
       "exit_sleep_mode": {
         "default": "mdi:sleep-off"
+      },
+      "optimize_battery": {
+        "default": "mdi:battery-settings"
+      },
+      "reset_power_settings": {
+        "default": "mdi:refresh-circle"
+      }
+    },
+    "siren": {
+      "siren": {
+        "default": "mdi:alarm-light",
+        "state": {
+          "on": "mdi:alarm-light",
+          "off": "mdi:alarm-light-outline"
+        }
       }
     },
     "camera": {
       "camera": {
         "default": "mdi:video"
-      }
-    },
-    "siren": {
-      "siren": {
-        "default": "mdi:alarm-light"
+      },
+      "camera_sd": {
+        "default": "mdi:video"
       }
     }
   },

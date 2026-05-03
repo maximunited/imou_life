@@ -47,7 +47,6 @@ class TestImouBatteryButton:
             mock_config_entry,
             "enterSleepMode",
             "Enter Sleep Mode",
-            "mdi:power-sleep",
             "enter_sleep_mode",
         )
 
@@ -59,7 +58,6 @@ class TestImouBatteryButton:
             mock_config_entry,
             "exitSleepMode",
             "Exit Sleep Mode",
-            "mdi:power-sleep",
             "exit_sleep_mode",
         )
 
@@ -71,7 +69,6 @@ class TestImouBatteryButton:
             mock_config_entry,
             "optimizeBattery",
             "Optimize Battery",
-            "mdi:battery-settings",
             "optimize_battery",
         )
 
@@ -83,7 +80,6 @@ class TestImouBatteryButton:
             mock_config_entry,
             "resetPowerSettings",
             "Reset Power Settings",
-            "mdi:refresh-circle",
             "reset_power_settings",
         )
 
@@ -91,7 +87,7 @@ class TestImouBatteryButton:
         """Test button entity initialization."""
         assert enter_sleep_button.button_type == "enterSleepMode"
         assert enter_sleep_button._description == "Enter Sleep Mode"
-        assert enter_sleep_button._icon == "mdi:power-sleep"
+        assert enter_sleep_button._attr_translation_key == "enter_sleep_mode"
         assert enter_sleep_button._action_name == "enter_sleep_mode"
 
     def test_button_name(self, enter_sleep_button):
@@ -104,8 +100,8 @@ class TestImouBatteryButton:
         assert enter_sleep_button.unique_id == expected_id
 
     def test_button_icon(self, enter_sleep_button):
-        """Test button entity icon."""
-        assert enter_sleep_button.icon == "mdi:power-sleep"
+        """Test button entity has translation key for dynamic icons."""
+        assert enter_sleep_button._attr_translation_key == "enter_sleep_mode"
 
     @pytest.mark.asyncio
     async def test_button_press_enter_sleep_mode(
@@ -259,40 +255,24 @@ class TestImouBatteryButton:
     def test_all_button_types(self, mock_coordinator, mock_config_entry):
         """Test all button types have correct properties."""
         button_configs = [
-            (
-                "enterSleepMode",
-                "Enter Sleep Mode",
-                "mdi:power-sleep",
-                "enter_sleep_mode",
-            ),
-            ("exitSleepMode", "Exit Sleep Mode", "mdi:power-sleep", "exit_sleep_mode"),
-            (
-                "optimizeBattery",
-                "Optimize Battery",
-                "mdi:battery-settings",
-                "optimize_battery",
-            ),
-            (
-                "resetPowerSettings",
-                "Reset Power Settings",
-                "mdi:refresh-circle",
-                "reset_power_settings",
-            ),
+            ("enterSleepMode", "Enter Sleep Mode", "enter_sleep_mode"),
+            ("exitSleepMode", "Exit Sleep Mode", "exit_sleep_mode"),
+            ("optimizeBattery", "Optimize Battery", "optimize_battery"),
+            ("resetPowerSettings", "Reset Power Settings", "reset_power_settings"),
         ]
 
-        for button_type, description, icon, action_name in button_configs:
+        for button_type, description, action_name in button_configs:
             button = ImouBatteryButton(
                 mock_coordinator,
                 mock_config_entry,
                 button_type,
                 description,
-                icon,
                 action_name,
             )
 
             assert button.button_type == button_type
             assert button._description == description
-            assert button._icon == icon
+            assert button._attr_translation_key == action_name
             assert button._action_name == action_name
             assert button.name == f"Test Device {description}"
 

@@ -76,7 +76,6 @@ class TestImouBatterySelect:
             "powerMode",
             "Power Mode",
             POWER_MODES,
-            "mdi:battery-settings",
             "power_mode",
         )
 
@@ -91,7 +90,6 @@ class TestImouBatterySelect:
             "motionSensitivityLevel",
             "Motion Sensitivity",
             MOTION_SENSITIVITY_LEVELS,
-            "mdi:tune-vertical",
             "motion_sensitivity",
         )
 
@@ -106,7 +104,6 @@ class TestImouBatterySelect:
             "recordingQuality",
             "Recording Quality",
             RECORDING_QUALITY_OPTIONS,
-            "mdi:video-quality",
             "recording_quality",
         )
 
@@ -121,7 +118,6 @@ class TestImouBatterySelect:
             "sleepSchedule",
             "Sleep Schedule",
             SLEEP_SCHEDULE_OPTIONS,
-            "mdi:clock-outline",
             "sleep_schedule",
         )
 
@@ -130,7 +126,7 @@ class TestImouBatterySelect:
         assert power_mode_select.select_type == "powerMode"
         assert power_mode_select._description == "Power Mode"
         assert power_mode_select._options == POWER_MODES
-        assert power_mode_select._icon == "mdi:battery-settings"
+        assert power_mode_select._attr_translation_key == "power_mode"
         assert power_mode_select._attribute_name == "power_mode"
 
     def test_select_name(self, power_mode_select):
@@ -143,8 +139,8 @@ class TestImouBatterySelect:
         assert power_mode_select.unique_id == expected_id
 
     def test_select_icon(self, power_mode_select):
-        """Test select entity icon."""
-        assert power_mode_select.icon == "mdi:battery-settings"
+        """Test select entity has translation key for dynamic icons."""
+        assert power_mode_select._attr_translation_key == "power_mode"
 
     def test_select_options(self, power_mode_select):
         """Test select entity options."""

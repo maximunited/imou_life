@@ -1,6 +1,7 @@
 """Base entity class for battery optimization features."""
 
 import logging
+import re
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.device_registry import DeviceInfo
@@ -9,6 +10,11 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .const import DOMAIN
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
+
+
+def _camel_to_snake(name: str) -> str:
+    """Convert camelCase to snake_case for translation keys."""
+    return re.sub(r"(?<!^)(?=[A-Z])", "_", name).lower()
 
 
 class ImouBatteryEntity(CoordinatorEntity):
@@ -20,7 +26,6 @@ class ImouBatteryEntity(CoordinatorEntity):
         config_entry: ConfigEntry,
         entity_type: str,
         description: str,
-        icon: str,
         unique_id_suffix: str,
     ) -> None:
         """Initialize the battery entity."""
@@ -28,8 +33,10 @@ class ImouBatteryEntity(CoordinatorEntity):
         self.config_entry = config_entry
         self._entity_type = entity_type
         self._description = description
-        self._icon = icon
         self._unique_id_suffix = unique_id_suffix
+
+        # Set translation key for dynamic icons
+        self._attr_translation_key = _camel_to_snake(unique_id_suffix)
 
     @property
     def device_info(self) -> DeviceInfo:
@@ -65,11 +72,6 @@ class ImouBatteryEntity(CoordinatorEntity):
     def unique_id(self) -> str:
         """Return a unique ID."""
         return f"{self.config_entry.entry_id}_{self._unique_id_suffix}"
-
-    @property
-    def icon(self) -> str:
-        """Return the icon of the entity."""
-        return self._icon
 
     @property
     def available(self) -> bool:

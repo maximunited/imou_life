@@ -57,8 +57,8 @@ class TestImouButton:
         assert button.should_poll is False
 
     def test_button_icon(self, button):
-        """Test button icon."""
-        assert button.icon == "mdi:restart"
+        """Test button has translation key for dynamic icons."""
+        assert button._attr_translation_key == "restart_device"
 
     def test_button_device_class(self, button):
         """Test button device class."""

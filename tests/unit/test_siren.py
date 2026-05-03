@@ -66,8 +66,8 @@ class TestImouSiren:
         assert siren.is_on is False
 
     def test_siren_icon(self, siren):
-        """Test siren icon."""
-        assert siren.icon == "mdi:alarm-light"
+        """Test siren has translation key for dynamic icons."""
+        assert siren._attr_translation_key == "siren"
 
     def test_siren_available(self, siren):
         """Test siren available property."""
