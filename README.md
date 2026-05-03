@@ -23,7 +23,7 @@ A Home Assistant integration for Imou Life cameras and devices, providing compre
 
 ### System Requirements
 - **Home Assistant**: 2024.2.0 or later
-- **Python**: 3.11, 3.12, 3.13
+- **Python**: 3.11, 3.12, 3.13, 3.14
 - **Operating System**: Any platform supported by Home Assistant
 
 ### Python Dependencies
@@ -240,23 +240,24 @@ Download diagnostics from the device page in Home Assistant for detailed informa
 
 ### Python & Home Assistant Version Support
 
-| Python Version | Home Assistant Support | Integration Status |
-|----------------|------------------------|-------------------|
-| **3.11** | 2023.3+ | ✅ **Fully Supported** (2024.2.0+) |
-| **3.12** | 2024.2+ | ✅ **Fully Supported** (2024.2.0+) |
-| **3.13** | 2024.12+ | ✅ **Fully Supported** (2024.2.0+) |
+| Python Version | Home Assistant Version Required | Integration Support Status |
+|----------------|--------------------------------|----------------------------|
+| **3.11** | 2024.2+ | ✅ **Fully Supported** |
+| **3.12** | 2024.2+ | ✅ **Fully Supported** |
+| **3.13** | 2024.12+ | ✅ **Fully Supported** |
+| **3.14** | 2026.4+ | ✅ **Fully Supported** |
 
-**Note**: Our integration requires Home Assistant 2024.2.0+ which automatically provides Python 3.11-3.13 compatibility.
+**Note**: Our integration requires Home Assistant 2024.2.0 or later. Python 3.11 and 3.12 work with HA 2024.2+, Python 3.13 requires HA 2024.12+, and Python 3.14 requires HA 2026.4+.
 
 ### Tested Environments
-- **Home Assistant**: 2024.2.0 → 2025.8.3+ (latest)
-- **Python**: 3.11, 3.12, 3.13
+- **Home Assistant**: 2024.2.0 → 2026.4.4+ (latest)
+- **Python**: 3.11, 3.12, 3.13, 3.14
 - **Platforms**: Windows, macOS, Linux, Docker, Home Assistant OS
 - **Architectures**: x86_64, ARM64, ARM32
 
 ### CI/CD Testing
-- **GitHub Actions**: Automated testing on Python 3.11, 3.12, 3.13
-- **Coverage**: Maintains >60% test coverage across all versions
+- **GitHub Actions**: Automated testing on Python 3.11, 3.12, 3.13, 3.14
+- **Coverage**: Maintains ≥70% test coverage across all versions
 - **Quality**: Scrutinizer CI integration for code quality monitoring
 
 ## ⚠️ Important Notes

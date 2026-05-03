@@ -22,7 +22,7 @@ This is a Home Assistant custom integration for Imou Life cameras and devices. T
 - **Quality Scale**: Platinum tier
 - **Config Flow**: UI-based configuration (VERSION 3)
 - **API Library**: `imouapi==1.0.15`
-- **Requirements**: Home Assistant 2024.2.0+, Python 3.11-3.13
+- **Requirements**: Home Assistant 2024.2.0+, Python 3.11-3.14
 
 ## Architecture
 
@@ -219,7 +219,7 @@ See `docs/RELEASE_PROCESS.md` for complete documentation including:
 
 **test.yml** - Quick PR checks:
 - Pre-commit hooks (black, flake8, isort, codespell)
-- Unit tests on Python 3.11, 3.12, 3.13
+- Unit tests on Python 3.11, 3.12, 3.13, 3.14
 - HACS validation
 - Hassfest validation
 
