@@ -4,6 +4,7 @@ import asyncio
 from unittest.mock import AsyncMock
 
 import pytest
+from homeassistant.exceptions import HomeAssistantError
 
 
 class TestBatteryCoordinatorSettings:
@@ -17,7 +18,7 @@ class TestBatteryCoordinatorSettings:
 
     def test_set_motion_sensitivity_invalid(self, coordinator):
         """Test setting invalid motion sensitivity."""
-        with pytest.raises(ValueError, match="Invalid motion sensitivity: invalid"):
+        with pytest.raises(HomeAssistantError):
             asyncio.run(coordinator._set_motion_sensitivity("invalid"))
 
     @pytest.mark.asyncio
@@ -28,7 +29,7 @@ class TestBatteryCoordinatorSettings:
 
     def test_set_recording_quality_invalid(self, coordinator):
         """Test setting invalid recording quality."""
-        with pytest.raises(ValueError, match="Invalid recording quality: invalid"):
+        with pytest.raises(HomeAssistantError):
             asyncio.run(coordinator._set_recording_quality("invalid"))
 
     @pytest.mark.asyncio
@@ -39,7 +40,7 @@ class TestBatteryCoordinatorSettings:
 
     def test_set_power_mode_invalid(self, coordinator):
         """Test setting invalid power mode."""
-        with pytest.raises(ValueError, match="Invalid power mode: invalid"):
+        with pytest.raises(HomeAssistantError):
             asyncio.run(coordinator._set_power_mode("invalid"))
 
     @pytest.mark.asyncio

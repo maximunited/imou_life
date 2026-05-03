@@ -178,7 +178,9 @@ async def _initialize_device(device: ImouDevice, entry: ConfigEntry):
         _LOGGER.debug("Device initialization completed")
     except asyncio.TimeoutError:
         _LOGGER.error("Device initialization timed out after %d seconds", setup_timeout)
-        raise ConfigEntryNotReady("Device initialization timed out")
+        raise ConfigEntryNotReady(
+            translation_domain=DOMAIN, translation_key="device_init_timeout"
+        )
     except ImouException as exception:
         error_msg = str(exception)
         # Handle API rate limit errors (OP1013) by requesting retry
@@ -190,7 +192,9 @@ async def _initialize_device(device: ImouDevice, entry: ConfigEntry):
                 error_msg,
             )
             raise ConfigEntryNotReady(
-                f"API rate limit exceeded, will retry later: {error_msg}"
+                translation_domain=DOMAIN,
+                translation_key="rate_limit_retry",
+                translation_placeholders={"error": error_msg},
             )
         _LOGGER.error("Imou exception: %s", error_msg)
         raise
@@ -220,7 +224,9 @@ async def _setup_coordinator(
         _LOGGER.debug("Initial data fetch completed")
     except asyncio.TimeoutError:
         _LOGGER.error("Initial data fetch timed out after %d seconds", setup_timeout)
-        raise ConfigEntryNotReady("Initial data fetch timed out")
+        raise ConfigEntryNotReady(
+            translation_domain=DOMAIN, translation_key="initial_fetch_timeout"
+        )
 
     if not coordinator.last_update_success:
         raise ConfigEntryNotReady

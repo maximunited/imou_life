@@ -218,9 +218,7 @@ class TestCameraEntity:
             side_effect=ImouException("PTZ control failed")
         )
 
-        with pytest.raises(
-            HomeAssistantError, match="Failed to move camera to location"
-        ):
+        with pytest.raises(HomeAssistantError):
             await camera.async_service_ptz_location(0.5, -0.3, 0.8)
 
     @pytest.mark.asyncio
@@ -230,5 +228,5 @@ class TestCameraEntity:
             side_effect=ImouException("PTZ control failed")
         )
 
-        with pytest.raises(HomeAssistantError, match="Failed to move camera"):
+        with pytest.raises(HomeAssistantError):
             await camera.async_service_ptz_move("up", 2000)

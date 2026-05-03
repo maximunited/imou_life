@@ -142,9 +142,7 @@ class TestDeviceInitialization:
         entry = MagicMock()
         entry.options = {OPTION_SETUP_TIMEOUT: 1}
 
-        with pytest.raises(
-            ConfigEntryNotReady, match="Device initialization timed out"
-        ):
+        with pytest.raises(ConfigEntryNotReady):
             await _initialize_device(device, entry)
 
 
@@ -165,9 +163,7 @@ class TestCoordinatorSetup:
             coordinator = MockCoordinator.return_value
             coordinator.async_refresh = AsyncMock(side_effect=asyncio.TimeoutError())
 
-            with pytest.raises(
-                ConfigEntryNotReady, match="Initial data fetch timed out"
-            ):
+            with pytest.raises(ConfigEntryNotReady):
                 await _setup_coordinator(hass, device, entry)
 
 

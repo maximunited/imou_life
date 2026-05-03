@@ -203,7 +203,9 @@ class ImouCamera(Camera):
             )
         except ImouException as err:
             raise HomeAssistantError(
-                f"Failed to move camera to location: {err}"
+                translation_domain=DOMAIN,
+                translation_key="camera_move_location_failed",
+                translation_placeholders={"error": str(err)},
             ) from err
 
     async def async_service_ptz_move(self, operation, duration):
@@ -220,4 +222,8 @@ class ImouCamera(Camera):
                 duration,
             )
         except ImouException as err:
-            raise HomeAssistantError(f"Failed to move camera: {err}") from err
+            raise HomeAssistantError(
+                translation_domain=DOMAIN,
+                translation_key="camera_move_failed",
+                translation_placeholders={"error": str(err)},
+            ) from err

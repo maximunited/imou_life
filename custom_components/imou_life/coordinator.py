@@ -119,7 +119,7 @@ class ImouDataUpdateCoordinator(DataUpdateCoordinator):
                 self.last_error_message = error_str
 
                 raise ConfigEntryAuthFailed(
-                    "Invalid credentials, please reauthenticate"
+                    translation_domain=DOMAIN, translation_key="invalid_credentials"
                 ) from exception
 
             # Check for stale device errors (device no longer exists on account)
@@ -142,13 +142,21 @@ class ImouDataUpdateCoordinator(DataUpdateCoordinator):
                             {"entry_id": self.config_entry.entry_id},
                         )
 
-                error_msg = (
-                    f"Device may no longer exist on account "
-                    f"(failure {self.stale_device_failure_count}/{STALE_DEVICE_FAILURE_THRESHOLD}): "
-                    f"{error_str}"
+                _LOGGER.warning(
+                    "Device may no longer exist on account (failure %s/%s): %s",
+                    self.stale_device_failure_count,
+                    STALE_DEVICE_FAILURE_THRESHOLD,
+                    error_str,
                 )
-                _LOGGER.warning(error_msg)
-                raise UpdateFailed(error_msg) from exception
+                raise UpdateFailed(
+                    translation_domain=DOMAIN,
+                    translation_key="stale_device_suspected",
+                    translation_placeholders={
+                        "count": str(self.stale_device_failure_count),
+                        "threshold": str(STALE_DEVICE_FAILURE_THRESHOLD),
+                        "error": error_str,
+                    },
+                ) from exception
 
             # Non-stale error: reset stale tracking (ensures consecutive failures)
             self.stale_device_failure_count = 0
@@ -173,22 +181,30 @@ class ImouDataUpdateCoordinator(DataUpdateCoordinator):
                 # Adjust scan interval to reduce API calls
                 self._adjust_scan_interval_for_rate_limit()
 
-                error_msg = (
-                    f"Imou API rate limit exceeded (#{self.rate_limit_count}). "
-                    f"Scan interval adjusted to {self.update_interval.total_seconds()}s. "
-                    f"Estimated reset: {self.rate_limit_estimated_reset.strftime('%H:%M:%S UTC')}. "
-                    f"Error: {error_str}"
+                _LOGGER.warning(
+                    "Imou API rate limit exceeded (#%s). Polling paused until %s",
+                    self.rate_limit_count,
+                    self.rate_limit_estimated_reset.isoformat(),
                 )
-                _LOGGER.warning(error_msg)
+                raise UpdateFailed(
+                    translation_domain=DOMAIN,
+                    translation_key="rate_limit_exceeded",
+                    translation_placeholders={
+                        "count": str(self.rate_limit_count),
+                        "reset_time": self.rate_limit_estimated_reset.isoformat(),
+                    },
+                ) from exception
             else:
                 self.is_rate_limited = False
                 self.last_error_type = "api_error"
                 self.last_error_message = error_str
 
-                error_msg = f"Imou API error: {error_str}"
-                _LOGGER.error(error_msg)
-
-            raise UpdateFailed(error_msg) from exception
+                _LOGGER.error("Imou API error: %s", error_str)
+                raise UpdateFailed(
+                    translation_domain=DOMAIN,
+                    translation_key="api_error",
+                    translation_placeholders={"error": error_str},
+                ) from exception
 
     def _adjust_scan_interval_for_rate_limit(self):
         """Increase scan interval when rate limited to reduce API calls."""

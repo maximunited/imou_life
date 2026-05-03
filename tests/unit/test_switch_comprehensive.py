@@ -3,6 +3,7 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from homeassistant.exceptions import HomeAssistantError
 
 from custom_components.imou_life.const import ENABLED_SWITCHES, OPTION_CALLBACK_URL
 from custom_components.imou_life.switch import ImouSwitch
@@ -152,7 +153,7 @@ class TestImouSwitch:
             "switch.{}",
         )
 
-        with pytest.raises(ValueError, match="No callback URL provided"):
+        with pytest.raises(HomeAssistantError):
             await switch.async_turn_on()
 
     @pytest.mark.asyncio
@@ -170,7 +171,7 @@ class TestImouSwitch:
             "switch.{}",
         )
 
-        with pytest.raises(ValueError, match="No callback URL provided"):
+        with pytest.raises(HomeAssistantError):
             await switch.async_turn_on()
 
     @pytest.mark.asyncio

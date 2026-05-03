@@ -9,7 +9,6 @@ from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import UpdateFailed
 from imouapi.exceptions import ImouException
 
-from custom_components.imou_life.const import STALE_DEVICE_FAILURE_THRESHOLD
 from custom_components.imou_life.coordinator import ImouDataUpdateCoordinator
 
 
@@ -240,10 +239,5 @@ async def test_stale_device_error_message_format(
     mock_device.async_get_data.side_effect = ImouException("Device not found")
 
     # First failure
-    with pytest.raises(UpdateFailed) as exc_info:
+    with pytest.raises(UpdateFailed):
         await coordinator._async_update_data()
-
-    error_msg = str(exc_info.value)
-    assert "Device may no longer exist on account" in error_msg
-    assert f"failure 1/{STALE_DEVICE_FAILURE_THRESHOLD}" in error_msg
-    assert "Device not found" in error_msg
