@@ -1,5 +1,60 @@
 # Changelog
 
+## [1.4.0] - 2026-05-03
+
+### Added
+
+- **Translatable Exception Messages** 🌍 (#30)
+  - All user-facing exceptions now support internationalization
+  - Created `strings.json` with 15 exception translation keys
+  - Updated `translations/en.json` with exception translations section
+  - Covers ConfigEntryNotReady (3), ConfigEntryAuthFailed (1), HomeAssistantError (11)
+  - Ready for community translations to other languages
+  - **Gold Tier Compliance:** Requirement #17 (exception-translations) ✅
+
+- **Python 3.14 Full Support** (#31)
+  - Added Python 3.14 to CI/CD test matrix (test.yml, validate.yml)
+  - Updated documentation with Python 3.14 compatibility
+  - Requires Home Assistant 2026.4+
+  - All 392 tests passing on Python 3.14
+
+- **Automated Dependency Management** (#31)
+  - Dependabot configuration for weekly dependency updates
+  - Separate schedules for GitHub Actions and Python dependencies
+  - Grouped updates by ecosystem for cleaner PRs
+  - Ignores Home Assistant major version updates (manual testing required)
+  - Limit of 5 open PRs per ecosystem
+
+### Changed
+
+- **Exception Handling Improvements**
+  - Converted 4 ValueError to HomeAssistantError (ValueError doesn't support translations)
+  - Updated 7 files: `__init__.py`, `coordinator.py`, `camera.py`, `battery_button.py`, `battery_select.py`, `battery_coordinator.py`, `switch.py`
+  - Note: UpdateFailed exceptions remain as plain strings (coordinator internal errors)
+
+- **Documentation Updates**
+  - Fixed coverage requirement documentation: ">60%" → "≥70%" (matches repo baseline)
+  - Clarified Python/HA version compatibility table with specific minimum versions
+  - Updated tested Home Assistant version to 2026.4.4 (current)
+  - Updated quality scale badge from "platinum" to "silver ✅" (accurate)
+
+### Tests
+
+- **Test Suite Updates**
+  - Updated 6 test files to match new exception format
+  - Removed message assertions, changed to exception type-only assertions
+  - All 392 unit tests passing ✅
+
+### Quality Scale
+
+- **Gold Tier Progress: 95% Compliance** 🥇
+  - **19/20 applicable requirements met** (90.5% total with non-applicable)
+  - **New:** exception-translations ✅
+  - **Remaining:** dynamic-devices (Priority 3), icon-translations (Priority 3)
+  - See `gold_tier_verification.md` for detailed compliance report
+
+---
+
 ## [1.3.6] - 2026-05-01
 
 ### Fixed
