@@ -240,14 +240,14 @@ Download diagnostics from the device page in Home Assistant for detailed informa
 
 ### Python & Home Assistant Version Support
 
-| Python Version | Home Assistant Support | Integration Status |
-|----------------|------------------------|-------------------|
-| **3.11** | 2023.3+ | ✅ **Fully Supported** (2024.2.0+) |
-| **3.12** | 2024.2+ | ✅ **Fully Supported** (2024.2.0+) |
-| **3.13** | 2024.12+ | ✅ **Fully Supported** (2024.2.0+) |
+| Python Version | Home Assistant Version Required | Integration Support Status |
+|----------------|--------------------------------|----------------------------|
+| **3.11** | 2024.2+ | ✅ **Fully Supported** |
+| **3.12** | 2024.2+ | ✅ **Fully Supported** |
+| **3.13** | 2024.12+ | ✅ **Fully Supported** |
 | **3.14** | 2025.6+ (estimated) | ✅ **Tested** (experimental) |
 
-**Note**: Our integration requires Home Assistant 2024.2.0+ which automatically provides Python 3.11-3.13 compatibility. Python 3.14 support is tested in CI but may require Home Assistant 2025.6+ or later.
+**Note**: Our integration requires Home Assistant 2024.2.0 or later. Python 3.11 and 3.12 work with HA 2024.2+, Python 3.13 requires HA 2024.12+, and Python 3.14 is experimental (estimated to require HA 2025.6+).
 
 ### Tested Environments
 - **Home Assistant**: 2024.2.0 → 2025.8.3+ (latest)
@@ -257,7 +257,7 @@ Download diagnostics from the device page in Home Assistant for detailed informa
 
 ### CI/CD Testing
 - **GitHub Actions**: Automated testing on Python 3.11, 3.12, 3.13, 3.14
-- **Coverage**: Maintains >60% test coverage across all versions
+- **Coverage**: Maintains ≥70% test coverage across all versions
 - **Quality**: Scrutinizer CI integration for code quality monitoring
 
 ## ⚠️ Important Notes
