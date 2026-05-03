@@ -109,11 +109,9 @@ jobs:
       with:
         category: "integration"
         ignore: brands
-      continue-on-error: ${{ matrix.python-version == '3.14' }}
 
     - name: Hassfest validation
       uses: home-assistant/actions/hassfest@master
-      continue-on-error: ${{ matrix.python-version == '3.14' }}
 
   finish:
     needs: validate
