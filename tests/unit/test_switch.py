@@ -1,8 +1,10 @@
 """Test imou_life switch."""
 
+from typing import Generator
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from homeassistant.core import HomeAssistant
 
 from custom_components.imou_life.const import DOMAIN
 from tests.fixtures.const import MOCK_CONFIG_ENTRY
@@ -11,7 +13,7 @@ from tests.fixtures.mocks import MockConfigEntry
 
 # This fixture bypasses the actual setup of the integration
 @pytest.fixture(autouse=True)
-def bypass_added_to_hass():
+def bypass_added_to_hass() -> Generator[None, None, None]:
     """Prevent added to hass."""
     with (
         patch(
@@ -27,7 +29,7 @@ def bypass_added_to_hass():
 
 
 @pytest.mark.asyncio
-async def test_switch(hass):
+async def test_switch(hass: HomeAssistant) -> None:
     """Test switch services."""
     # Create mock switch sensor with tracked methods
     mock_sensor = MagicMock()
@@ -86,12 +88,11 @@ async def test_switch(hass):
 
         # Add entity to hass manually
         switch_entity.hass = hass
-        switch_entity.entity_id = "switch.device_name_motiondetect"
         await switch_entity.async_added_to_hass()
 
         # Register the entity with hass
         hass.states.async_set(
-            "switch.device_name_motiondetect",
+            switch_entity.entity_id,
             "off",
             switch_entity.extra_state_attributes,
         )
