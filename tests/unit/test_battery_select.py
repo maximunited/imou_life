@@ -284,21 +284,24 @@ class TestImouBatterySelect:
     def test_motion_sensitivity_select_properties(self, motion_sensitivity_select):
         """Test motion sensitivity select entity properties."""
         assert motion_sensitivity_select.name == "Test Device Motion Sensitivity"
-        assert motion_sensitivity_select.icon == "mdi:tune-vertical"
+        assert (
+            motion_sensitivity_select._attr_translation_key
+            == "motion_sensitivity_level"
+        )
         assert motion_sensitivity_select.options == MOTION_SENSITIVITY_LEVELS
         assert motion_sensitivity_select._attribute_name == "motion_sensitivity"
 
     def test_recording_quality_select_properties(self, recording_quality_select):
         """Test recording quality select entity properties."""
         assert recording_quality_select.name == "Test Device Recording Quality"
-        assert recording_quality_select.icon == "mdi:video-quality"
+        assert recording_quality_select._attr_translation_key == "recording_quality"
         assert recording_quality_select.options == RECORDING_QUALITY_OPTIONS
         assert recording_quality_select._attribute_name == "recording_quality"
 
     def test_sleep_schedule_select_properties(self, sleep_schedule_select):
         """Test sleep schedule select entity properties."""
         assert sleep_schedule_select.name == "Test Device Sleep Schedule"
-        assert sleep_schedule_select.icon == "mdi:clock-outline"
+        assert sleep_schedule_select._attr_translation_key == "sleep_schedule"
         assert sleep_schedule_select.options == SLEEP_SCHEDULE_OPTIONS
         assert sleep_schedule_select._attribute_name == "sleep_schedule"
 

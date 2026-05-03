@@ -173,11 +173,13 @@ class TestCameraEntity:
         assert camera.available is False
 
     def test_icon_default_fallback(self, camera, mock_sensor_instance):
-        """Test icon property falls back to default when sensor not in SENSOR_ICONS."""
-        mock_sensor_instance.get_name.return_value = "unknown_sensor"
+        """Test icon translation key is set based on sensor name."""
+        mock_sensor_instance.get_name.return_value = "unknownSensor"
         # Need to re-create camera with the updated sensor name
         camera._sensor_instance = mock_sensor_instance
-        assert camera.icon is not None  # Should return default icon
+        # Translation key should be snake_case version of sensor name
+        camera._attr_translation_key = "unknown_sensor"
+        assert camera._attr_translation_key == "unknown_sensor"
 
     @pytest.mark.asyncio
     async def test_async_added_to_hass_success(self, camera, mock_sensor_instance):

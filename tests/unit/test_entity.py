@@ -84,9 +84,9 @@ class TestImouEntity:
         assert attrs["last_update"] == "2023-01-01T00:00:00Z"
 
     def test_entity_icon(self, entity):
-        """Test entity icon property."""
-        # Icon comes from SENSOR_ICONS based on sensor name
-        assert entity.icon is not None
+        """Test entity has translation key for dynamic icons."""
+        # Translation key is snake_case version of sensor name
+        assert entity._attr_translation_key == "test_sensor"
 
     @pytest.mark.asyncio
     async def test_entity_async_added_to_hass(self, entity):

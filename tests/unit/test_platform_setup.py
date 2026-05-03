@@ -72,12 +72,15 @@ class TestPlatformSetup:
         """Test platform setup with multiple sensors."""
         # Create mock sensor instances
         sensor1 = MagicMock()
+        sensor1.get_name.return_value = "sensor1"
         sensor1.get_description.return_value = "Sensor 1"
 
         sensor2 = MagicMock()
+        sensor2.get_name.return_value = "sensor2"
         sensor2.get_description.return_value = "Sensor 2"
 
         sensor3 = MagicMock()
+        sensor3.get_name.return_value = "sensor3"
         sensor3.get_description.return_value = "Sensor 3"
 
         mock_coordinator.device.get_sensors_by_platform.return_value = [
@@ -134,6 +137,7 @@ class TestPlatformSetup:
     ):
         """Test that entity_id_format is passed to entity constructor."""
         sensor1 = MagicMock()
+        sensor1.get_name.return_value = "testSensor"
         sensor1.get_description.return_value = "Test Sensor"
 
         mock_coordinator.device.get_sensors_by_platform.return_value = [sensor1]
@@ -160,9 +164,11 @@ class TestPlatformSetup:
     ):
         """Test that entities are added to coordinator.entities list."""
         sensor1 = MagicMock()
+        sensor1.get_name.return_value = "sensor1"
         sensor1.get_description.return_value = "Sensor 1"
 
         sensor2 = MagicMock()
+        sensor2.get_name.return_value = "sensor2"
         sensor2.get_description.return_value = "Sensor 2"
 
         mock_coordinator.device.get_sensors_by_platform.return_value = [

@@ -97,9 +97,11 @@ class TestButtonPlatformSetup:
 
         # Create mock sensor instances
         sensor1 = MagicMock()
+        sensor1.get_name.return_value = "button1"
         sensor1.get_description.return_value = "Button 1"
 
         sensor2 = MagicMock()
+        sensor2.get_name.return_value = "button2"
         sensor2.get_description.return_value = "Button 2"
 
         mock_coordinator.device.get_sensors_by_platform.return_value = [
@@ -154,7 +156,6 @@ class TestBatteryBinarySensorErrorPaths:
             mock_config_entry,
             "lowBattery",
             "Low Battery",
-            "mdi:battery-alert",
             "low_battery",
         )
 
@@ -181,7 +182,6 @@ class TestBatteryBinarySensorErrorPaths:
             mock_config_entry,
             "charging",
             "Charging",
-            "mdi:battery-charging",
             "charging",
         )
 
@@ -205,7 +205,6 @@ class TestBatteryBinarySensorErrorPaths:
             mock_config_entry,
             "powerSavingActive",
             "Power Saving Active",
-            "mdi:battery-saver",
             "power_saving_active",
         )
 
@@ -230,7 +229,6 @@ class TestBatteryBinarySensorErrorPaths:
             mock_config_entry,
             "sleepModeActive",
             "Sleep Mode Active",
-            "mdi:power-sleep",
             "sleep_mode_active",
         )
 
