@@ -6,7 +6,7 @@
 [![Imou Life](https://img.shields.io/badge/imou%20life-%23FF8C00.svg?logo=imou&logoColor=white)](https://open.imoulife.com/)
 [![Latest Release](https://img.shields.io/badge/release-1.2.0-blue.svg)](https://github.com/maximunited/imou_life/releases/tag/v1.2.0)
 [![Pre-release](https://img.shields.io/badge/pre--release-1.2.0-orange.svg)](https://github.com/maximunited/imou_life/releases/tag/v1.2.0)
-[![Quality Scale](https://img.shields.io/badge/quality%20scale-platinum-brightgreen.svg)](https://developers.home-assistant.io/docs/core/integration-quality-scale/)
+[![Quality Scale](https://img.shields.io/badge/quality%20scale-silver%20%E2%9C%85-silver.svg)](https://developers.home-assistant.io/docs/core/integration-quality-scale/)
 [![Buy Me a Coffee](https://img.shields.io/badge/buy%20me%20a%20coffee-%23FFDD00.svg?logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/maxim_united)
 
 A Home Assistant integration for Imou Life cameras and devices, providing comprehensive monitoring and control capabilities.
