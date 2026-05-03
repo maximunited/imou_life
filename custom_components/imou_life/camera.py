@@ -1,7 +1,6 @@
 """Camera platform for Imou."""
 
 import logging
-import re
 from collections.abc import Callable
 
 import imouapi
@@ -29,15 +28,9 @@ from .const import (
     SERVIZE_PTZ_LOCATION,
     SERVIZE_PTZ_MOVE,
 )
+from .helpers import camel_to_snake
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
-
-
-def _camel_to_snake(name: str) -> str:
-    """Convert camelCase to snake_case for translation keys."""
-    if not isinstance(name, str):
-        return str(name)
-    return re.sub(r"(?<!^)(?=[A-Z])", "_", name).lower()
 
 
 # Serialize entity updates to prevent API rate limiting
@@ -115,7 +108,7 @@ class ImouCamera(Camera):
         self._entity_available = None
 
         # Set translation key for dynamic icons
-        self._attr_translation_key = _camel_to_snake(self._sensor_instance.get_name())
+        self._attr_translation_key = camel_to_snake(self._sensor_instance.get_name())
 
     @property
     def entity_registry_enabled_default(self) -> bool:

@@ -1,22 +1,15 @@
 """entity sensor platform for Imou."""
 
 import logging
-import re
 
 from homeassistant.helpers.entity import async_generate_entity_id
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from imouapi.exceptions import ImouException
 
 from .const import DOMAIN
+from .helpers import camel_to_snake
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
-
-
-def _camel_to_snake(name: str) -> str:
-    """Convert camelCase to snake_case for translation keys."""
-    if not isinstance(name, str):
-        return str(name)
-    return re.sub(r"(?<!^)(?=[A-Z])", "_", name).lower()
 
 
 class ImouEntity(CoordinatorEntity):
@@ -39,7 +32,7 @@ class ImouEntity(CoordinatorEntity):
         self._last_available = None
 
         # Set translation key for dynamic icons
-        self._attr_translation_key = _camel_to_snake(self.sensor_instance.get_name())
+        self._attr_translation_key = camel_to_snake(self.sensor_instance.get_name())
 
     @property
     def unique_id(self):
