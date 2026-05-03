@@ -17,6 +17,7 @@ from .const import (
     DEFAULT_MOTION_SENSITIVITY,
     DEFAULT_POWER_SAVING_MODE,
     DEFAULT_RECORDING_QUALITY,
+    DOMAIN,
 )
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -155,7 +156,12 @@ class ImouBatteryButton(ImouBatteryEntity, ButtonEntity):
                 "Error executing %s action: %s", self._description, str(exception)
             )
             raise HomeAssistantError(
-                f"Failed to execute {self._description}: {exception}"
+                translation_domain=DOMAIN,
+                translation_key="button_action_failed",
+                translation_placeholders={
+                    "action": self._description,
+                    "error": str(exception),
+                },
             ) from exception
 
     async def _reset_power_settings(self):
@@ -184,5 +190,7 @@ class ImouBatteryButton(ImouBatteryEntity, ButtonEntity):
         except ImouException as exception:
             _LOGGER.error("Error resetting power settings: %s", str(exception))
             raise HomeAssistantError(
-                f"Failed to reset power settings: {exception}"
+                translation_domain=DOMAIN,
+                translation_key="power_reset_failed",
+                translation_placeholders={"error": str(exception)},
             ) from exception

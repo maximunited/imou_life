@@ -11,6 +11,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .battery_entity import ImouBatteryEntity
 from .const import (
+    DOMAIN,
     MOTION_SENSITIVITY_LEVELS,
     POWER_MODES,
     RECORDING_QUALITY_OPTIONS,
@@ -171,7 +172,13 @@ class ImouBatterySelect(ImouBatteryEntity, SelectEntity):
                 "Error setting %s to %s: %s", self._description, option, str(exception)
             )
             raise HomeAssistantError(
-                f"Failed to set {self._description} to {option}: {exception}"
+                translation_domain=DOMAIN,
+                translation_key="select_option_failed",
+                translation_placeholders={
+                    "setting": self._description,
+                    "option": option,
+                    "error": str(exception),
+                },
             ) from exception
 
         # Always update config entry options
@@ -193,5 +200,10 @@ class ImouBatterySelect(ImouBatteryEntity, SelectEntity):
                 "Error updating config for %s: %s", self._description, str(exception)
             )
             raise HomeAssistantError(
-                f"Failed to update config for {self._description}: {exception}"
+                translation_domain=DOMAIN,
+                translation_key="select_config_failed",
+                translation_placeholders={
+                    "setting": self._description,
+                    "error": str(exception),
+                },
             ) from exception

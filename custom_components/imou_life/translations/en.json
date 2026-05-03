@@ -88,6 +88,53 @@
       "invalid_data": "Invalid repair data."
     }
   },
+  "exceptions": {
+    "device_init_timeout": {
+      "message": "Device initialization timed out"
+    },
+    "rate_limit_retry": {
+      "message": "API rate limit exceeded, will retry later: {error}"
+    },
+    "initial_fetch_timeout": {
+      "message": "Initial data fetch timed out"
+    },
+    "invalid_credentials": {
+      "message": "Invalid credentials, please reauthenticate"
+    },
+    "camera_move_location_failed": {
+      "message": "Failed to move camera to location: {error}"
+    },
+    "camera_move_failed": {
+      "message": "Failed to move camera: {error}"
+    },
+    "button_action_failed": {
+      "message": "Failed to execute {action}: {error}"
+    },
+    "power_reset_failed": {
+      "message": "Failed to reset power settings: {error}"
+    },
+    "select_option_failed": {
+      "message": "Failed to set {setting} to {option}: {error}"
+    },
+    "select_config_failed": {
+      "message": "Failed to update config for {setting}: {error}"
+    },
+    "invalid_motion_sensitivity": {
+      "message": "Invalid motion sensitivity: {value}"
+    },
+    "invalid_recording_quality": {
+      "message": "Invalid recording quality: {value}"
+    },
+    "invalid_power_mode": {
+      "message": "Invalid power mode: {value}"
+    },
+    "invalid_sleep_schedule": {
+      "message": "Invalid sleep schedule: {value}"
+    },
+    "no_callback_url": {
+      "message": "No callback URL provided for push notifications"
+    }
+  },
   "options": {
     "step": {
       "init": {

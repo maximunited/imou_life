@@ -119,7 +119,7 @@ class ImouDataUpdateCoordinator(DataUpdateCoordinator):
                 self.last_error_message = error_str
 
                 raise ConfigEntryAuthFailed(
-                    "Invalid credentials, please reauthenticate"
+                    translation_domain=DOMAIN, translation_key="invalid_credentials"
                 ) from exception
 
             # Check for stale device errors (device no longer exists on account)
@@ -175,11 +175,10 @@ class ImouDataUpdateCoordinator(DataUpdateCoordinator):
 
                 error_msg = (
                     f"Imou API rate limit exceeded (#{self.rate_limit_count}). "
-                    f"Scan interval adjusted to {self.update_interval.total_seconds()}s. "
-                    f"Estimated reset: {self.rate_limit_estimated_reset.strftime('%H:%M:%S UTC')}. "
-                    f"Error: {error_str}"
+                    f"Polling paused until {self.rate_limit_estimated_reset.isoformat()}"
                 )
                 _LOGGER.warning(error_msg)
+                raise UpdateFailed(error_msg) from exception
             else:
                 self.is_rate_limited = False
                 self.last_error_type = "api_error"
@@ -187,8 +186,7 @@ class ImouDataUpdateCoordinator(DataUpdateCoordinator):
 
                 error_msg = f"Imou API error: {error_str}"
                 _LOGGER.error(error_msg)
-
-            raise UpdateFailed(error_msg) from exception
+                raise UpdateFailed(error_msg) from exception
 
     def _adjust_scan_interval_for_rate_limit(self):
         """Increase scan interval when rate limited to reduce API calls."""

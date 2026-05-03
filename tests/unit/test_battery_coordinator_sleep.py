@@ -4,6 +4,7 @@ from datetime import time
 from unittest.mock import patch
 
 import pytest
+from homeassistant.exceptions import HomeAssistantError
 
 
 class TestBatteryCoordinatorSleep:
@@ -98,7 +99,7 @@ class TestBatteryCoordinatorSleep:
     @pytest.mark.asyncio
     async def test_set_sleep_schedule_invalid(self, coordinator):
         """Test setting invalid sleep schedule."""
-        with pytest.raises(ValueError, match="Invalid sleep schedule: invalid"):
+        with pytest.raises(HomeAssistantError):
             await coordinator.set_sleep_schedule("invalid")
 
     @pytest.mark.asyncio

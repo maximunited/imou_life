@@ -6,6 +6,7 @@ from datetime import datetime, time, timedelta
 from typing import Any, Dict, Optional
 
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.util import dt as dt_util
 
@@ -15,6 +16,7 @@ from .const import (
     DEFAULT_LED_INDICATORS,
     DEFAULT_MOTION_SENSITIVITY,
     DEFAULT_RECORDING_QUALITY,
+    DOMAIN,
     MOTION_SENSITIVITY_LEVELS,
     POWER_MODES,
     RECORDING_QUALITY_OPTIONS,
@@ -361,7 +363,11 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
     async def _set_motion_sensitivity(self, sensitivity: str):
         """Set motion sensitivity level."""
         if sensitivity not in MOTION_SENSITIVITY_LEVELS:
-            raise ValueError(f"Invalid motion sensitivity: {sensitivity}")
+            raise HomeAssistantError(
+                translation_domain=DOMAIN,
+                translation_key="invalid_motion_sensitivity",
+                translation_placeholders={"value": str(sensitivity)},
+            )
 
         try:
             _LOGGER.info("Setting motion sensitivity to %s", sensitivity)
@@ -379,7 +385,11 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
     async def _set_recording_quality(self, quality: str):
         """Set recording quality."""
         if quality not in RECORDING_QUALITY_OPTIONS:
-            raise ValueError(f"Invalid recording quality: {quality}")
+            raise HomeAssistantError(
+                translation_domain=DOMAIN,
+                translation_key="invalid_recording_quality",
+                translation_placeholders={"value": str(quality)},
+            )
 
         try:
             _LOGGER.info("Setting recording quality to %s", quality)
@@ -414,7 +424,11 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
     async def _set_power_mode(self, mode: str):
         """Set power mode."""
         if mode not in POWER_MODES:
-            raise ValueError(f"Invalid power mode: {mode}")
+            raise HomeAssistantError(
+                translation_domain=DOMAIN,
+                translation_key="invalid_power_mode",
+                translation_placeholders={"value": str(mode)},
+            )
 
         try:
             _LOGGER.info("Setting power mode to %s", mode)
@@ -474,7 +488,11 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
     ):
         """Set sleep schedule."""
         if schedule not in SLEEP_SCHEDULE_OPTIONS:
-            raise ValueError(f"Invalid sleep schedule: {schedule}")
+            raise HomeAssistantError(
+                translation_domain=DOMAIN,
+                translation_key="invalid_sleep_schedule",
+                translation_placeholders={"value": str(schedule)},
+            )
 
         self._sleep_schedule = schedule
 

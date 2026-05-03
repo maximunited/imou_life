@@ -6,8 +6,9 @@ from collections.abc import Callable
 from homeassistant.components.switch import ENTITY_ID_FORMAT, SwitchEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import HomeAssistantError
 
-from .const import ENABLED_SWITCHES, OPTION_CALLBACK_URL
+from .const import DOMAIN, ENABLED_SWITCHES, OPTION_CALLBACK_URL
 from .entity import ImouEntity
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -89,7 +90,9 @@ class ImouSwitch(ImouEntity, SwitchEntity):
             ):
                 callback_url = self.config_entry.options[OPTION_CALLBACK_URL]
             if callback_url is None:
-                raise ValueError("No callback URL provided for push notifications")
+                raise HomeAssistantError(
+                    translation_domain=DOMAIN, translation_key="no_callback_url"
+                )
             _LOGGER.debug("Callback URL: %s", callback_url)
             await self.sensor_instance.async_turn_on(url=callback_url)
         # control all other switches
