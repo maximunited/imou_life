@@ -340,8 +340,9 @@ async def async_remove_config_entry_device(
     )
 
     # Check if this device belongs to this config entry by comparing identifiers
+    # Note: Entities use config_entry.entry_id as the device identifier, not device_id
     for identifier in device_entry.identifiers:
-        if identifier[0] == DOMAIN and identifier[1] == device_id:
+        if identifier[0] == DOMAIN and identifier[1] == config_entry.entry_id:
             _LOGGER.debug(
                 "Device '%s' belongs to this config entry, allowing removal",
                 device_name,

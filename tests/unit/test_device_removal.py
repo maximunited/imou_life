@@ -25,9 +25,10 @@ async def test_async_remove_config_entry_device_matching_device(hass: HomeAssist
     )
 
     # Create a mock device entry with matching identifier
+    # Note: Entities use config_entry.entry_id as device identifier, not device_id
     device_entry = DeviceEntry(
         id="device_id_123",
-        identifiers={(DOMAIN, "test_device_123")},
+        identifiers={(DOMAIN, "test_entry_id")},  # Matches config_entry.entry_id
         manufacturer="Imou",
         model="Test Model",
         name="Test Camera",
@@ -87,11 +88,12 @@ async def test_async_remove_config_entry_device_multiple_identifiers(
     )
 
     # Create a mock device entry with multiple identifiers (one matches)
+    # Note: Entities use config_entry.entry_id as device identifier
     device_entry = DeviceEntry(
         id="device_id_123",
         identifiers={
             ("other_domain", "other_id"),
-            (DOMAIN, "test_device_123"),  # This one matches
+            (DOMAIN, "test_entry_id"),  # This one matches config_entry.entry_id
         },
         manufacturer="Imou",
         model="Test Model",
@@ -105,28 +107,32 @@ async def test_async_remove_config_entry_device_multiple_identifiers(
 
 @pytest.mark.asyncio
 async def test_async_remove_config_entry_device_no_device_id(hass: HomeAssistant):
-    """Test device removal when config entry has no device_id."""
+    """Test device removal when config entry has no device_id in data.
+
+    This test verifies that device_id in config data is not required for removal,
+    since the function compares against config_entry.entry_id, not device_id.
+    """
     # Create a mock config entry without device_id (edge case)
     config_entry = MockConfigEntry(
         domain=DOMAIN,
         data={
             CONF_DEVICE_NAME: "Test Camera",
-            # Missing CONF_DEVICE_ID
+            # Missing CONF_DEVICE_ID - but this doesn't affect removal logic
         },
         entry_id="test_entry_id",
         version=3,
         title="Test Camera",
     )
 
-    # Create a mock device entry
+    # Create a mock device entry with non-matching identifier
     device_entry = DeviceEntry(
         id="device_id_123",
-        identifiers={(DOMAIN, "test_device_123")},
+        identifiers={(DOMAIN, "test_device_123")},  # Doesn't match entry_id
         manufacturer="Imou",
         model="Test Model",
         name="Test Camera",
     )
 
-    # Should return False - can't match without device_id
+    # Should return False - identifier doesn't match config_entry.entry_id
     result = await async_remove_config_entry_device(hass, config_entry, device_entry)
     assert result is False
