@@ -1,4 +1,29 @@
 {
+  "config": {
+    "step": {
+      "discovery_confirm": {
+        "title": "New Device Discovered",
+        "description": "A new Imou device has been found: {device_name} ({device_id}).\n\nWould you like to add it to Home Assistant?",
+        "data": {
+          "device_name": "Device Name"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "enable_discovery": "Enable automatic device discovery",
+          "discovery_interval": "Discovery polling interval (seconds)"
+        },
+        "data_description": {
+          "enable_discovery": "Automatically detect and add new devices from your Imou account. Shows confirmation dialog before adding.",
+          "discovery_interval": "How often to check for new devices (default: 3600 seconds / 60 minutes). Range: 300-86400 seconds (5 minutes - 24 hours)."
+        }
+      }
+    }
+  },
   "exceptions": {
     "device_init_timeout": {
       "message": "Device initialization timed out"

@@ -63,6 +63,13 @@
           "api_server": "Select your geographic region for optimal performance",
           "api_url": "Only required when 'Custom' server is selected"
         }
+      },
+      "discovery_confirm": {
+        "title": "New Device Discovered",
+        "description": "A new Imou device has been found: {device_name} ({device_id}).\n\nWould you like to add it to Home Assistant?",
+        "data": {
+          "device_name": "Device Name"
+        }
       }
     },
     "error": {
@@ -150,7 +157,9 @@
           "recording_quality": "Recording Quality",
           "led_indicators": "LED Indicators",
           "auto_sleep": "Auto Sleep",
-          "battery_threshold": "Battery Threshold"
+          "battery_threshold": "Battery Threshold",
+          "enable_discovery": "Enable automatic device discovery",
+          "discovery_interval": "Discovery polling interval (seconds)"
         },
         "data_description": {
           "battery_optimization": "🔋 Automatically optimize battery settings for maximum battery life. When enabled, the integration will adjust power mode, recording quality, and motion sensitivity based on battery level.",
@@ -159,7 +168,9 @@
           "recording_quality": "Video recording quality. Higher quality uses more storage and battery power.",
           "led_indicators": "Enable LED status indicators on the device. Disable to save battery.",
           "auto_sleep": "Automatically put device to sleep when inactive to conserve battery.",
-          "battery_threshold": "Battery level (%) below which optimization features automatically activate."
+          "battery_threshold": "Battery level (%) below which optimization features automatically activate.",
+          "enable_discovery": "Automatically detect and add new devices from your Imou account. Shows confirmation dialog before adding.",
+          "discovery_interval": "How often to check for new devices (default: 3600 seconds / 60 minutes). Range: 300-86400 seconds (5 minutes - 24 hours)."
         }
       }
     }

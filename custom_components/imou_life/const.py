@@ -29,6 +29,10 @@ OPTION_LED_INDICATORS = "led_indicators"
 OPTION_AUTO_SLEEP = "auto_sleep"
 OPTION_BATTERY_THRESHOLD = "battery_threshold"
 
+# Discovery options
+OPTION_ENABLE_DISCOVERY = "enable_discovery"
+OPTION_DISCOVERY_INTERVAL = "discovery_interval"
+
 SERVIZE_PTZ_LOCATION = "ptz_location"
 SERVIZE_PTZ_MOVE = "ptz_move"
 ATTR_PTZ_HORIZONTAL = "horizontal"
@@ -91,6 +95,10 @@ DEFAULT_RECORDING_QUALITY = "standard"
 DEFAULT_LED_INDICATORS = True
 DEFAULT_AUTO_SLEEP = False
 DEFAULT_BATTERY_THRESHOLD = 20
+
+# Discovery defaults
+DEFAULT_ENABLE_DISCOVERY = True
+DEFAULT_DISCOVERY_INTERVAL = 3600  # 60 minutes (conservative for rate limits)
 
 # Power mode options
 POWER_MODES = ["performance", "balanced", "power_saving", "ultra_power_saving"]

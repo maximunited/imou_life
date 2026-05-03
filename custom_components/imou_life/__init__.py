@@ -23,17 +23,19 @@ from .const import (
     CONF_DEVICE_ID,
     CONF_DEVICE_NAME,
     DEFAULT_API_URL,
+    DEFAULT_ENABLE_DISCOVERY,
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,
     OPTION_API_TIMEOUT,
     OPTION_API_URL,
     OPTION_CAMERA_WAIT_BEFORE_DOWNLOAD,
+    OPTION_ENABLE_DISCOVERY,
     OPTION_SCAN_INTERVAL,
     OPTION_SETUP_TIMEOUT,
     OPTION_WAIT_AFTER_WAKE_UP,
     PLATFORMS,
 )
-from .coordinator import ImouDataUpdateCoordinator
+from .coordinator import ImouDataUpdateCoordinator, ImouDiscoveryCoordinator
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -75,6 +77,28 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             handle_stale_device,
         )
     )
+
+    # Initialize discovery coordinator on first entry only
+    if _is_first_entry(hass, entry):
+        discovery_coordinator = await _setup_discovery_coordinator(
+            hass, api_client, entry
+        )
+        # Store discovery coordinator separately
+        hass.data.setdefault(DOMAIN, {})
+        hass.data[DOMAIN]["discovery"] = discovery_coordinator
+
+        # Handle first entry removal - transfer discovery to next entry
+        async def cleanup_discovery(event):
+            """Clean up discovery coordinator."""
+            if event.data.get("entry_id") == entry.entry_id:
+                await _transfer_discovery_to_next_entry(hass, entry)
+
+        entry.async_on_unload(
+            hass.bus.async_listen(
+                f"{DOMAIN}_entry_unload_{entry.entry_id}",
+                cleanup_discovery,
+            )
+        )
 
     await _setup_platforms(hass, entry, coordinator)
 
@@ -293,17 +317,68 @@ async def _create_stale_device_repair_issue(
         },
     )
 
-    _LOGGER.warning(
-        "Device '%s' (%s) appears to no longer exist on account. "
-        "Repair issue created for user action.",
-        device_name,
-        device_id,
-    )
+
+def _is_first_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    """Check if this is the first config entry."""
+    entries = hass.config_entries.async_entries(DOMAIN)
+    if not entries:
+        return True
+    return entries[0].entry_id == entry.entry_id
+
+
+async def _setup_discovery_coordinator(
+    hass: HomeAssistant, api_client, entry: ConfigEntry
+):
+    """Set up discovery coordinator."""
+    # Check if discovery is enabled
+    if not entry.options.get(OPTION_ENABLE_DISCOVERY, DEFAULT_ENABLE_DISCOVERY):
+        _LOGGER.debug("Discovery is disabled in options, skipping setup")
+        return None
+
+    _LOGGER.debug("Setting up discovery coordinator for first entry")
+    coordinator = ImouDiscoveryCoordinator(hass, api_client, entry)
+    await coordinator.async_config_entry_first_refresh()
+    return coordinator
+
+
+async def _transfer_discovery_to_next_entry(
+    hass: HomeAssistant, entry: ConfigEntry
+) -> None:
+    """Transfer discovery coordinator to next entry when first entry is removed."""
+    entries = hass.config_entries.async_entries(DOMAIN)
+    remaining_entries = [e for e in entries if e.entry_id != entry.entry_id]
+
+    if remaining_entries and DOMAIN in hass.data:
+        _LOGGER.debug(
+            "First entry removed, transferring discovery to next entry: %s",
+            remaining_entries[0].entry_id,
+        )
+
+        # Stop current discovery
+        if "discovery" in hass.data[DOMAIN]:
+            hass.data[DOMAIN]["discovery"] = None
+
+        # Reload next entry to initialize discovery
+        await hass.config_entries.async_reload(remaining_entries[0].entry_id)
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Handle removal of an entry."""
     _LOGGER.debug("Unloading entry %s", entry.entry_id)
+
+    # Fire event for discovery cleanup
+    hass.bus.async_fire(
+        f"{DOMAIN}_entry_unload_{entry.entry_id}",
+        {"entry_id": entry.entry_id},
+    )
+
+    # Clean up discovery if this is the last entry
+    if DOMAIN in hass.data and "discovery" in hass.data[DOMAIN]:
+        entries = hass.config_entries.async_entries(DOMAIN)
+        if len(entries) <= 1:  # Last entry being removed
+            hass.data[DOMAIN]["discovery"] = None
+            _LOGGER.debug("Last entry removed, stopping discovery coordinator")
+
     coordinator = entry.runtime_data
     unloaded = all(
         await asyncio.gather(
