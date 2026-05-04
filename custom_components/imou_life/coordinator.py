@@ -7,10 +7,20 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.util import dt as dt_util
-from imouapi.device import ImouDevice
+from imouapi.device import ImouDevice, ImouDiscoverService
 from imouapi.exceptions import ImouException
 
-from .const import DOMAIN, STALE_DEVICE_ERROR_PATTERNS
+from .const import (
+    CONF_API_URL,
+    CONF_APP_ID,
+    CONF_APP_SECRET,
+    CONF_DEVICE_ID,
+    DEFAULT_API_URL,
+    DEFAULT_DISCOVERY_INTERVAL,
+    DOMAIN,
+    OPTION_DISCOVERY_INTERVAL,
+    STALE_DEVICE_ERROR_PATTERNS,
+)
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -212,3 +222,85 @@ class ImouDataUpdateCoordinator(DataUpdateCoordinator):
                 "Restored original scan interval to %ds (rate limit cleared)",
                 self._original_scan_interval,
             )
+
+
+class ImouDiscoveryCoordinator(DataUpdateCoordinator):
+    """Coordinator for discovering new devices."""
+
+    def __init__(self, hass: HomeAssistant, api_client, entry) -> None:
+        """Initialize discovery coordinator."""
+        self.api_client = api_client
+        self.entry = entry
+        self.discovered_devices = {}
+
+        # Get discovery interval from options
+        discovery_interval = entry.options.get(
+            OPTION_DISCOVERY_INTERVAL, DEFAULT_DISCOVERY_INTERVAL
+        )
+
+        super().__init__(
+            hass,
+            _LOGGER,
+            name=f"{DOMAIN}_discovery",
+            update_interval=timedelta(seconds=discovery_interval),
+        )
+
+        _LOGGER.debug(
+            "Initialized discovery coordinator. Poll interval %d seconds",
+            discovery_interval,
+        )
+
+    async def _async_update_data(self):
+        """Poll for new devices."""
+        try:
+            _LOGGER.debug("Polling for new Imou devices...")
+            discover_service = ImouDiscoverService(self.api_client)
+            devices = await discover_service.async_discover_devices()
+
+            # Check for new devices
+            for device_id, device in devices.items():
+                await self._handle_discovered_device(device_id, device)
+
+            return devices
+        except ImouException as err:
+            # Log but don't fail - discovery is not critical
+            _LOGGER.debug(
+                "Device discovery poll failed (will retry next cycle): %s", err
+            )
+            return {}
+
+    async def _handle_discovered_device(self, device_id, device):
+        """Handle a discovered device."""
+        # Check if device already has config entry
+        existing_entries = self.hass.config_entries.async_entries(DOMAIN)
+        for entry in existing_entries:
+            if entry.data.get(CONF_DEVICE_ID) == device_id:
+                return  # Device already configured
+
+        # New device found - trigger discovery flow
+        device_name = "Unknown"
+        try:
+            if hasattr(device, "get_name"):
+                device_name = device.get_name()
+        except Exception:
+            pass  # If get_name() fails, use "Unknown"
+
+        _LOGGER.info(
+            "New Imou device discovered: %s (%s). Starting confirmation flow.",
+            device_name,
+            device_id,
+        )
+
+        await self.hass.config_entries.flow.async_init(
+            DOMAIN,
+            context={"source": "discovery"},
+            data={
+                "device_id": device_id,
+                "device": device,
+                "api_credentials": {
+                    "app_id": self.entry.data[CONF_APP_ID],
+                    "app_secret": self.entry.data[CONF_APP_SECRET],
+                    "api_url": self.entry.data.get(CONF_API_URL, DEFAULT_API_URL),
+                },
+            },
+        )

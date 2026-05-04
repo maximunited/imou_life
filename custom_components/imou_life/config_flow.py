@@ -28,6 +28,8 @@ from .const import (
     DEFAULT_AUTO_SLEEP,
     DEFAULT_BATTERY_OPTIMIZATION,
     DEFAULT_BATTERY_THRESHOLD,
+    DEFAULT_DISCOVERY_INTERVAL,
+    DEFAULT_ENABLE_DISCOVERY,
     DEFAULT_LED_INDICATORS,
     DEFAULT_MOTION_SENSITIVITY,
     DEFAULT_POWER_SAVING_MODE,
@@ -40,6 +42,8 @@ from .const import (
     OPTION_BATTERY_THRESHOLD,
     OPTION_CALLBACK_URL,
     OPTION_CAMERA_WAIT_BEFORE_DOWNLOAD,
+    OPTION_DISCOVERY_INTERVAL,
+    OPTION_ENABLE_DISCOVERY,
     OPTION_LED_INDICATORS,
     OPTION_MOTION_SENSITIVITY,
     OPTION_POWER_SAVING_MODE,
@@ -67,6 +71,10 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
         self._session = None
         self._discovered_devices = {}
         self._errors = {}
+        # Discovery flow state
+        self._device_id = None
+        self._device = None
+        self._api_credentials = None
 
     async def async_step_user(self, user_input=None):
         """Handle a flow initialized by the user."""
@@ -247,6 +255,72 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
         }
         await self.async_set_unique_id(device.get_device_id())
         return self.async_create_entry(title=name, data=data)
+
+    # Step: discovery (automatic device discovery)
+    async def async_step_discovery(self, discovery_info):
+        """Handle discovery of a new device."""
+        _LOGGER.debug("Discovery step triggered with info: %s", discovery_info)
+
+        device_id = discovery_info.get("device_id")
+        device = discovery_info.get("device")
+        api_credentials = discovery_info.get("api_credentials")
+
+        # Set unique ID to prevent duplicates
+        await self.async_set_unique_id(device_id)
+        self._abort_if_unique_id_configured()
+
+        # Store discovery info for confirmation step
+        self._device_id = device_id
+        self._device = device
+        self._api_credentials = api_credentials
+
+        # Show confirmation to user
+        return await self.async_step_discovery_confirm()
+
+    async def async_step_discovery_confirm(self, user_input=None):
+        """Confirm discovery of a new device."""
+        self._errors = {}
+
+        if user_input is not None:
+            # Create config entry with discovered device
+            device_name = user_input.get(CONF_DEVICE_NAME)
+            if not device_name:
+                try:
+                    device_name = self._device.get_name()
+                except Exception:
+                    device_name = f"Imou Device {self._device_id[:8]}"
+
+            return self.async_create_entry(
+                title=device_name,
+                data={
+                    CONF_DEVICE_ID: self._device_id,
+                    CONF_DEVICE_NAME: device_name,
+                    CONF_APP_ID: self._api_credentials["app_id"],
+                    CONF_APP_SECRET: self._api_credentials["app_secret"],
+                    CONF_API_URL: self._api_credentials["api_url"],
+                },
+            )
+
+        # Get device name for display
+        try:
+            default_name = self._device.get_name()
+        except Exception:
+            default_name = f"Imou Device {self._device_id[:8]}"
+
+        # Show form asking user to confirm
+        return self.async_show_form(
+            step_id="discovery_confirm",
+            data_schema=vol.Schema(
+                {
+                    vol.Optional(CONF_DEVICE_NAME, default=default_name): str,
+                }
+            ),
+            description_placeholders={
+                "device_name": default_name,
+                "device_id": self._device_id,
+            },
+            errors=self._errors,
+        )
 
     async def async_step_reauth(self, entry_data: dict[str, Any]) -> FlowResult:
         """Handle reauthentication."""
@@ -574,6 +648,13 @@ class ImouOptionsFlowHandler(config_entries.OptionsFlow):
         """Return the config entry."""
         return self.hass.config_entries.async_get_entry(self.handler)
 
+    def _is_first_entry(self) -> bool:
+        """Check if this config entry is the first entry."""
+        entries = self.hass.config_entries.async_entries("imou_life")
+        if not entries:
+            return True
+        return entries[0].entry_id == self.config_entry.entry_id
+
     async def async_step_init(self, user_input=None):  # pylint: disable=unused-argument
         """Manage the options."""
         self.options = dict(self.config_entry.options)
@@ -581,88 +662,103 @@ class ImouOptionsFlowHandler(config_entries.OptionsFlow):
             self.options.update(user_input)
             return await self._update_options()
 
+        # Build base schema
+        schema_dict = {
+            vol.Required(
+                OPTION_SCAN_INTERVAL,
+                default=self.options.get(OPTION_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL),
+            ): int,
+            vol.Optional(
+                OPTION_API_TIMEOUT,
+                default=(
+                    str(self.options.get(OPTION_API_TIMEOUT))
+                    if self.options.get(OPTION_API_TIMEOUT) not in (None, "")
+                    else ""
+                ),
+            ): str,
+            vol.Optional(
+                OPTION_CALLBACK_URL,
+                default=self.options.get(OPTION_CALLBACK_URL) or "",
+            ): str,
+            vol.Optional(
+                OPTION_CAMERA_WAIT_BEFORE_DOWNLOAD,
+                default=(
+                    str(self.options.get(OPTION_CAMERA_WAIT_BEFORE_DOWNLOAD))
+                    if self.options.get(OPTION_CAMERA_WAIT_BEFORE_DOWNLOAD)
+                    not in (None, "")
+                    else ""
+                ),
+            ): str,
+            vol.Optional(
+                OPTION_WAIT_AFTER_WAKE_UP,
+                default=(
+                    str(self.options.get(OPTION_WAIT_AFTER_WAKE_UP))
+                    if self.options.get(OPTION_WAIT_AFTER_WAKE_UP) not in (None, "")
+                    else ""
+                ),
+            ): str,
+            vol.Optional(
+                OPTION_BATTERY_OPTIMIZATION,
+                default=self.options.get(
+                    OPTION_BATTERY_OPTIMIZATION, DEFAULT_BATTERY_OPTIMIZATION
+                ),
+            ): bool,
+            vol.Optional(
+                OPTION_POWER_SAVING_MODE,
+                default=self.options.get(
+                    OPTION_POWER_SAVING_MODE, DEFAULT_POWER_SAVING_MODE
+                ),
+            ): bool,
+            vol.Optional(
+                OPTION_MOTION_SENSITIVITY,
+                default=self.options.get(
+                    OPTION_MOTION_SENSITIVITY, DEFAULT_MOTION_SENSITIVITY
+                ),
+            ): vol.In(MOTION_SENSITIVITY_OPTIONS),
+            vol.Optional(
+                OPTION_RECORDING_QUALITY,
+                default=self.options.get(
+                    OPTION_RECORDING_QUALITY, DEFAULT_RECORDING_QUALITY
+                ),
+            ): vol.In(RECORDING_QUALITY_DISPLAY),
+            vol.Optional(
+                OPTION_LED_INDICATORS,
+                default=self.options.get(OPTION_LED_INDICATORS, DEFAULT_LED_INDICATORS),
+            ): bool,
+            vol.Optional(
+                OPTION_AUTO_SLEEP,
+                default=self.options.get(OPTION_AUTO_SLEEP, DEFAULT_AUTO_SLEEP),
+            ): bool,
+            vol.Optional(
+                OPTION_BATTERY_THRESHOLD,
+                default=self.options.get(
+                    OPTION_BATTERY_THRESHOLD, DEFAULT_BATTERY_THRESHOLD
+                ),
+            ): vol.Range(min=5, max=50),
+        }
+
+        # Add discovery options only for first entry
+        if self._is_first_entry():
+            schema_dict[
+                vol.Optional(
+                    OPTION_ENABLE_DISCOVERY,
+                    default=self.options.get(
+                        OPTION_ENABLE_DISCOVERY, DEFAULT_ENABLE_DISCOVERY
+                    ),
+                )
+            ] = bool
+            schema_dict[
+                vol.Optional(
+                    OPTION_DISCOVERY_INTERVAL,
+                    default=self.options.get(
+                        OPTION_DISCOVERY_INTERVAL, DEFAULT_DISCOVERY_INTERVAL
+                    ),
+                )
+            ] = vol.All(vol.Coerce(int), vol.Range(min=300, max=86400))
+
         return self.async_show_form(
             step_id="init",
-            data_schema=vol.Schema(
-                {
-                    vol.Required(
-                        OPTION_SCAN_INTERVAL,
-                        default=self.options.get(
-                            OPTION_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
-                        ),
-                    ): int,
-                    vol.Optional(
-                        OPTION_API_TIMEOUT,
-                        default=(
-                            str(self.options.get(OPTION_API_TIMEOUT))
-                            if self.options.get(OPTION_API_TIMEOUT) not in (None, "")
-                            else ""
-                        ),
-                    ): str,
-                    vol.Optional(
-                        OPTION_CALLBACK_URL,
-                        default=self.options.get(OPTION_CALLBACK_URL) or "",
-                    ): str,
-                    vol.Optional(
-                        OPTION_CAMERA_WAIT_BEFORE_DOWNLOAD,
-                        default=(
-                            str(self.options.get(OPTION_CAMERA_WAIT_BEFORE_DOWNLOAD))
-                            if self.options.get(OPTION_CAMERA_WAIT_BEFORE_DOWNLOAD)
-                            not in (None, "")
-                            else ""
-                        ),
-                    ): str,
-                    vol.Optional(
-                        OPTION_WAIT_AFTER_WAKE_UP,
-                        default=(
-                            str(self.options.get(OPTION_WAIT_AFTER_WAKE_UP))
-                            if self.options.get(OPTION_WAIT_AFTER_WAKE_UP)
-                            not in (None, "")
-                            else ""
-                        ),
-                    ): str,
-                    vol.Optional(
-                        OPTION_BATTERY_OPTIMIZATION,
-                        default=self.options.get(
-                            OPTION_BATTERY_OPTIMIZATION, DEFAULT_BATTERY_OPTIMIZATION
-                        ),
-                    ): bool,
-                    vol.Optional(
-                        OPTION_POWER_SAVING_MODE,
-                        default=self.options.get(
-                            OPTION_POWER_SAVING_MODE, DEFAULT_POWER_SAVING_MODE
-                        ),
-                    ): bool,
-                    vol.Optional(
-                        OPTION_MOTION_SENSITIVITY,
-                        default=self.options.get(
-                            OPTION_MOTION_SENSITIVITY, DEFAULT_MOTION_SENSITIVITY
-                        ),
-                    ): vol.In(MOTION_SENSITIVITY_OPTIONS),
-                    vol.Optional(
-                        OPTION_RECORDING_QUALITY,
-                        default=self.options.get(
-                            OPTION_RECORDING_QUALITY, DEFAULT_RECORDING_QUALITY
-                        ),
-                    ): vol.In(RECORDING_QUALITY_DISPLAY),
-                    vol.Optional(
-                        OPTION_LED_INDICATORS,
-                        default=self.options.get(
-                            OPTION_LED_INDICATORS, DEFAULT_LED_INDICATORS
-                        ),
-                    ): bool,
-                    vol.Optional(
-                        OPTION_AUTO_SLEEP,
-                        default=self.options.get(OPTION_AUTO_SLEEP, DEFAULT_AUTO_SLEEP),
-                    ): bool,
-                    vol.Optional(
-                        OPTION_BATTERY_THRESHOLD,
-                        default=self.options.get(
-                            OPTION_BATTERY_THRESHOLD, DEFAULT_BATTERY_THRESHOLD
-                        ),
-                    ): vol.Range(min=5, max=50),
-                }
-            ),
+            data_schema=vol.Schema(schema_dict),
         )
 
     async def _update_options(self):
