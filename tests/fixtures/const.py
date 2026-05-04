@@ -63,5 +63,13 @@ MOCK_LOGIN_WITH_CUSTOM_SERVER = {
     "api_url": "https://custom.api.url/openapi",
     CONF_APP_ID: "app_id",
     CONF_APP_SECRET: "app_secret",
+    CONF_ENABLE_DISCOVER: False,
+}
+
+MOCK_LOGIN_WITH_CUSTOM_SERVER_DISCOVER = {
+    "api_server": "custom",
+    "api_url": "https://custom.api.url/openapi",
+    CONF_APP_ID: "app_id",
+    CONF_APP_SECRET: "app_secret",
     CONF_ENABLE_DISCOVER: True,
 }

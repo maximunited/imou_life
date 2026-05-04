@@ -219,13 +219,13 @@ async def test_login_with_custom_server(hass, api_ok):
 @pytest.mark.asyncio
 async def test_custom_server_with_valid_url(hass, api_ok):
     """Test that custom server with valid URL works."""
-    from tests.fixtures.const import MOCK_LOGIN_WITH_CUSTOM_SERVER
+    from tests.fixtures.const import MOCK_LOGIN_WITH_CUSTOM_SERVER_DISCOVER
 
     result = await _test_flow_init(hass, "discover")
 
     # Submit with custom server and valid URL
     result = await _test_flow_configure(
-        hass, result["flow_id"], MOCK_LOGIN_WITH_CUSTOM_SERVER, "discover"
+        hass, result["flow_id"], MOCK_LOGIN_WITH_CUSTOM_SERVER_DISCOVER, "discover"
     )
 
     # Verify it proceeds to discover step

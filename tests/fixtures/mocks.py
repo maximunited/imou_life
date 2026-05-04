@@ -117,6 +117,8 @@ class MockHomeAssistant:
         self._discovery_data = None  # Store discovery data for configure step
         self._configured_unique_ids = set()  # Track configured unique IDs
         self._created_entries = []  # Track created config entries
+        self._flow_data = {}  # Store flow data (credentials, etc.)
+        self._discovered_devices = {}  # Store discovered devices
 
         # Set up mocks
         self._setup_config_entries_mocks()
@@ -247,7 +249,16 @@ class MockHomeAssistant:
                     }.get(key)
                 )
             elif self._flow_step == 1:
-                # First configure call - show next form based on mode
+                # First configure call - store credentials and show next form
+                # Store flow data (credentials) for later use
+                self._flow_data = user_input.copy()
+
+                # Check if discovery is enabled
+                if user_input.get("enable_discover", False):
+                    self._flow_mode = "discover"
+                else:
+                    self._flow_mode = "manual"
+
                 if self._flow_error:
                     # Return error response
                     mock_response.__getitem__ = MagicMock(
@@ -277,17 +288,62 @@ class MockHomeAssistant:
                     )
             else:
                 # Second configure call - create entry
+                # Extract device info from user_input and discovered devices
+                from custom_components.imou_life.const import (
+                    CONF_DEVICE_ID,
+                    CONF_DEVICE_NAME,
+                    CONF_DISCOVERED_DEVICE,
+                )
+
+                device_name = user_input.get(CONF_DEVICE_NAME, "Unknown Device")
+                # Check both discovered_device (for discovery flow) and device_id (for manual flow)
+                device_id = user_input.get(CONF_DISCOVERED_DEVICE) or user_input.get(
+                    CONF_DEVICE_ID, "device_id"
+                )
+
+                # Try to get device from discovered devices
+                if (
+                    hasattr(self, "_discovered_devices")
+                    and device_id in self._discovered_devices
+                ):
+                    device = self._discovered_devices[device_id]
+                    if hasattr(device, "get_device_id"):
+                        device_id = device.get_device_id()
+                    if not device_name or device_name == "Unknown Device":
+                        if hasattr(device, "get_name"):
+                            try:
+                                device_name = device.get_name()
+                            except Exception:
+                                pass
+
+                entry_data = {
+                    "api_url": self._flow_data.get("api_url", "http://api.url"),
+                    "app_id": self._flow_data.get("app_id", "app_id"),
+                    "app_secret": self._flow_data.get("app_secret", "app_secret"),
+                    "device_id": device_id,
+                    "device_name": device_name,
+                }
+
+                # Create the config entry
+                from custom_components.imou_life.const import DOMAIN
+
+                entry = MockConfigEntry(
+                    domain=DOMAIN,
+                    data=entry_data,
+                    unique_id=device_id,
+                    title=device_name,
+                )
+                entry.add_to_hass(self)
+                self._created_entries.append(entry)
+                self._configured_unique_ids.add(device_id)
+
                 mock_response.__getitem__ = MagicMock(
                     side_effect=lambda key: {
                         "type": data_entry_flow.FlowResultType.CREATE_ENTRY,
                         "flow_id": "test_flow_id",
-                        "data": {
-                            "api_url": "http://api.url",
-                            "app_id": "app_id",
-                            "app_secret": "app_secret",
-                            "device_id": "device_id",
-                        },
-                        "result": True,
+                        "data": entry_data,
+                        "title": device_name,
+                        "result": entry,
                     }.get(key)
                 )
 
@@ -325,16 +381,46 @@ class MockHomeAssistant:
             mock_coordinator.__class__ = ImouDataUpdateCoordinator
             # Add required attributes
             mock_coordinator.platforms = []
-            mock_coordinator.device = MagicMock()
             mock_coordinator.entities = []
-            mock_coordinator.data = {}  # Add data attribute for tests
-            mock_coordinator.async_refresh = AsyncMock()
+            mock_coordinator.data = {
+                "battery_level": 85,
+                "online": True,
+                "motion_detected": False,
+            }  # Add realistic data structure
 
-            # Mock device methods
-            mock_device = MagicMock()
-            mock_device.get_sensors_by_platform.return_value = [MagicMock()]
-            mock_device.get_name.return_value = "device_name"
+            # Try to use patched ImouDevice if available, otherwise create a mock
+            try:
+                from imouapi.device import ImouDevice
+
+                # This will use the patched ImouDevice if the test patched it
+                mock_device = ImouDevice(None, None)
+            except Exception:
+                # Fallback to creating a MagicMock
+                mock_device = MagicMock()
+                mock_device.get_sensors_by_platform.return_value = [MagicMock()]
+                mock_device.get_name.return_value = "device_name"
+                mock_device.async_get_data = AsyncMock(
+                    return_value={
+                        "battery_level": 85,
+                        "online": True,
+                        "motion_detected": False,
+                    }
+                )
             mock_coordinator.device = mock_device
+
+            # Make async_refresh actually update data from device
+            async def mock_async_refresh():
+                """Mock refresh that updates data from device."""
+                if hasattr(mock_coordinator.device, "async_get_data"):
+                    try:
+                        mock_coordinator.data = (
+                            await mock_coordinator.device.async_get_data()
+                        )
+                    except Exception:
+                        # Keep old data on failure, like real DataUpdateCoordinator
+                        pass
+
+            mock_coordinator.async_refresh = AsyncMock(side_effect=mock_async_refresh)
 
             # Find the config entry and set runtime_data
             for entry in self.config_entries._entries.values():
