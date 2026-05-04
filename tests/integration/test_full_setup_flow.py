@@ -17,7 +17,7 @@ from tests.fixtures.mocks import MockConfigEntry
 
 
 @pytest.mark.asyncio
-async def test_full_setup_flow_with_discovery(hass, mock_imou_device):
+async def test_full_setup_flow_with_discovery(hass, api_ok, mock_imou_device):
     """Test complete setup flow from config to entity creation with device discovery."""
     # Step 1: Initialize config flow
     result = await hass.config_entries.flow.async_init(
@@ -30,12 +30,10 @@ async def test_full_setup_flow_with_discovery(hass, mock_imou_device):
     # Set up discovered devices for the mock
     hass._discovered_devices = {"test_device_123": mock_imou_device}
 
-    with (
-        patch("imouapi.api.ImouAPIClient.async_connect"),
-        patch(
-            "imouapi.device.ImouDiscoverService.async_discover_devices",
-            return_value={"test_device_123": mock_imou_device},
-        ),
+    # Override api_ok's discovery to return our specific device
+    with patch(
+        "imouapi.device.ImouDiscoverService.async_discover_devices",
+        return_value={"test_device_123": mock_imou_device},
     ):
         result = await hass.config_entries.flow.async_configure(
             result["flow_id"],

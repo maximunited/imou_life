@@ -313,15 +313,25 @@ class MockHomeAssistant:
                         if hasattr(device, "get_name"):
                             try:
                                 device_name = device.get_name()
-                            except Exception:
+                            except (AttributeError, NotImplementedError):
+                                # Expected when device doesn't support get_name
                                 pass
 
-                # Validate required flow data was collected
+                # Validate required flow data was collected and is not empty
                 required = ("api_url", "app_id", "app_secret")
-                missing = [key for key in required if key not in self._flow_data]
+                missing = [
+                    key
+                    for key in required
+                    if key not in self._flow_data
+                    or not self._flow_data[key]
+                    or (
+                        isinstance(self._flow_data[key], str)
+                        and not self._flow_data[key].strip()
+                    )
+                ]
                 if missing:
                     raise AssertionError(
-                        f"Missing flow data before entry creation: {missing}"
+                        f"Missing or empty flow data before entry creation: {missing}"
                     )
 
                 entry_data = {
