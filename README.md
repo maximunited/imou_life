@@ -4,9 +4,9 @@
 [![Home Assistant](https://img.shields.io/badge/home%20assistant-%2341BDF5.svg?logo=home-assistant&logoColor=white)](https://www.home-assistant.io/)
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
 [![Imou Life](https://img.shields.io/badge/imou%20life-%23FF8C00.svg?logo=imou&logoColor=white)](https://open.imoulife.com/)
-[![Latest Release](https://img.shields.io/badge/release-1.2.0-blue.svg)](https://github.com/maximunited/imou_life/releases/tag/v1.2.0)
-[![Pre-release](https://img.shields.io/badge/pre--release-1.2.0-orange.svg)](https://github.com/maximunited/imou_life/releases/tag/v1.2.0)
-[![Quality Scale](https://img.shields.io/badge/quality%20scale-silver%20%E2%9C%85-silver.svg)](https://developers.home-assistant.io/docs/core/integration-quality-scale/)
+[![Latest Release](https://img.shields.io/badge/release-1.5.0-blue.svg)](https://github.com/maximunited/imou_life/releases/tag/v1.5.0)
+[![Pre-release](https://img.shields.io/badge/pre--release-1.5.0-orange.svg)](https://github.com/maximunited/imou_life/releases/tag/v1.5.0)
+[![Quality Scale](https://img.shields.io/badge/quality%20scale-gold%20%E2%9C%85-gold.svg)](https://developers.home-assistant.io/docs/core/integration-quality-scale/)
 [![Buy Me a Coffee](https://img.shields.io/badge/buy%20me%20a%20coffee-%23FFDD00.svg?logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/maxim_united)
 
 A Home Assistant integration for Imou Life cameras and devices, providing comprehensive monitoring and control capabilities.
@@ -14,6 +14,7 @@ A Home Assistant integration for Imou Life cameras and devices, providing compre
 ## 🚀 Features
 
 - **Camera Integration**: Live video streaming and snapshot capture
+- **Multi-Device Support**: Automatic discovery of new devices added to your Imou account
 - **Motion Detection**: Real-time motion alerts and notifications
 - **Device Control**: PTZ control, recording management, and more
 - **Automation Ready**: Full Home Assistant automation support
@@ -94,201 +95,55 @@ Once added, each device will create several entities:
 
 ### Advanced Configuration
 
-After adding a device, you can configure advanced options:
+Configure options via Settings → Devices & Services → Imou Life → Configure:
 
-- **Polling Interval**: How often to refresh device data (default: 15 minutes)
-- **API Base URL**: Imou API endpoint (default: https://openapi.easy4ip.com/openapi)
-- **API Timeout**: API call timeout in seconds (default: 10 seconds)
-- **Callback URL**: For push notifications (requires internet exposure)
+- **Scan Interval**: Device data refresh frequency (default: 15 minutes)
+- **API Settings**: Base URL, timeout, and server region selection
+- **Push Notifications**: Callback URL for real-time motion alerts
+- **Battery Optimization**: Sleep schedules and power-saving modes (battery devices only)
+- **Discovery**: Enable/disable automatic device discovery (first device only)
 
 ## 🔄 Multi-Device Management
 
-### Automatic Device Discovery
-
-The integration **automatically discovers new devices** added to your Imou account without requiring reconfiguration!
+The integration **automatically discovers new devices** added to your Imou account - no reconfiguration needed!
 
 **How It Works:**
-- Background polling checks for new devices every 60 minutes (configurable)
-- When a new device is detected, a **confirmation dialog** appears in Home Assistant
-- You choose whether to add the device or dismiss it
-- Each device becomes a separate integration entry for easy management
+- Checks for new devices every 60 minutes (configurable 5 min - 24 hours)
+- Shows confirmation dialog when a new device is found
+- Each device becomes a separate integration entry for independent management
+- Shared API credentials - no need to re-enter
 
-**Key Features:**
-- ✅ **Enabled by default** - Works out of the box
-- ✅ **User confirmation required** - No surprise auto-adds
-- ✅ **Shared credentials** - New devices use the same API credentials
-- ✅ **Configurable interval** - Adjust polling from 5 minutes to 24 hours
-- ✅ **Rate limit friendly** - Designed to respect Imou API limits
+**Quick Start:**
+1. Add your first device normally during setup
+2. When you add more devices to your Imou account, they're automatically discovered
+3. Approve the discovery notification to add them to Home Assistant
 
-### Configuring Discovery
+**Configuration:**
+- Go to Settings → Devices & Services → Imou Life
+- Click Configure on your **first device entry** (discovery options only show here)
+- Toggle discovery on/off or adjust polling interval
 
-To adjust automatic discovery settings:
-
-1. **Go to Settings** → Devices & Services → Imou Life
-2. **Click Configure** on your **first device entry**
-3. **Discovery Options** (only visible on first entry):
-   - **Enable automatic device discovery**: Toggle on/off (default: enabled)
-   - **Discovery polling interval**: Seconds between checks (default: 3600 / 60 minutes)
-     - Range: 300-86400 seconds (5 minutes - 24 hours)
-     - Recommendation: Keep default to avoid rate limits
-
-> **Note**: Discovery options only appear on the first device you configured. All discovered devices automatically use the same API credentials.
-
-### Multi-Device Setup Examples
-
-#### Scenario 1: Adding Your Second Camera
-
-**Initial Setup:**
-```
-✓ Living Room Camera (configured manually)
-```
-
-**After 60 minutes:**
-```
-✓ Living Room Camera
-🔔 New device discovered: "Backyard Camera" - [Add Device] [Dismiss]
-```
-
-**Click "Add Device":**
-```
-✓ Living Room Camera
-✓ Backyard Camera (automatically configured)
-```
-
-#### Scenario 2: Family Member Adds Camera
-
-Your family member installs a new Imou camera and adds it to your shared account:
-
-**Before:**
-```
-✓ Front Door Camera
-✓ Garage Camera
-```
-
-**Within 60 minutes, Home Assistant shows:**
-```
-Notification: "New Imou device discovered: Driveway Camera"
-```
-
-**Accept the notification:**
-```
-✓ Front Door Camera
-✓ Garage Camera
-✓ Driveway Camera (automatically added with entities)
-```
-
-No need to re-enter API credentials or manually configure anything!
-
-#### Scenario 3: Managing Multiple Locations
-
-If you manage cameras at multiple locations (home, office, vacation home):
-
-**Setup:**
-1. Add all devices to your Imou account
-2. Configure the integration once with your API credentials
-3. Select your first device during initial setup
-4. All other devices are **automatically discovered** within 60 minutes
-
-**Result:**
-```
-✓ Home - Living Room
-✓ Home - Kitchen
-✓ Home - Front Door
-✓ Office - Reception
-✓ Office - Conference Room
-✓ Cabin - Entrance
-```
-
-Each device is a separate entry you can:
-- Remove individually
-- Configure independently (different polling intervals, etc.)
-- Use in separate automations
-
-### Discovery Best Practices
-
-**When to disable discovery:**
-- You only have one camera and won't be adding more
-- You prefer manual control over all device additions
-- Testing/development environments
-
-**When to adjust the interval:**
-- **Increase to 24 hours** (86400s): If you rarely add devices and want minimal API calls
-- **Decrease to 15 minutes** (900s): If you're actively adding multiple devices
-- **Keep default** (60 minutes): Best balance for most users
-
-**Managing discovered devices:**
-- Each device appears as a separate integration entry
-- Remove devices individually from Settings → Devices & Services
-- Each device has its own configuration options
-- Discovery runs only from the first entry you configured
+See **[Multi-Device Guide](docs/MULTI_DEVICE_GUIDE.md)** for detailed scenarios, best practices, and troubleshooting.
 
 ## 📊 Data Updates & Polling
 
-The integration uses a **coordinator-based polling system** to keep device data up-to-date while respecting API rate limits.
+Device data updates every 15 minutes by default using a coordinator-based polling system.
 
-### How Data Updates Work
+**Adjusting Update Frequency:**
+1. Go to Settings → Devices & Services → Imou Life
+2. Click Configure on your device
+3. Set `Scan Interval` (minimum: 60s, recommended: 300-900s)
 
-1. **Data Update Coordinator**: Each device has a coordinator that manages data fetching and distribution to all entities
-2. **Polling Interval**: Configurable update frequency (default: 900 seconds / 15 minutes)
-3. **Parallel Updates Control**: Platform updates are serialized (`PARALLEL_UPDATES = 1`) to prevent API rate limiting
-4. **Automatic Recovery**: Failed updates are logged and retried on the next interval
+> **⚠️ Warning**: Intervals below 5 minutes may trigger API rate limits with multiple devices.
 
-### Update Intervals
+**Alternative: Real-time Updates**
+- Use Push Notifications for instant motion detection (requires internet-accessible HA)
+- See [Push Notifications Setup](#-push-notifications-setup) below
 
-| Setting | Default Value | Configurable | Purpose |
-|---------|---------------|--------------|---------|
-| **Scan Interval** | 15 minutes (900s) | ✅ Yes (Options) | Balance freshness vs API calls |
-
-**Note**: All devices (standard and battery-powered) use the same configurable scan interval. Battery-powered cameras have additional optimization features (sleep schedules, power-saving modes) but share the same polling frequency.
-
-### Battery Device Optimization
-
-Battery-powered cameras support additional features:
-- **Smart scheduling**: Configurable sleep schedules (daily, weekly, custom, battery-based)
-- **Power-saving modes**: Automatic optimization when battery is low
-- **LED control**: Manage LED indicators to conserve power
-- **Motion sensitivity**: Adjustable detection levels to reduce wake events
-
-### API Rate Limiting
-
-The Imou API has rate limits to protect their service:
-- **Rate Limit Detection**: Automatic detection of `OP1013` rate limit errors
-- **Error Handling**: Failed requests don't crash the integration
-- **User Notification**: Persistent notification shown if rate-limited during setup
-- **Retry Strategy**: Next update attempt waits for the current effective interval (temporarily increased while rate-limited)
-- **Monitoring**: Check the API Status diagnostic sensor (disabled by default) for rate limit status
-
-### Stale Device Detection
-
-The integration automatically detects when a device no longer exists on your Imou account:
-- **Automatic Detection**: Monitors for "device not found" API errors
-- **Smart Threshold**: Requires 3 consecutive failures to avoid false positives
-- **User Control**: Presents a repair issue in Settings → System → Repairs
-- **Flexible Options**: Choose to Remove, Retry, or Ignore the warning
-- **No Silent Deletion**: Device is only removed after explicit user confirmation
-
-See [Stale Device Detection](docs/STALE_DEVICE_DETECTION.md) for detailed information.
-
-### Customizing Update Frequency
-
-To change polling intervals:
-
-1. **Go to Settings** → Devices & Services → Imou Life
-2. **Click Configure** on your device
-3. **Adjust Options**:
-   - `Scan Interval`: Seconds between updates (minimum: 60, recommended: 300-900)
-   - Applies to all device data including battery status
-4. **Save and Reload**
-
-> **⚠️ Rate Limit Warning**: Setting intervals too low (< 5 minutes for multiple devices) may trigger API rate limits. The Imou developer account is limited to reasonable API call frequencies.
-
-### Real-time Updates (Alternative)
-
-For instant motion detection updates instead of polling:
-- Use **Push Notifications** (see section below)
-- Requires internet-accessible Home Assistant instance
-- Bypasses polling for motion events only
-- Other sensor data still uses polling
+**Advanced Features:**
+- **API Rate Limiting**: Automatic detection and handling with interval adjustment
+- **Stale Device Detection**: Auto-detects removed devices - see [Stale Device Detection](docs/STALE_DEVICE_DETECTION.md)
+- **Battery Optimization**: Sleep schedules, power-saving modes for battery cameras
 
 ## 🔔 Push Notifications Setup
 
