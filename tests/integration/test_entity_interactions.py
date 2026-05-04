@@ -31,8 +31,9 @@ async def test_switch_entity_interaction(hass, api_ok, mock_imou_device):
         assert await hass.config_entries.async_setup(config_entry.entry_id)
         await hass.async_block_till_done()
 
-    # Get coordinator (verify it exists in hass.data)
-    _coordinator = hass.data[DOMAIN][config_entry.entry_id]  # noqa: F841
+    # Get coordinator (verify it exists in entry.runtime_data)
+    _coordinator = config_entry.runtime_data  # noqa: F841
+    assert _coordinator is not None
 
     # Verify switch sensors were discovered
     switch_sensors = mock_imou_device.get_sensors_by_platform("switch")
@@ -84,7 +85,7 @@ async def test_binary_sensor_state_changes(hass, api_ok, mock_imou_device):
     }
 
     # Refresh coordinator
-    coordinator = hass.data[DOMAIN][config_entry.entry_id]
+    coordinator = config_entry.runtime_data
     await coordinator.async_refresh()
     await hass.async_block_till_done()
 
@@ -141,7 +142,7 @@ async def test_coordinator_update_failure_recovery(hass, api_ok, mock_imou_devic
         assert await hass.config_entries.async_setup(config_entry.entry_id)
         await hass.async_block_till_done()
 
-    coordinator = hass.data[DOMAIN][config_entry.entry_id]
+    coordinator = config_entry.runtime_data
 
     # First update succeeds
     await coordinator.async_refresh()
@@ -218,8 +219,8 @@ async def test_multiple_devices_same_integration(hass, api_ok, mock_imou_device)
     assert config_entry_2.entry_id in hass.data[DOMAIN]
 
     # Each should have their own coordinator
-    coordinator_1 = hass.data[DOMAIN][config_entry_1.entry_id]
-    coordinator_2 = hass.data[DOMAIN][config_entry_2.entry_id]
+    coordinator_1 = config_entry_1.runtime_data
+    coordinator_2 = config_entry_2.runtime_data
     assert coordinator_1 != coordinator_2
 
 
@@ -239,7 +240,7 @@ async def test_config_entry_options_update(hass, api_ok, mock_imou_device):
         assert await hass.config_entries.async_setup(config_entry.entry_id)
         await hass.async_block_till_done()
 
-    coordinator = hass.data[DOMAIN][config_entry.entry_id]
+    coordinator = config_entry.runtime_data
     initial_interval = coordinator.update_interval.total_seconds()
 
     # Update options
@@ -254,7 +255,7 @@ async def test_config_entry_options_update(hass, api_ok, mock_imou_device):
         await hass.async_block_till_done()
 
     # Get updated coordinator
-    coordinator = hass.data[DOMAIN][config_entry.entry_id]
+    coordinator = config_entry.runtime_data
     new_interval = coordinator.update_interval.total_seconds()
 
     # Interval should have changed

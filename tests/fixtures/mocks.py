@@ -315,6 +315,7 @@ class MockHomeAssistant:
 
         def mock_async_setup(entry_id):
             # Create a mock coordinator that can pass isinstance checks
+            from custom_components.imou_life.const import DOMAIN
             from custom_components.imou_life.coordinator import (
                 ImouDataUpdateCoordinator,
             )
@@ -326,6 +327,8 @@ class MockHomeAssistant:
             mock_coordinator.platforms = []
             mock_coordinator.device = MagicMock()
             mock_coordinator.entities = []
+            mock_coordinator.data = {}  # Add data attribute for tests
+            mock_coordinator.async_refresh = AsyncMock()
 
             # Mock device methods
             mock_device = MagicMock()
@@ -345,10 +348,81 @@ class MockHomeAssistant:
             for platform in PLATFORMS:
                 mock_coordinator.platforms.append(platform)
 
+            # Initialize hass.data[DOMAIN] if this is the first entry
+            if DOMAIN not in self.data:
+                self.data[DOMAIN] = {}
+
+            # Set up discovery coordinator for first entry
+            # Check _entries (includes manually added) not just _created_entries (from flow)
+            existing_entries = [
+                e for e in self.config_entries._entries.values() if e.domain == DOMAIN
+            ]
+            if len(existing_entries) == 1:  # This is the first entry
+                # Get the entry being set up
+                setup_entry = None
+                for e in self.config_entries._entries.values():
+                    if e.entry_id == entry_id:
+                        setup_entry = e
+                        break
+
+                # Check if discovery is enabled in options
+                from custom_components.imou_life.const import (
+                    DEFAULT_DISCOVERY_INTERVAL,
+                    DEFAULT_ENABLE_DISCOVERY,
+                    OPTION_DISCOVERY_INTERVAL,
+                    OPTION_ENABLE_DISCOVERY,
+                )
+
+                discovery_enabled = setup_entry.options.get(
+                    OPTION_ENABLE_DISCOVERY, DEFAULT_ENABLE_DISCOVERY
+                )
+
+                if discovery_enabled:
+                    # Create mock discovery coordinator with proper attributes
+                    from datetime import timedelta
+
+                    mock_discovery = MagicMock()
+                    mock_discovery.async_refresh = AsyncMock()
+                    mock_discovery._async_update_data = AsyncMock(return_value={})
+
+                    # Set update_interval from options
+                    discovery_interval = setup_entry.options.get(
+                        OPTION_DISCOVERY_INTERVAL, DEFAULT_DISCOVERY_INTERVAL
+                    )
+                    mock_discovery.update_interval = timedelta(
+                        seconds=discovery_interval
+                    )
+
+                    self.data[DOMAIN]["discovery"] = mock_discovery
+                else:
+                    self.data[DOMAIN]["discovery"] = None
+
             return True
 
         self.config_entries.async_setup = AsyncMock(side_effect=mock_async_setup)
         self.config_entries._entries = {}
+
+        # Mock async_remove
+        async def mock_async_remove(entry_id):
+            """Mock remove config entry."""
+            from custom_components.imou_life.const import DOMAIN
+
+            if entry_id in self.config_entries._entries:
+                del self.config_entries._entries[entry_id]
+
+            # Clean up discovery if this is the last entry
+            if DOMAIN in self.data and "discovery" in self.data[DOMAIN]:
+                remaining_entries = [
+                    e
+                    for e in self.config_entries._entries.values()
+                    if e.domain == DOMAIN
+                ]
+                if len(remaining_entries) == 0:
+                    self.data[DOMAIN]["discovery"] = None
+
+            return True
+
+        self.config_entries.async_remove = AsyncMock(side_effect=mock_async_remove)
 
         # Mock async_forward_entry_setups
         def mock_async_forward_entry_setups(entry, platforms):

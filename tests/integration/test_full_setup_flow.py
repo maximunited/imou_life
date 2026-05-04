@@ -63,13 +63,11 @@ async def test_full_setup_flow_with_discovery(hass, api_ok, mock_imou_device):
     assert await hass.config_entries.async_setup(config_entry.entry_id)
     await hass.async_block_till_done()
 
-    # Verify coordinator is created
-    assert DOMAIN in hass.data
-    assert config_entry.entry_id in hass.data[DOMAIN]
+    # Verify coordinator is created (stored in runtime_data)
+    assert config_entry.runtime_data is not None
+    coordinator = config_entry.runtime_data
 
     # Verify entities are created (would be in entity registry in real HA)
-    coordinator = hass.data[DOMAIN][config_entry.entry_id]
-    assert coordinator is not None
     assert coordinator.device.get_device_id() == "test_device_123"
 
 
@@ -135,8 +133,8 @@ async def test_setup_and_entity_state_updates(hass, api_ok, mock_imou_device):
         assert await hass.config_entries.async_setup(config_entry.entry_id)
         await hass.async_block_till_done()
 
-    # Get coordinator
-    coordinator = hass.data[DOMAIN][config_entry.entry_id]
+    # Get coordinator (stored in runtime_data)
+    coordinator = config_entry.runtime_data
     assert coordinator is not None
 
     # Initial data state
