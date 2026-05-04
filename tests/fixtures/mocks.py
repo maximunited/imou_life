@@ -114,6 +114,9 @@ class MockHomeAssistant:
         self._flow_step = 0
         self._flow_mode = "discover"  # "discover" or "manual"
         self._flow_error = None  # Error to return
+        self._discovery_data = None  # Store discovery data for configure step
+        self._configured_unique_ids = set()  # Track configured unique IDs
+        self._created_entries = []  # Track created config entries
 
         # Set up mocks
         self._setup_config_entries_mocks()
@@ -137,22 +140,113 @@ class MockHomeAssistant:
         def mock_flow_init(*args, **kwargs):
             self._flow_step = 0
             mock_response = MagicMock()
-            mock_response.__getitem__ = MagicMock(
-                side_effect=lambda key: {
-                    "type": data_entry_flow.FlowResultType.FORM,
-                    "step_id": "login",
-                    "flow_id": "test_flow_id",
-                    "errors": {},
-                    "data_schema": None,
-                }.get(key)
-            )
+
+            # Check if this is a discovery flow
+            context = kwargs.get("context", {})
+            data = kwargs.get("data", {})
+
+            if context.get("source") == "discovery":
+                device_id = data.get("device_id", "unknown")
+
+                # Check if this unique_id is already configured
+                if device_id in self._configured_unique_ids:
+                    # Return abort result
+                    mock_response.__getitem__ = MagicMock(
+                        side_effect=lambda key: {
+                            "type": data_entry_flow.FlowResultType.ABORT,
+                            "flow_id": "test_flow_id",
+                            "reason": "already_configured",
+                        }.get(key)
+                    )
+                else:
+                    # Store discovery data for configure step
+                    self._discovery_data = data
+
+                    # Discovery flow - return discovery_confirm step with placeholders
+                    device_name = "Unknown"
+                    device = data.get("device")
+                    if device and hasattr(device, "get_name"):
+                        try:
+                            device_name = device.get_name()
+                        except Exception:
+                            pass
+
+                    mock_response.__getitem__ = MagicMock(
+                        side_effect=lambda key: {
+                            "type": data_entry_flow.FlowResultType.FORM,
+                            "step_id": "discovery_confirm",
+                            "flow_id": "test_flow_id",
+                            "errors": {},
+                            "data_schema": None,
+                            "description_placeholders": {
+                                "device_name": device_name,
+                                "device_id": device_id,
+                            },
+                        }.get(key)
+                    )
+            else:
+                # Regular user flow - return login step
+                self._discovery_data = None
+                mock_response.__getitem__ = MagicMock(
+                    side_effect=lambda key: {
+                        "type": data_entry_flow.FlowResultType.FORM,
+                        "step_id": "login",
+                        "flow_id": "test_flow_id",
+                        "errors": {},
+                        "data_schema": None,
+                    }.get(key)
+                )
             return mock_response
 
         def mock_flow_configure(*args, **kwargs):
             self._flow_step += 1
             mock_response = MagicMock()
+            user_input = kwargs.get("user_input", {})
 
-            if self._flow_step == 1:
+            # Check if this is a discovery flow being confirmed
+            if self._discovery_data is not None:
+                # Discovery flow - create entry immediately with discovery data
+                device_name = user_input.get("device_name", "Unknown")
+                if not device_name:
+                    device = self._discovery_data.get("device")
+                    if device and hasattr(device, "get_name"):
+                        try:
+                            device_name = device.get_name()
+                        except Exception:
+                            device_name = f"Imou Device {self._discovery_data.get('device_id', 'unknown')[:8]}"
+
+                api_creds = self._discovery_data.get("api_credentials", {})
+                entry_data = {
+                    "device_id": self._discovery_data.get("device_id"),
+                    "device_name": device_name,
+                    "app_id": api_creds.get("app_id"),
+                    "app_secret": api_creds.get("app_secret"),
+                    "api_url": api_creds.get("api_url"),
+                }
+
+                # Track this entry as created
+                from custom_components.imou_life.const import DOMAIN
+
+                entry = MockConfigEntry(
+                    domain=DOMAIN,
+                    data=entry_data,
+                    unique_id=self._discovery_data.get("device_id"),
+                    title=device_name,
+                )
+                entry.add_to_hass(self)
+                self._created_entries.append(entry)
+                self._configured_unique_ids.add(self._discovery_data.get("device_id"))
+
+                mock_response.__getitem__ = MagicMock(
+                    side_effect=lambda key: {
+                        "type": data_entry_flow.FlowResultType.CREATE_ENTRY,
+                        "flow_id": "test_flow_id",
+                        "data": entry_data,
+                        "title": device_name,
+                        "result": True,
+                    }.get(key)
+                )
+            elif self._flow_step == 1:
                 # First configure call - show next form based on mode
                 if self._flow_error:
                     # Return error response
@@ -212,6 +306,12 @@ class MockHomeAssistant:
 
     def _setup_entry_setup_mocks(self):
         """Set up entry setup mocks."""
+
+        # Make async_entries return the created entries
+        def mock_async_entries(domain):
+            return [e for e in self._created_entries if e.domain == domain]
+
+        self.config_entries.async_entries = mock_async_entries
 
         def mock_async_setup(entry_id):
             # Create a mock coordinator that can pass isinstance checks

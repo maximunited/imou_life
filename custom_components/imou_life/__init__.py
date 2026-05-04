@@ -337,7 +337,8 @@ async def _setup_discovery_coordinator(
 
     _LOGGER.debug("Setting up discovery coordinator for first entry")
     coordinator = ImouDiscoveryCoordinator(hass, api_client, entry)
-    await coordinator.async_config_entry_first_refresh()
+    # Don't wait for first refresh - discovery is non-critical
+    # Coordinator will run on its schedule
     return coordinator
 
 
