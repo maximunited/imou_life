@@ -78,19 +78,26 @@ async def test_binary_sensor_state_changes(hass, api_ok, mock_imou_device):
     online_sensor = binary_sensors[0]
     assert online_sensor.is_on() is True
 
-    # Simulate device going offline
-    mock_imou_device.async_get_data.return_value = {
+    # Get coordinator
+    coordinator = config_entry.runtime_data
+
+    # Simulate device going offline - update the coordinator's device mock
+    coordinator.device.async_get_data.return_value = {
         "online": False,
         "battery_level": 85,
     }
 
     # Refresh coordinator
-    coordinator = config_entry.runtime_data
     await coordinator.async_refresh()
     await hass.async_block_till_done()
 
-    # Verify data updated (in real HA, entity would update automatically)
+    # Verify coordinator data updated
     assert coordinator.data["online"] is False
+
+    # Note: In a full HA environment with entity registry, we would also verify
+    # entity state via hass.states.get(entity_id) to ensure state propagation.
+    # This mock framework validates coordinator updates; entity state binding
+    # is covered by unit tests for the entity classes themselves.
 
 
 @pytest.mark.asyncio
@@ -107,22 +114,21 @@ async def test_api_connection_failure_on_setup(hass):
         version=3,
     )
 
-    # Mock API connection failure
-    with patch("imouapi.api.ImouAPIClient") as mock_api:
+    # Mock API rate limit during device initialization
+    with patch("custom_components.imou_life.ImouAPIClient") as mock_api:
         mock_api_instance = MagicMock()
-        mock_api_instance.async_connect = AsyncMock(
-            side_effect=ImouException("Connection failed")
-        )
+        mock_api_instance.async_connect = AsyncMock()
         mock_api.return_value = mock_api_instance
 
-        with patch("imouapi.device.ImouDevice") as mock_device:
+        with patch("custom_components.imou_life.ImouDevice") as mock_device:
             mock_device_instance = MagicMock()
+            # Simulate rate limit error (OP1013)
             mock_device_instance.async_initialize = AsyncMock(
-                side_effect=Exception("Device init failed")
+                side_effect=ImouException("OP1013: API calls exceed limit")
             )
             mock_device.return_value = mock_device_instance
 
-            # Should raise ConfigEntryNotReady
+            # Should raise ConfigEntryNotReady for rate limit errors
             with pytest.raises(ConfigEntryNotReady):
                 await async_setup_entry(hass, config_entry)
 
@@ -149,8 +155,8 @@ async def test_coordinator_update_failure_recovery(hass, api_ok, mock_imou_devic
     assert coordinator.data is not None
     first_data = coordinator.data
 
-    # Simulate temporary API failure
-    mock_imou_device.async_get_data.side_effect = Exception("Temporary failure")
+    # Simulate temporary API failure with ImouException
+    coordinator.device.async_get_data.side_effect = ImouException("Temporary failure")
 
     # Update should fail but not crash
     await coordinator.async_refresh()
@@ -159,8 +165,8 @@ async def test_coordinator_update_failure_recovery(hass, api_ok, mock_imou_devic
     assert coordinator.data == first_data
 
     # Restore API
-    mock_imou_device.async_get_data.side_effect = None
-    mock_imou_device.async_get_data.return_value = {
+    coordinator.device.async_get_data.side_effect = None
+    coordinator.device.async_get_data.return_value = {
         "battery_level": 90,
         "online": True,
     }
@@ -213,14 +219,11 @@ async def test_multiple_devices_same_integration(hass, api_ok, mock_imou_device)
 
     await hass.async_block_till_done()
 
-    # Both devices should be in hass.data
-    assert DOMAIN in hass.data
-    assert config_entry_1.entry_id in hass.data[DOMAIN]
-    assert config_entry_2.entry_id in hass.data[DOMAIN]
-
     # Each should have their own coordinator
     coordinator_1 = config_entry_1.runtime_data
     coordinator_2 = config_entry_2.runtime_data
+    assert coordinator_1 is not None
+    assert coordinator_2 is not None
     assert coordinator_1 != coordinator_2
 
 
