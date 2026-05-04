@@ -211,8 +211,6 @@ async def test_setup_reload_and_unload(hass, api_ok, mock_imou_device):
     # Check that discovery coordinator was cleaned up if this was first entry
     if DOMAIN in hass.data and "discovery" in hass.data[DOMAIN]:
         # If there are no more entries, discovery should be stopped
-        remaining_entries = [
-            e for e in hass.config_entries._entries.values() if e.domain == DOMAIN
-        ]
+        remaining_entries = hass.config_entries.async_entries(DOMAIN)
         if len(remaining_entries) == 0:
             assert hass.data[DOMAIN]["discovery"] is None
