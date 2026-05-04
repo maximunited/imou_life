@@ -316,10 +316,18 @@ class MockHomeAssistant:
                             except Exception:
                                 pass
 
+                # Validate required flow data was collected
+                required = ("api_url", "app_id", "app_secret")
+                missing = [key for key in required if key not in self._flow_data]
+                if missing:
+                    raise AssertionError(
+                        f"Missing flow data before entry creation: {missing}"
+                    )
+
                 entry_data = {
-                    "api_url": self._flow_data.get("api_url", "http://api.url"),
-                    "app_id": self._flow_data.get("app_id", "app_id"),
-                    "app_secret": self._flow_data.get("app_secret", "app_secret"),
+                    "api_url": self._flow_data["api_url"],
+                    "app_id": self._flow_data["app_id"],
+                    "app_secret": self._flow_data["app_secret"],
                     "device_id": device_id,
                     "device_name": device_name,
                 }
@@ -394,8 +402,8 @@ class MockHomeAssistant:
 
                 # This will use the patched ImouDevice if the test patched it
                 mock_device = ImouDevice(None, None)
-            except Exception:
-                # Fallback to creating a MagicMock
+            except (ImportError, TypeError):
+                # Fallback to MagicMock only for import/constructor issues
                 mock_device = MagicMock()
                 mock_device.get_sensors_by_platform.return_value = [MagicMock()]
                 mock_device.get_name.return_value = "device_name"
@@ -413,11 +421,14 @@ class MockHomeAssistant:
                 """Mock refresh that updates data from device."""
                 if hasattr(mock_coordinator.device, "async_get_data"):
                     try:
+                        from imouapi.exceptions import ImouException
+
                         mock_coordinator.data = (
                             await mock_coordinator.device.async_get_data()
                         )
-                    except Exception:
-                        # Keep old data on failure, like real DataUpdateCoordinator
+                    except ImouException:
+                        # Keep old data on API errors, like real DataUpdateCoordinator
+                        # Unexpected errors will surface during tests
                         pass
 
             mock_coordinator.async_refresh = AsyncMock(side_effect=mock_async_refresh)

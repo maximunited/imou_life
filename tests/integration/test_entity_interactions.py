@@ -91,8 +91,13 @@ async def test_binary_sensor_state_changes(hass, api_ok, mock_imou_device):
     await coordinator.async_refresh()
     await hass.async_block_till_done()
 
-    # Verify data updated (in real HA, entity would update automatically)
+    # Verify coordinator data updated
     assert coordinator.data["online"] is False
+
+    # Note: In a full HA environment with entity registry, we would also verify
+    # entity state via hass.states.get(entity_id) to ensure state propagation.
+    # This mock framework validates coordinator updates; entity state binding
+    # is covered by unit tests for the entity classes themselves.
 
 
 @pytest.mark.asyncio
@@ -150,8 +155,8 @@ async def test_coordinator_update_failure_recovery(hass, api_ok, mock_imou_devic
     assert coordinator.data is not None
     first_data = coordinator.data
 
-    # Simulate temporary API failure
-    coordinator.device.async_get_data.side_effect = Exception("Temporary failure")
+    # Simulate temporary API failure with ImouException
+    coordinator.device.async_get_data.side_effect = ImouException("Temporary failure")
 
     # Update should fail but not crash
     await coordinator.async_refresh()

@@ -208,5 +208,13 @@ async def test_setup_reload_and_unload(hass, api_ok, mock_imou_device):
     assert await async_unload_entry(hass, config_entry)
     await hass.async_block_till_done()
 
-    # Verify cleanup - runtime_data should be cleared
-    # Note: runtime_data might still have a value depending on implementation
+    # Verify cleanup - in production HA, runtime_data would be cleared
+    # Our mock framework doesn't auto-clear it, but unload should succeed
+    # Check that discovery coordinator was cleaned up if this was first entry
+    if DOMAIN in hass.data and "discovery" in hass.data[DOMAIN]:
+        # If there are no more entries, discovery should be stopped
+        remaining_entries = [
+            e for e in hass.config_entries._entries.values() if e.domain == DOMAIN
+        ]
+        if len(remaining_entries) == 0:
+            assert hass.data[DOMAIN]["discovery"] is None
