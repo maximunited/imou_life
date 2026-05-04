@@ -234,7 +234,14 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
         """Check if device should sleep during battery-based schedule."""
         # Use cached battery level from coordinator data instead of making new API call
         battery_level = self.data.get("battery_level", 100) if self.data else 100
-        return battery_level <= self._battery_threshold
+
+        # Apply hysteresis to prevent rapid on/off cycling
+        if self.is_sleep_mode_active():
+            # Already in sleep mode - stay asleep until battery is above threshold + hysteresis
+            return battery_level <= (self._battery_threshold + self._battery_hysteresis)
+        else:
+            # Not in sleep mode - enter sleep if battery drops below threshold
+            return battery_level <= self._battery_threshold
 
     async def _determine_sleep_state(self, current_time: time) -> bool:
         """Determine if device should be in sleep mode based on schedule."""
@@ -412,6 +419,7 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
             )
             if hasattr(self.device, "async_set_led_indicators"):
                 await self.device.async_set_led_indicators(enabled)
+                self._led_indicators = enabled
             else:
                 _LOGGER.warning(
                     "Device does not support async_set_led_indicators - "
@@ -434,6 +442,7 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
             _LOGGER.info("Setting power mode to %s", mode)
             if hasattr(self.device, "async_set_power_mode"):
                 await self.device.async_set_power_mode(mode)
+                self._power_mode = mode
             else:
                 _LOGGER.warning(
                     "Device does not support async_set_power_mode - "

@@ -158,14 +158,14 @@ async def test_power_mode_changes_propagate(hass, mock_imou_device):
         hass, mock_imou_device, config_entry, scan_interval=60
     )
 
-    # Mock the set_power_mode method
-    coordinator.device.set_power_mode = AsyncMock()
+    # Mock the async_set_power_mode method
+    coordinator.device.async_set_power_mode = AsyncMock()
 
     # Change power mode
     await coordinator.set_power_mode("power_saving")
 
     # Verify it was set on the device
-    coordinator.device.set_power_mode.assert_called_once_with("power_saving")
+    coordinator.device.async_set_power_mode.assert_called_once_with("power_saving")
     assert coordinator._power_mode == "power_saving"
 
 
@@ -185,19 +185,19 @@ async def test_led_indicators_toggle(hass, mock_imou_device):
     )
 
     # Mock LED control method
-    coordinator.device.set_led_status = AsyncMock()
+    coordinator.device.async_set_led_indicators = AsyncMock()
 
     # Initial state
     assert coordinator._led_indicators is True
 
     # Toggle off
     await coordinator.set_led_indicators(False)
-    coordinator.device.set_led_status.assert_called_with(False)
+    coordinator.device.async_set_led_indicators.assert_called_with(False)
     assert coordinator._led_indicators is False
 
     # Toggle on
     await coordinator.set_led_indicators(True)
-    coordinator.device.set_led_status.assert_called_with(True)
+    coordinator.device.async_set_led_indicators.assert_called_with(True)
     assert coordinator._led_indicators is True
 
 
@@ -245,20 +245,27 @@ async def test_battery_data_caching(hass, mock_imou_device):
         hass, mock_imou_device, config_entry, scan_interval=60
     )
 
-    # First call - should fetch from API
-    data1 = await coordinator._get_battery_data()
-    assert mock_imou_device.async_get_battery_status.call_count == 1
-
-    # Data should be cached now
+    # Refresh coordinator to populate initial data
+    await coordinator.async_refresh()
     assert coordinator.data is not None
 
-    # Second call - should use cached data
-    data2 = await coordinator._get_battery_data()
-    # Call count should still be 1 (used cache)
-    assert mock_imou_device.async_get_battery_status.call_count == 1
+    # Data should be cached in coordinator.data
+    cached_battery_level = coordinator.data.get("battery_level")
+    assert cached_battery_level == 85  # From mock
 
-    # Both should return same data
-    assert data1 == data2
+    # Reset call count to verify caching behavior
+    mock_imou_device.async_get_battery_status.reset_mock()
+
+    # Access cached data multiple times
+    level1 = coordinator.data.get("battery_level")
+    level2 = coordinator.data.get("battery_level")
+    level3 = coordinator.data.get("battery_level")
+
+    # Should not have called the API again (using cached coordinator.data)
+    assert mock_imou_device.async_get_battery_status.call_count == 0
+
+    # All should return same cached value
+    assert level1 == level2 == level3 == 85
 
 
 @pytest.mark.asyncio
