@@ -101,6 +101,127 @@ After adding a device, you can configure advanced options:
 - **API Timeout**: API call timeout in seconds (default: 10 seconds)
 - **Callback URL**: For push notifications (requires internet exposure)
 
+## 🔄 Multi-Device Management
+
+### Automatic Device Discovery
+
+The integration **automatically discovers new devices** added to your Imou account without requiring reconfiguration!
+
+**How It Works:**
+- Background polling checks for new devices every 60 minutes (configurable)
+- When a new device is detected, a **confirmation dialog** appears in Home Assistant
+- You choose whether to add the device or dismiss it
+- Each device becomes a separate integration entry for easy management
+
+**Key Features:**
+- ✅ **Enabled by default** - Works out of the box
+- ✅ **User confirmation required** - No surprise auto-adds
+- ✅ **Shared credentials** - New devices use the same API credentials
+- ✅ **Configurable interval** - Adjust polling from 5 minutes to 24 hours
+- ✅ **Rate limit friendly** - Designed to respect Imou API limits
+
+### Configuring Discovery
+
+To adjust automatic discovery settings:
+
+1. **Go to Settings** → Devices & Services → Imou Life
+2. **Click Configure** on your **first device entry**
+3. **Discovery Options** (only visible on first entry):
+   - **Enable automatic device discovery**: Toggle on/off (default: enabled)
+   - **Discovery polling interval**: Seconds between checks (default: 3600 / 60 minutes)
+     - Range: 300-86400 seconds (5 minutes - 24 hours)
+     - Recommendation: Keep default to avoid rate limits
+
+> **Note**: Discovery options only appear on the first device you configured. All discovered devices automatically use the same API credentials.
+
+### Multi-Device Setup Examples
+
+#### Scenario 1: Adding Your Second Camera
+
+**Initial Setup:**
+```
+✓ Living Room Camera (configured manually)
+```
+
+**After 60 minutes:**
+```
+✓ Living Room Camera
+🔔 New device discovered: "Backyard Camera" - [Add Device] [Dismiss]
+```
+
+**Click "Add Device":**
+```
+✓ Living Room Camera
+✓ Backyard Camera (automatically configured)
+```
+
+#### Scenario 2: Family Member Adds Camera
+
+Your family member installs a new Imou camera and adds it to your shared account:
+
+**Before:**
+```
+✓ Front Door Camera
+✓ Garage Camera
+```
+
+**Within 60 minutes, Home Assistant shows:**
+```
+Notification: "New Imou device discovered: Driveway Camera"
+```
+
+**Accept the notification:**
+```
+✓ Front Door Camera
+✓ Garage Camera
+✓ Driveway Camera (automatically added with entities)
+```
+
+No need to re-enter API credentials or manually configure anything!
+
+#### Scenario 3: Managing Multiple Locations
+
+If you manage cameras at multiple locations (home, office, vacation home):
+
+**Setup:**
+1. Add all devices to your Imou account
+2. Configure the integration once with your API credentials
+3. Select your first device during initial setup
+4. All other devices are **automatically discovered** within 60 minutes
+
+**Result:**
+```
+✓ Home - Living Room
+✓ Home - Kitchen
+✓ Home - Front Door
+✓ Office - Reception
+✓ Office - Conference Room
+✓ Cabin - Entrance
+```
+
+Each device is a separate entry you can:
+- Remove individually
+- Configure independently (different polling intervals, etc.)
+- Use in separate automations
+
+### Discovery Best Practices
+
+**When to disable discovery:**
+- You only have one camera and won't be adding more
+- You prefer manual control over all device additions
+- Testing/development environments
+
+**When to adjust the interval:**
+- **Increase to 24 hours** (86400s): If you rarely add devices and want minimal API calls
+- **Decrease to 15 minutes** (900s): If you're actively adding multiple devices
+- **Keep default** (60 minutes): Best balance for most users
+
+**Managing discovered devices:**
+- Each device appears as a separate integration entry
+- Remove devices individually from Settings → Devices & Services
+- Each device has its own configuration options
+- Discovery runs only from the first entry you configured
+
 ## 📊 Data Updates & Polling
 
 The integration uses a **coordinator-based polling system** to keep device data up-to-date while respecting API rate limits.

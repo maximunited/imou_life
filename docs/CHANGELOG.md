@@ -1,5 +1,88 @@
 # Changelog
 
+## [1.5.0] - 2026-05-04
+
+### Added
+
+- **Dynamic Device Discovery** 🔍 (#35)
+  - Automatic detection of new devices added to your Imou account
+  - Background polling every 60 minutes (configurable 5 min - 24 hours)
+  - User confirmation dialog before adding discovered devices
+  - Enabled by default for seamless user experience
+  - No manual re-configuration needed when adding new cameras
+  - **Advanced Feature**: Beyond Gold tier compliance requirements
+
+- **ImouDiscoveryCoordinator** - Background discovery service
+  - Polls Imou Cloud API for new devices at configurable intervals
+  - Runs only on first config entry to avoid duplicate API calls
+  - Automatically transfers to next entry if first entry is removed
+  - Graceful rate limit handling (logs debug, non-critical failure)
+  - Prevents duplicate entries via unique_id enforcement
+
+- **Discovery Config Flow Handlers**
+  - `async_step_discovery()`: Handles new device discovery events
+  - `async_step_discovery_confirm()`: Shows confirmation dialog with device info
+  - Preserves API credentials from first entry (no re-authentication)
+  - Custom device naming option during confirmation
+
+- **Discovery Configuration Options**
+  - "Enable automatic device discovery" toggle (default: enabled)
+  - "Discovery polling interval" slider (300-86400 seconds, default: 3600)
+  - Options visible only on first config entry
+  - Instant apply on reload
+
+### Documentation
+
+- **Multi-Device Management Guide** (README.md)
+  - New comprehensive section explaining automatic discovery
+  - "How It Works" with feature highlights
+  - Configuration instructions with screenshots
+  - Three detailed usage scenarios:
+    - Scenario 1: Adding Your Second Camera
+    - Scenario 2: Family Member Adds Camera
+    - Scenario 3: Managing Multiple Locations
+  - Best practices for discovery interval configuration
+  - When to disable discovery and adjust intervals
+
+### Tests
+
+- **Discovery Coordinator Test Suite** (`tests/unit/test_discovery_coordinator.py`)
+  - 13 comprehensive tests covering all discovery scenarios
+  - Tests: initialization, polling, new device detection, existing device filtering
+  - Rate limit handling, multi-device scenarios, error recovery
+  - All 13 tests passing ✓
+
+- **Discovery Config Flow Tests** (`tests/unit/test_config_flow_discovery.py`)
+  - 8 tests validating discovery flow behavior
+  - Tests: entry creation, default names, duplicate prevention, description placeholders
+  - Custom API URL handling, credentials preservation, sequential discoveries
+  - All 8 tests passing ✓
+
+- **Enhanced Mock Framework** (`tests/fixtures/mocks.py`)
+  - Discovery source detection in MockHomeAssistant
+  - Unique ID tracking to prevent duplicate test entries
+  - Discovery data flow between async_init and async_configure
+  - Entry tracking with _created_entries list
+  - Proper abort handling for already_configured scenarios
+
+### Changed
+
+- **First Entry Lifecycle Management**
+  - Discovery coordinator automatically transfers to next entry on removal
+  - Event-based cleanup system (`{DOMAIN}_entry_unload_{entry_id}`)
+  - Graceful shutdown when last entry is removed
+  - Maintains discovery continuity across entry changes
+
+### Technical
+
+- **Architecture**: Dynamic Config Entry Creation pattern (1:1 entry-to-device)
+- **Polling Strategy**: Conservative 60-minute default respects API rate limits
+- **User Control**: Full control via toggle and interval settings
+- **Backward Compatible**: Purely additive feature, no breaking changes
+- **Test Coverage**: 418 total tests passing (392 existing + 26 new)
+
+---
+
 ## [1.4.0] - 2026-05-03
 
 ### Added
