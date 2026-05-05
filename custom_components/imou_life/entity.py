@@ -1,7 +1,7 @@
 """entity sensor platform for Imou."""
 
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from homeassistant.helpers.entity import async_generate_entity_id
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
@@ -28,9 +28,9 @@ class ImouEntity(CoordinatorEntity):
         self,
         coordinator: "ImouDataUpdateCoordinator",
         config_entry: "ConfigEntry",
-        sensor_instance,
+        sensor_instance: Any,  # Type from external imouapi library
         entity_format: str,
-    ):
+    ) -> None:
         """Initialize."""
         super().__init__(coordinator)
         self.config_entry = config_entry
