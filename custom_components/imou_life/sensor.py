@@ -64,9 +64,9 @@ class ImouSensor(ImouEntity, DeviceClassMixin):
     @property
     def native_value(self):
         """Return the native value of the sensor."""
-        if self.sensor_instance.get_state() is None:
-            self.entity_available = False
-        return self.sensor_instance.get_state()
+        state = self.sensor_instance.get_state()
+        self.entity_available = state is not None
+        return state
 
     @property
     def extra_state_attributes(self):
