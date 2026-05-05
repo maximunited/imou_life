@@ -5,6 +5,7 @@
 import asyncio
 import logging
 
+from homeassistant.components import persistent_notification
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
@@ -79,11 +80,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     )
 
     # Initialize discovery coordinator on first entry only
+    # Discovery runs on the first config entry to avoid duplicate polling
+    # If first entry is removed, discovery automatically transfers to the next entry
     if _is_first_entry(hass, entry):
         discovery_coordinator = await _setup_discovery_coordinator(
             hass, api_client, entry
         )
-        # Store discovery coordinator separately
+        # Store discovery coordinator separately from device coordinators
+        # All entries share the same discovery coordinator instance
         hass.data.setdefault(DOMAIN, {})
         hass.data[DOMAIN]["discovery"] = discovery_coordinator
 
@@ -284,7 +288,8 @@ def _check_rate_limit_status(hass: HomeAssistant, entry: ConfigEntry, coordinato
             f"Error: {coordinator.last_error_message}"
         )
 
-        hass.components.persistent_notification.async_create(
+        persistent_notification.async_create(
+            hass,
             message,
             title="Imou API Rate Limit Detected",
             notification_id=notification_id,

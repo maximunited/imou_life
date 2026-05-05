@@ -71,6 +71,8 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
         self._sleep_lock = asyncio.Lock()
 
         # Hysteresis for battery optimization
+        # Prevents rapid on/off cycling when battery level hovers near threshold
+        # Sleep mode stays active until battery reaches threshold + 10%
         self._battery_hysteresis = 10  # Deactivate at threshold + 10%
 
         _LOGGER.debug(

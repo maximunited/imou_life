@@ -76,7 +76,7 @@ class TestImouAPIStatusSensor:
         mock_coordinator.last_successful_update = dt_util.utcnow()
         sensor = ImouAPIStatusSensor(mock_coordinator, config_entry)
 
-        assert sensor.state == "ok"
+        assert sensor.native_value == "ok"
 
     def test_sensor_state_rate_limited(self, mock_coordinator, config_entry):
         """Test sensor state when rate limited."""
@@ -84,7 +84,7 @@ class TestImouAPIStatusSensor:
         mock_coordinator.rate_limit_count = 3
         sensor = ImouAPIStatusSensor(mock_coordinator, config_entry)
 
-        assert sensor.state == "rate_limited"
+        assert sensor.native_value == "rate_limited"
 
     def test_sensor_state_error(self, mock_coordinator, config_entry):
         """Test sensor state when error occurs."""
@@ -92,13 +92,13 @@ class TestImouAPIStatusSensor:
         mock_coordinator.last_error_message = "Connection timeout"
         sensor = ImouAPIStatusSensor(mock_coordinator, config_entry)
 
-        assert sensor.state == "error"
+        assert sensor.native_value == "error"
 
     def test_sensor_state_unknown(self, mock_coordinator, config_entry):
         """Test sensor state when unknown."""
         sensor = ImouAPIStatusSensor(mock_coordinator, config_entry)
 
-        assert sensor.state == "unknown"
+        assert sensor.native_value == "unknown"
 
     def test_sensor_attributes_basic(self, mock_coordinator, config_entry):
         """Test basic sensor attributes."""

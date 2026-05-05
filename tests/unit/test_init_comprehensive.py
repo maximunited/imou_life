@@ -170,7 +170,8 @@ class TestCoordinatorSetup:
 class TestRateLimitNotification:
     """Test rate limit notification."""
 
-    def test_check_rate_limit_status_rate_limited(self):
+    @patch("custom_components.imou_life.persistent_notification.async_create")
+    def test_check_rate_limit_status_rate_limited(self, mock_async_create):
         """Test rate limit notification when rate limited."""
         hass = MagicMock()
         entry = MagicMock()
@@ -184,14 +185,16 @@ class TestRateLimitNotification:
         _check_rate_limit_status(hass, entry, coordinator)
 
         # Should create notification
-        hass.components.persistent_notification.async_create.assert_called_once()
-        call_args = hass.components.persistent_notification.async_create.call_args
-        assert "Test Camera" in call_args[0][0]
-        assert "Rate limit count: 5" in call_args[0][0]
+        mock_async_create.assert_called_once()
+        call_args = mock_async_create.call_args
+        assert call_args[0][0] == hass  # First arg is hass
+        assert "Test Camera" in call_args[0][1]  # Second arg is message
+        assert "Rate limit count: 5" in call_args[0][1]
         assert call_args[1]["title"] == "Imou API Rate Limit Detected"
         assert call_args[1]["notification_id"] == f"{DOMAIN}_test_entry_123_rate_limit"
 
-    def test_check_rate_limit_status_not_rate_limited(self):
+    @patch("custom_components.imou_life.persistent_notification.async_create")
+    def test_check_rate_limit_status_not_rate_limited(self, mock_async_create):
         """Test no notification when not rate limited."""
         hass = MagicMock()
         entry = MagicMock()
@@ -201,7 +204,7 @@ class TestRateLimitNotification:
         _check_rate_limit_status(hass, entry, coordinator)
 
         # Should not create notification
-        hass.components.persistent_notification.async_create.assert_not_called()
+        mock_async_create.assert_not_called()
 
 
 class TestAPIClientSetup:

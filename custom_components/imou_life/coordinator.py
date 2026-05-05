@@ -202,6 +202,8 @@ class ImouDataUpdateCoordinator(DataUpdateCoordinator):
         """Increase scan interval when rate limited to reduce API calls."""
         if not self._is_interval_adjusted:
             # Double the scan interval (e.g., 15min -> 30min)
+            # This reduces API call frequency to help stay under rate limits
+            # Interval auto-restores when rate limit clears (see _async_update_data)
             new_interval = self._original_scan_interval * 2
             self.update_interval = timedelta(seconds=new_interval)
             self._is_interval_adjusted = True
@@ -231,7 +233,7 @@ class ImouDiscoveryCoordinator(DataUpdateCoordinator):
         """Initialize discovery coordinator."""
         self.api_client = api_client
         self.entry = entry
-        self.discovered_devices = {}
+        self.discovered_devices: dict[str, ImouDevice] = {}
 
         # Get discovery interval from options
         discovery_interval = entry.options.get(

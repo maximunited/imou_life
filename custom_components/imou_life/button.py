@@ -58,7 +58,7 @@ class ImouButton(ImouEntity, ButtonEntity, DeviceClassMixin):
                     await entity.async_update_ha_state()
 
     @property
-    def device_class(self) -> str:
+    def device_class(self) -> str | None:  # type: ignore[override]
         """Device device class."""
         return self._get_device_class_by_name(
             self.sensor_instance.get_name(), self.DEVICE_CLASS_MAPPING
