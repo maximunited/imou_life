@@ -8,7 +8,7 @@
 # Maximum Python version: 3.13
 
 # HTTP and async dependencies
-# aiohttp version controlled by homeassistant dependency
+# aiohttp and httpx versions controlled by homeassistant dependency
 
 # Coverage
 coverage>=7.4.0; python_version>="3.11"
@@ -19,7 +19,6 @@ coverage>=7.4.0; python_version>="3.11"
 # Python 3.13: 2025.1.0+ (minimum supported)
 # Using 2024.2+ as it's compatible with Python 3.11-3.13
 homeassistant>=2024.2.0; python_version>="3.11"
-httpx>=0.24.0; python_version>="3.11"
 
 # Integration runtime dependencies
 imouapi==1.0.15; python_version>="3.11"
