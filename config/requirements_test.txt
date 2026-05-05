@@ -8,7 +8,7 @@
 # Maximum Python version: 3.13
 
 # HTTP and async dependencies
-aiohttp>=3.8.0; python_version>="3.11"
+# aiohttp version controlled by homeassistant dependency
 
 # Coverage
 coverage>=7.4.0; python_version>="3.11"
