@@ -39,8 +39,9 @@ updates:
       # Ignore Home Assistant major version updates (require manual testing)
       - dependency-name: "homeassistant"
         update-types: ["version-update:semver-major"]
-      # Ignore aiohttp updates (version controlled by homeassistant dependency)
+      # Ignore aiohttp and httpx updates (versions controlled by homeassistant dependency)
       - dependency-name: "aiohttp"
+      - dependency-name: "httpx"
     groups:
       python-dependencies:
         patterns:
