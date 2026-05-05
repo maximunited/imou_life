@@ -50,23 +50,23 @@ class ImouSensor(ImouEntity, DeviceClassMixin):
     }
 
     @property
-    def device_class(self) -> str:
+    def device_class(self) -> str | None:
         """Device device class."""
         return self._get_device_class_by_name(
             self.sensor_instance.get_name(), self.DEVICE_CLASS_MAPPING
         )
 
     @property
-    def unit_of_measurement(self) -> str:
+    def unit_of_measurement(self) -> str | None:
         """Provide unit of measurement."""
         return self.UNIT_MAPPING.get(self.sensor_instance.get_name())
 
     @property
-    def state(self):
-        """Return the state of the sensor."""
-        if self.sensor_instance.get_state() is None:
-            self.entity_available = False
-        return self.sensor_instance.get_state()
+    def native_value(self):
+        """Return the native value of the sensor."""
+        state = self.sensor_instance.get_state()
+        self.entity_available = state is not None
+        return state
 
     @property
     def extra_state_attributes(self):
@@ -122,8 +122,8 @@ class ImouAPIStatusSensor(CoordinatorEntity, SensorEntity):
         }
 
     @property
-    def state(self):
-        """Return the state of the sensor."""
+    def native_value(self):
+        """Return the native value of the sensor."""
         if self.coordinator.is_rate_limited:
             return "rate_limited"
         elif self.coordinator.last_error_type:

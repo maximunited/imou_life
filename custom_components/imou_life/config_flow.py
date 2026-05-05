@@ -6,7 +6,6 @@ from typing import Any
 import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import callback
-from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from imouapi.api import ImouAPIClient
 from imouapi.device import ImouDevice, ImouDiscoverService
@@ -322,15 +321,16 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
             errors=self._errors,
         )
 
-    async def async_step_reauth(self, entry_data: dict[str, Any]) -> FlowResult:
+    async def async_step_reauth(self, entry_data: dict[str, Any]):
         """Handle reauthentication."""
         self.entry = self.hass.config_entries.async_get_entry(self.context["entry_id"])
+        if self.entry is None:
+            return self.async_abort(reason="entry_not_found")
         return await self.async_step_reauth_confirm()
 
-    async def async_step_reauth_confirm(
-        self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    async def async_step_reauth_confirm(self, user_input: dict[str, Any] | None = None):
         """Confirm reauthentication."""
+        assert self.entry is not None  # Set in async_step_reauth
         errors = {}
 
         if user_input is not None:
@@ -423,9 +423,7 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
             },
         )
 
-    async def async_step_reconfigure(
-        self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    async def async_step_reconfigure(self, user_input: dict[str, Any] | None = None):
         """Handle reconfiguration of the integration."""
         # Get the entry being reconfigured from context
         entry = self.hass.config_entries.async_get_entry(self.context["entry_id"])
@@ -440,8 +438,9 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
 
     async def async_step_reconfigure_confirm(
         self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    ):
         """Allow user to reconfigure the integration."""
+        assert self.entry is not None  # Set in async_step_reconfigure
         errors: dict[str, str] = {}
 
         if user_input is not None:
@@ -574,12 +573,15 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
 
     async def async_step_repair_stale_device(
         self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    ):
         """Handle stale device repair."""
         if not isinstance(self.init_data, dict):
             return self.async_abort(reason="invalid_data")
 
         entry_id = self.init_data.get("entry_id")
+        if not isinstance(entry_id, str):
+            return self.async_abort(reason="invalid_data")
+
         entry = self.hass.config_entries.async_get_entry(entry_id)
 
         if not entry:

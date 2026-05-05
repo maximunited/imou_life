@@ -57,7 +57,7 @@ class TestImouSensor:
 
     def test_sensor_state(self, sensor):
         """Test sensor state property."""
-        assert sensor.state == 85
+        assert sensor.native_value == 85
 
     def test_sensor_unit_of_measurement(self, sensor):
         """Test sensor unit of measurement."""
