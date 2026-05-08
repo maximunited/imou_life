@@ -7,6 +7,14 @@ on:
       - 'custom_components/imou_life/**'
       - 'config/requirements*.txt'
       - '.github/workflows/ha-compatibility.yml'
+  # Run on pushes to master for post-merge validation
+  push:
+    branches:
+      - master
+    paths:
+      - 'custom_components/imou_life/**'
+      - 'config/requirements*.txt'
+      - '.github/workflows/ha-compatibility.yml'
   # Run weekly to catch breaking changes in HA dev
   schedule:
     - cron: '0 6 * * 1'  # 6 AM UTC every Monday
@@ -27,7 +35,7 @@ jobs:
             label: "Minimum"
 
           # Mid-2024 stable (represents typical user installations)
-          - ha-version: "2024.7.4"
+          - ha-version: "2024.8.3"
             python-version: "3.12"
             label: "Mid-2024"
 
@@ -62,10 +70,10 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ matrix.ha-version }}-${{ hashFiles('config/requirements_test.txt') }}
+          key: ${{ runner.os }}-${{ matrix.ha-version }}-${{ hashFiles('config/requirements_test.txt') }}
           restore-keys: |
-            ${{ runner.os }}-pip-${{ matrix.ha-version }}-
-            ${{ runner.os }}-pip-
+            ${{ runner.os }}-${{ matrix.ha-version }}-
+            ${{ runner.os }}-
 
       - name: Install dependencies
         run: |
@@ -110,6 +118,7 @@ jobs:
             --tb=short \
             --cov=custom_components/imou_life \
             --cov-append \
+            --cov-fail-under=70 \
             -v \
             tests/integration/
         continue-on-error: ${{ matrix.allow-failure || false }}
@@ -166,21 +175,21 @@ jobs:
       - name: Create compatibility report
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         run: |
-          cat << 'EOF' > compatibility-report.md
+          cat << EOF > compatibility-report.md
           ## Home Assistant Compatibility Report
 
           **Test Date**: $(date -u +"%Y-%m-%d %H:%M UTC")
           **Trigger**: ${{ github.event_name }}
 
           ### Tested Versions
-          - ✓ Minimum Supported: HA 2024.3.3 / Python 3.11
-          - ✓ Mid-Year: HA 2024.6.4 / Python 3.12
-          - ✓ Recent: HA 2024.11.3 / Python 3.12
-          - ✓ Latest Stable: HA 2024.12.5 / Python 3.13
-          - ⚠️ Development: HA dev / Python 3.13 (allowed to fail)
+          - Minimum Supported: HA 2024.3.3 / Python 3.11
+          - Mid-Year: HA 2024.8.3 / Python 3.12
+          - Late 2024: HA 2024.12.5 / Python 3.12
+          - Latest Stable: HA 2025.1.4 / Python 3.13
+          - Development: HA dev / Python 3.14 (allowed to fail)
 
           ### Status
-          See detailed results in Actions tab.
+          See detailed results in Actions tab for pass/fail status.
           EOF
 
           cat compatibility-report.md

@@ -27,7 +27,7 @@ comprehensive monitoring and control capabilities.
 
 ### System Requirements
 - **Home Assistant**: 2024.3.3 or later ([compatibility matrix](docs/COMPATIBILITY.md))
-- **Python**: 3.11, 3.12, 3.13, 3.14
+- **Python**: 3.11, 3.12, 3.13 (3.14 with HA dev only)
 - **Operating System**: Any platform supported by Home Assistant
 
 > **Note**: We test against multiple HA versions (2024.3.3 through latest) to ensure broad compatibility. See [COMPATIBILITY.md](docs/COMPATIBILITY.md) for details.
@@ -223,16 +223,16 @@ Download diagnostics from the device page in Home Assistant for detailed informa
 
 | Python Version | Home Assistant Version Required | Integration Support Status |
 |----------------|--------------------------------|----------------------------|
-| **3.11** | 2024.2+ | ✅ **Fully Supported** |
-| **3.12** | 2024.2+ | ✅ **Fully Supported** |
+| **3.11** | 2024.3.3+ | ✅ **Fully Supported** |
+| **3.12** | 2024.3.3+ | ✅ **Fully Supported** |
 | **3.13** | 2024.12+ | ✅ **Fully Supported** |
-| **3.14** | 2026.4+ | ✅ **Fully Supported** |
+| **3.14** | dev only | ⚠️ **Development Testing** |
 
-**Note**: Our integration requires Home Assistant 2024.2.0 or later. Python 3.11 and 3.12 work with HA 2024.2+, Python 3.13 requires HA 2024.12+, and Python 3.14 requires HA 2026.4+.
+**Note**: Our integration requires Home Assistant 2024.3.3 or later. Python 3.11 and 3.12 work with HA 2024.3.3+, Python 3.13 requires HA 2024.12+, and Python 3.14 is currently only tested with HA development versions.
 
 ### Tested Environments
-- **Home Assistant**: 2024.2.0 → 2026.4.4+ (latest)
-- **Python**: 3.11, 3.12, 3.13, 3.14
+- **Home Assistant**: 2024.3.3 → 2025.1.4 (stable), dev (nightly)
+- **Python**: 3.11, 3.12, 3.13 (3.14 with dev only)
 - **Platforms**: Windows, macOS, Linux, Docker, Home Assistant OS
 - **Architectures**: x86_64, ARM64, ARM32
 

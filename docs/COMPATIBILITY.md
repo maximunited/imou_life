@@ -9,7 +9,7 @@ The integration is automatically tested against:
 | Home Assistant Version | Python Version | Status | Notes |
 |------------------------|----------------|--------|-------|
 | 2024.3.3 | 3.11 | ✅ Supported | Minimum required version |
-| 2024.7.4 | 3.12 | ✅ Supported | Mid-2024 stable |
+| 2024.8.3 | 3.12 | ✅ Supported | Mid-2024 stable |
 | 2024.12.5 | 3.12 | ✅ Supported | Late 2024 stable |
 | 2025.1.4 | 3.13 | ✅ Supported | Latest stable |
 | dev (nightly) | 3.14 | ⚠️ Testing | Development version |
@@ -17,7 +17,7 @@ The integration is automatically tested against:
 ## Minimum Requirements
 
 - **Home Assistant**: 2024.3.3 or newer
-- **Python**: 3.11 - 3.14
+- **Python**: 3.11 - 3.13 (3.14 supported with HA dev only)
 - **imouapi**: 1.0.15
 
 ## Version Support Policy
@@ -37,9 +37,9 @@ Support for older versions may be dropped when:
 ## Compatibility Testing
 
 ### Automated Tests
-Every pull request and weekly scheduled runs test against:
+Pull requests that modify integration code and weekly scheduled runs test against:
 - Minimum supported version (2024.3.3)
-- Mid-2024 stable version (2024.7.4)
+- Mid-2024 stable version (2024.8.3)
 - Late 2024 stable (2024.12.5)
 - Current stable version (2025.1.4)
 - Development version (to catch upcoming breaking changes)
@@ -74,12 +74,12 @@ Before each release, we manually test:
 
 ---
 
-### Home Assistant 2024.6.x
+### Home Assistant 2024.6.x and 2024.7.x
 ⚠️ **Limited testing** - Known test environment issues
 
-**Reason**: HA 2024.6.x has josepy dependency conflicts in test environment
+**Reason**: HA 2024.6.x - 2024.7.x have josepy dependency conflicts in test environment
 
-**Note**: Integration works correctly, but automated CI testing is skipped for this version. Tested against 2024.7.4 instead.
+**Note**: Integration works correctly, but automated CI testing is skipped for these versions. Tested against 2024.8.3 instead.
 
 ---
 
