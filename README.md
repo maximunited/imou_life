@@ -238,9 +238,10 @@ Download diagnostics from the device page in Home Assistant for detailed informa
 
 ### CI/CD Testing
 - **GitHub Actions**: Automated testing on Python 3.11, 3.12, 3.13, 3.14
-- **HA Compatibility Matrix**: Tests against 5 HA versions (2024.3.3 → 2025.1.4 → dev)
+- **HA Compatibility Matrix**: Tests against 4 HA versions (2024.3.3, 2024.12.5, 2025.1.4, dev)
 - **Coverage**: Maintains ≥70% test coverage across all versions
 - **Quality**: Scrutinizer CI integration for code quality monitoring
+- **Note**: Mid-2024 versions (2024.6-2024.11) skipped in CI due to dependency conflicts; work fine in production
 
 ## ⚠️ Important Notes
 

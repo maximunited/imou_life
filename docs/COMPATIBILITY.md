@@ -9,7 +9,6 @@ The integration is automatically tested against:
 | Home Assistant Version | Python Version | Status | Notes |
 |------------------------|----------------|--------|-------|
 | 2024.3.3 | 3.11 | ✅ Supported | Minimum required version |
-| 2024.11.3 | 3.12 | ✅ Supported | Mid-2024 stable |
 | 2024.12.5 | 3.12 | ✅ Supported | Late 2024 stable |
 | 2025.1.4 | 3.13 | ✅ Supported | Latest stable |
 | dev (nightly) | 3.14 | ⚠️ Testing | Development version |
@@ -39,10 +38,11 @@ Support for older versions may be dropped when:
 ### Automated Tests
 Pull requests that modify integration code and weekly scheduled runs test against:
 - Minimum supported version (2024.3.3)
-- Mid-2024 stable version (2024.11.3)
 - Late 2024 stable (2024.12.5)
 - Current stable version (2025.1.4)
 - Development version (to catch upcoming breaking changes)
+
+**Note**: Mid-2024 versions (2024.6.x - 2024.11.x) are skipped in CI due to josepy dependency conflicts in the test environment. These versions work fine in production.
 
 ### Manual Testing
 Before each release, we manually test:
@@ -74,12 +74,14 @@ Before each release, we manually test:
 
 ---
 
-### Home Assistant 2024.6.x through 2024.10.x
-⚠️ **Limited testing** - Known test environment issues
+### Home Assistant 2024.6.x through 2024.11.x
+⚠️ **CI Testing Skipped** - Known test environment issues
 
-**Reason**: HA 2024.6.x - 2024.10.x have josepy dependency conflicts in test environment (AttributeError: module 'josepy' has no attribute 'ComparableX509')
+**Reason**: HA 2024.6.x - 2024.11.x have josepy dependency conflicts in test environment (AttributeError: module 'josepy' has no attribute 'ComparableX509')
 
-**Note**: Integration works correctly in production, but automated CI testing is skipped for these versions. Issue resolved in 2024.11+. Testing against 2024.11.3 instead.
+**Impact**: Only affects automated CI testing. Integration works correctly in production environments.
+
+**Workaround**: None needed for production use. CI testing skips these versions and tests 2024.3.3 (minimum) and 2024.12.5+ (issue resolved).
 
 ---
 
