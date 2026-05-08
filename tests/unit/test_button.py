@@ -74,6 +74,94 @@ class TestImouButton:
         await button.async_press()
         button.sensor_instance.async_press.assert_called_once()
 
+    @pytest.mark.asyncio
+    async def test_button_press_refresh_data(
+        self, mock_coordinator, mock_sensor_instance
+    ):
+        """Test pressing refreshData button triggers coordinator refresh."""
+        # Create refreshData button
+        mock_sensor_instance.get_name.return_value = "refreshData"
+        mock_sensor_instance.get_description.return_value = "Refresh Data"
+        mock_coordinator.async_request_refresh = AsyncMock()
+
+        button = ImouButton(
+            mock_coordinator, MOCK_CONFIG_ENTRY, mock_sensor_instance, "button.{}"
+        )
+
+        await button.async_press()
+
+        # Verify async_press was called
+        mock_sensor_instance.async_press.assert_called_once()
+        # Verify coordinator refresh was requested (covers line 48)
+        mock_coordinator.async_request_refresh.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_button_press_refresh_alarm(
+        self, mock_coordinator, mock_sensor_instance
+    ):
+        """Test pressing refreshAlarm button updates motion sensor."""
+        # Create refreshAlarm button
+        mock_sensor_instance.get_name.return_value = "refreshAlarm"
+        mock_sensor_instance.get_description.return_value = "Refresh Alarm"
+
+        # Mock the motionAlarm sensor
+        motion_sensor = MagicMock()
+        motion_sensor.async_update = AsyncMock()
+        mock_coordinator.device.get_sensor_by_name.return_value = motion_sensor
+
+        # Mock entity with motionAlarm sensor
+        mock_entity = MagicMock()
+        mock_entity.sensor_instance.get_name.return_value = "motionAlarm"
+        mock_entity.async_update_ha_state = AsyncMock()
+        mock_coordinator.entities = [mock_entity]
+
+        button = ImouButton(
+            mock_coordinator, MOCK_CONFIG_ENTRY, mock_sensor_instance, "button.{}"
+        )
+
+        await button.async_press()
+
+        # Verify async_press was called
+        mock_sensor_instance.async_press.assert_called_once()
+        # Verify motion sensor was updated (covers lines 52-54)
+        mock_coordinator.device.get_sensor_by_name.assert_called_once_with(
+            "motionAlarm"
+        )
+        motion_sensor.async_update.assert_called_once()
+        # Verify HA state was updated (covers lines 56-58)
+        mock_entity.async_update_ha_state.assert_called_once()
+
+    def test_entity_registry_enabled_default_disabled_buttons(self):
+        """Test that manual/advanced buttons are disabled by default."""
+        mock_coordinator = MagicMock()
+
+        # Test disabled buttons
+        for button_name in ["refreshData", "refreshAlarm", "restartDevice"]:
+            mock_sensor = MagicMock()
+            mock_sensor.get_name.return_value = button_name
+            mock_sensor.get_description.return_value = button_name
+
+            button = ImouButton(
+                mock_coordinator, MOCK_CONFIG_ENTRY, mock_sensor, "button.{}"
+            )
+
+            # These buttons should be disabled by default (covers lines 34-35)
+            assert button.entity_registry_enabled_default is False
+
+    def test_entity_registry_enabled_default_enabled_buttons(self):
+        """Test that other buttons are enabled by default."""
+        mock_coordinator = MagicMock()
+        mock_sensor = MagicMock()
+        mock_sensor.get_name.return_value = "someOtherButton"
+        mock_sensor.get_description.return_value = "Some Other Button"
+
+        button = ImouButton(
+            mock_coordinator, MOCK_CONFIG_ENTRY, mock_sensor, "button.{}"
+        )
+
+        # Other buttons should be enabled by default
+        assert button.entity_registry_enabled_default is True
+
     def test_button_device_info(self, button):
         """Test button device info."""
         device_info = button.device_info
