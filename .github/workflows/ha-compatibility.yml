@@ -27,7 +27,7 @@ jobs:
             label: "Minimum"
 
           # Mid-2024 stable (represents typical user installations)
-          - ha-version: "2024.6.4"
+          - ha-version: "2024.7.4"
             python-version: "3.12"
             label: "Mid-2024"
 
