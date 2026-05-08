@@ -12,7 +12,7 @@ The integration is automatically tested against:
 | 2024.6.4 | 3.12 | ✅ Supported | Mid-year stable |
 | 2024.11.3 | 3.12 | ✅ Supported | Recent stable |
 | 2024.12.5 | 3.13 | ✅ Supported | Latest stable |
-| dev (nightly) | 3.13 | ⚠️ Testing | Development version |
+| dev (nightly) | 3.14 | ⚠️ Testing | Development version |
 
 ## Minimum Requirements
 

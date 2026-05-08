@@ -43,7 +43,7 @@ jobs:
 
           # Development/nightly (catch upcoming breaking changes)
           - ha-version: "dev"
-            python-version: "3.13"
+            python-version: "3.14"
             label: "Development"
             allow-failure: true
 
@@ -85,7 +85,7 @@ jobs:
           pip install -r /tmp/requirements_test_no_ha.txt
 
           # Verify installation
-          python -c "import homeassistant; print(f'Home Assistant {homeassistant.__version__} installed')"
+          python -c "from homeassistant.const import __version__; print(f'Home Assistant {__version__} installed')"
 
       - name: Run unit tests
         run: |
@@ -111,9 +111,9 @@ jobs:
         run: |
           python -c "
           import sys
-          import homeassistant
+          from homeassistant.const import __version__
           print(f'Python: {sys.version}')
-          print(f'Home Assistant: {homeassistant.__version__}')
+          print(f'Home Assistant: {__version__}')
 
           # Test integration import
           import custom_components.imou_life

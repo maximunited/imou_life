@@ -10,7 +10,6 @@
 
                      ],
     "documentation":  "https://github.com/maximunited/imou_life",
-    "homeassistant":  "2024.3.3",
     "iot_class":  "cloud_polling",
     "issue_tracker":  "https://github.com/maximunited/imou_life/issues",
     "quality_scale":  "platinum",
