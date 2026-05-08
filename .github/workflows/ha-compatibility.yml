@@ -21,23 +21,23 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Minimum supported version (from manifest requirement)
-          - ha-version: "2024.3.3"
-            python-version: "3.11"
+          # Minimum supported version (1 year support window)
+          - ha-version: "2025.5.0"
+            python-version: "3.12"
             label: "Minimum"
 
-          # Mid-year stable (represents typical user installations)
-          - ha-version: "2024.6.4"
+          # Mid-year 2025 stable (represents typical user installations)
+          - ha-version: "2025.9.0"
             python-version: "3.12"
-            label: "Mid-2024"
+            label: "Mid-2025"
 
-          # Recent stable (common version)
-          - ha-version: "2024.11.3"
-            python-version: "3.12"
+          # Recent stable (early 2026)
+          - ha-version: "2026.1.0"
+            python-version: "3.13"
             label: "Recent"
 
           # Latest stable release
-          - ha-version: "2024.12.5"
+          - ha-version: "2026.4.0"
             python-version: "3.13"
             label: "Latest Stable"
 
