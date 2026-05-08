@@ -9,7 +9,7 @@ The integration is automatically tested against:
 | Home Assistant Version | Python Version | Status | Notes |
 |------------------------|----------------|--------|-------|
 | 2024.3.3 | 3.11 | ✅ Supported | Minimum required version |
-| 2024.10.4 | 3.12 | ✅ Supported | Mid-2024 stable |
+| 2024.11.3 | 3.12 | ✅ Supported | Mid-2024 stable |
 | 2024.12.5 | 3.12 | ✅ Supported | Late 2024 stable |
 | 2025.1.4 | 3.13 | ✅ Supported | Latest stable |
 | dev (nightly) | 3.14 | ⚠️ Testing | Development version |
@@ -39,7 +39,7 @@ Support for older versions may be dropped when:
 ### Automated Tests
 Pull requests that modify integration code and weekly scheduled runs test against:
 - Minimum supported version (2024.3.3)
-- Mid-2024 stable version (2024.10.4)
+- Mid-2024 stable version (2024.11.3)
 - Late 2024 stable (2024.12.5)
 - Current stable version (2025.1.4)
 - Development version (to catch upcoming breaking changes)
@@ -74,12 +74,12 @@ Before each release, we manually test:
 
 ---
 
-### Home Assistant 2024.6.x through 2024.9.x
+### Home Assistant 2024.6.x through 2024.10.x
 ⚠️ **Limited testing** - Known test environment issues
 
-**Reason**: HA 2024.6.x - 2024.9.x have josepy dependency conflicts in test environment (AttributeError: module 'josepy' has no attribute 'ComparableX509')
+**Reason**: HA 2024.6.x - 2024.10.x have josepy dependency conflicts in test environment (AttributeError: module 'josepy' has no attribute 'ComparableX509')
 
-**Note**: Integration works correctly in production, but automated CI testing is skipped for these versions. Tested against 2024.10.4 instead.
+**Note**: Integration works correctly in production, but automated CI testing is skipped for these versions. Issue resolved in 2024.11+. Testing against 2024.11.3 instead.
 
 ---
 
