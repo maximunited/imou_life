@@ -1,0 +1,249 @@
+# Mergify Configuration for Auto-merge
+# Docs: https://docs.mergify.com/
+
+queue_rules:
+  - name: default
+    merge_method: squash
+    commit_message_template: |
+      {{ title }} (#{{ number }})
+
+      {{ body }}
+    queue_conditions:
+      - check-success=Pre-commit
+      - check-success=quick-tests
+      - check-success=hacs
+      - check-success=hassfest
+      - check-success=validate
+      - check-success=Compatibility Test Summary
+
+pull_request_rules:
+  # Auto-merge Dependabot PRs for non-breaking updates
+  - name: Auto-merge Dependabot minor/patch updates
+    conditions:
+      - author=dependabot[bot]
+      - check-success=Pre-commit
+      - check-success=quick-tests
+      - check-success=hacs
+      - check-success=hassfest
+      - check-success=validate
+      - check-success=Compatibility Test Summary
+      # Only auto-merge patch/minor updates, not major versions
+      - or:
+        - title~=^chore\(deps\):.*minor
+        - title~=^chore\(deps\):.*patch
+        - title~=^chore\(deps-dev\):
+        - title~=^ci\(deps\):
+      # Ensure no conflicts
+      - -conflict
+      # Not a draft
+      - -draft
+    actions:
+      queue:
+        name: default
+      label:
+        add:
+          - auto-merge
+          - dependencies
+
+  # Auto-merge Dependabot with manual approval for major updates
+  - name: Queue Dependabot major updates with approval
+    conditions:
+      - author=dependabot[bot]
+      - title~=^chore\(deps\):.*major
+      - check-success=Pre-commit
+      - check-success=quick-tests
+      - check-success=hacs
+      - check-success=hassfest
+      - check-success=validate
+      - check-success=Compatibility Test Summary
+      - "#approved-reviews-by>=1"
+      - -conflict
+      - -draft
+    actions:
+      queue:
+        name: default
+      label:
+        add:
+          - auto-merge
+          - dependencies
+          - needs-review
+
+  # Auto-merge pre-commit.ci updates
+  - name: Auto-merge pre-commit.ci updates
+    conditions:
+      - author=pre-commit-ci[bot]
+      - check-success=Pre-commit
+      - check-success=quick-tests
+      - check-success=hacs
+      - check-success=hassfest
+      - check-success=validate
+      - -conflict
+      - -draft
+    actions:
+      queue:
+        name: default
+      label:
+        add:
+          - auto-merge
+          - dependencies
+
+  # Auto-approve Dependabot PRs (still need CI to pass for merge)
+  - name: Auto-approve Dependabot
+    conditions:
+      - author=dependabot[bot]
+      - -conflict
+      - -draft
+    actions:
+      review:
+        type: APPROVE
+        message: "Auto-approved: Dependabot update. Will auto-merge when CI passes."
+
+  # Add labels based on PR title (conventional commits)
+  - name: Label enhancement PRs
+    conditions:
+      - title~=^feat(\(.*\))?:
+    actions:
+      label:
+        add:
+          - enhancement
+
+  - name: Label bugfix PRs
+    conditions:
+      - title~=^fix(\(.*\))?:
+    actions:
+      label:
+        add:
+          - bug
+
+  - name: Label documentation PRs
+    conditions:
+      - title~=^docs(\(.*\))?:
+    actions:
+      label:
+        add:
+          - documentation
+
+  - name: Label refactoring PRs
+    conditions:
+      - title~=^refactor(\(.*\))?:
+    actions:
+      label:
+        add:
+          - refactoring
+
+  - name: Label test PRs
+    conditions:
+      - title~=^test(\(.*\))?:
+    actions:
+      label:
+        add:
+          - tests
+
+  - name: Label CI/CD PRs
+    conditions:
+      - title~=^ci(\(.*\))?:
+    actions:
+      label:
+        add:
+          - github-actions
+
+  # Request review from bots on new PRs
+  - name: Request CodeRabbit review
+    conditions:
+      - -author=dependabot[bot]
+      - -author=pre-commit-ci[bot]
+      - -draft
+      - -closed
+      - -merged
+    actions:
+      comment:
+        message: "@coderabbitai review"
+
+  # Delete branch after merge
+  - name: Delete head branch after merge
+    conditions:
+      - merged
+      - -closed
+    actions:
+      delete_head_branch: {}
+
+  # Warn about missing tests on feature PRs
+  - name: Warn about missing tests
+    conditions:
+      - title~=^feat(\(.*\))?:
+      - -files~=^tests/
+      - -label=skip-tests
+    actions:
+      comment:
+        message: |
+          ⚠️ This feature PR doesn't appear to include tests.
+
+          Please add tests in `tests/unit/` or `tests/integration/`, or add the `skip-tests` label if tests aren't needed.
+
+  # Automatic rebase for PRs with conflicts
+  - name: Auto-rebase on conflict
+    conditions:
+      - conflict
+      - -draft
+      - -merged
+      - -closed
+      - author=@maximunited
+    actions:
+      comment:
+        message: |
+          This PR has merge conflicts.
+
+          Comment `@mergifyio rebase` to automatically rebase this PR.
+
+  # Remind to update changelog for significant changes
+  - name: Remind about changelog
+    conditions:
+      - or:
+        - title~=^feat(\(.*\))?:
+        - title~=^fix(\(.*\))?:
+      - -files~=^docs/CHANGELOG\.md
+      - -label=skip-changelog
+      - -author=dependabot[bot]
+    actions:
+      comment:
+        message: |
+          📝 Don't forget to update `docs/CHANGELOG.md`!
+
+          If this change doesn't need a changelog entry, add the `skip-changelog` label.
+
+  # Auto-label PRs that modify workflows
+  - name: Label workflow changes
+    conditions:
+      - files~=^\.github/workflows/
+    actions:
+      label:
+        add:
+          - github-actions
+
+  # Auto-label PRs that modify dependencies
+  - name: Label dependency changes
+    conditions:
+      - files~=^config/requirements
+    actions:
+      label:
+        add:
+          - dependencies
+
+  # Auto-label PRs that modify docs
+  - name: Label documentation changes
+    conditions:
+      - files~=^docs/
+    actions:
+      label:
+        add:
+          - documentation
+
+  # Dismiss stale reviews when new commits are pushed
+  - name: Dismiss stale reviews
+    conditions:
+      - base=master
+    actions:
+      dismiss_reviews:
+        approved: true
+        changes_requested: false
+        message: "New commits pushed - dismissing approval"
