@@ -424,10 +424,16 @@ class TestImouBatteryBinarySensor:
 
     def test_charging_sensor_with_exception(self, charging_sensor, mock_coordinator):
         """Test _is_charging exception handling (covers lines 143-145)."""
-        # Mock coordinator.data to raise exception when accessed
-        type(mock_coordinator).data = property(
-            lambda self: (_ for _ in ()).throw(TypeError("Test error"))
-        )
+
+        # Create object that raises when accessed (instance-scoped, no class pollution)
+        class BadData:
+            def __getitem__(self, key):
+                raise TypeError("Test error")
+
+            def get(self, key, default=None):
+                raise TypeError("Test error")
+
+        mock_coordinator.data = BadData()
 
         # Should handle exception and return False
         assert charging_sensor.is_on is False
