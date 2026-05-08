@@ -338,3 +338,102 @@ class TestImouBatteryBinarySensor:
         assert "manufacturer" in device_info
         assert "sw_version" in device_info
         assert "hw_version" in device_info
+
+    def test_entity_registry_enabled_default_power_saving(
+        self, mock_coordinator, mock_config_entry
+    ):
+        """Test power_saving_active sensor disabled by default (covers line 91-92)."""
+        sensor = ImouBatteryBinarySensor(
+            mock_coordinator,
+            mock_config_entry,
+            "powerSavingActive",
+            "Power Saving Active",
+            "power_saving_active",
+        )
+        # Should be disabled by default (diagnostic sensor)
+        assert sensor.entity_registry_enabled_default is False
+
+    def test_entity_registry_enabled_default_sleep_mode(
+        self, mock_coordinator, mock_config_entry
+    ):
+        """Test sleep_mode_active sensor disabled by default (covers line 91-92)."""
+        sensor = ImouBatteryBinarySensor(
+            mock_coordinator,
+            mock_config_entry,
+            "sleepModeActive",
+            "Sleep Mode Active",
+            "sleep_mode_active",
+        )
+        # Should be disabled by default (diagnostic sensor)
+        assert sensor.entity_registry_enabled_default is False
+
+    def test_entity_registry_enabled_default_other_sensors(
+        self, mock_coordinator, mock_config_entry
+    ):
+        """Test other sensors enabled by default."""
+        # low_battery and charging should be enabled
+        for sensor_type, description, attribute_name in [
+            ("lowBattery", "Low Battery", "low_battery"),
+            ("charging", "Charging", "charging"),
+        ]:
+            sensor = ImouBatteryBinarySensor(
+                mock_coordinator,
+                mock_config_entry,
+                sensor_type,
+                description,
+                attribute_name,
+            )
+            # Should be enabled by default
+            assert sensor.entity_registry_enabled_default is True
+
+    def test_unknown_sensor_type_returns_false(
+        self, mock_coordinator, mock_config_entry
+    ):
+        """Test unknown sensor type returns False (covers line 107)."""
+        sensor = ImouBatteryBinarySensor(
+            mock_coordinator,
+            mock_config_entry,
+            "unknownSensorType",
+            "Unknown Sensor",
+            "unknown_sensor",
+        )
+        # Unknown sensor type should return False
+        assert sensor.is_on is False
+
+    def test_charging_sensor_with_battery_charging_true(
+        self, charging_sensor, mock_coordinator
+    ):
+        """Test _is_charging with battery_charging=True (covers lines 137-138)."""
+        mock_coordinator.data = {"battery_charging": True}
+        assert charging_sensor.is_on is True
+
+    def test_charging_sensor_with_battery_charging_false(
+        self, charging_sensor, mock_coordinator
+    ):
+        """Test _is_charging with battery_charging=False (covers lines 137-138)."""
+        mock_coordinator.data = {"battery_charging": False}
+        assert charging_sensor.is_on is False
+
+    def test_charging_sensor_without_battery_charging_key(
+        self, charging_sensor, mock_coordinator
+    ):
+        """Test _is_charging without battery_charging key (covers lines 140-141)."""
+        mock_coordinator.data = {"battery_level": 50}  # No battery_charging key
+        # Should return False when key not present
+        assert charging_sensor.is_on is False
+
+    def test_charging_sensor_with_exception(self, charging_sensor, mock_coordinator):
+        """Test _is_charging exception handling (covers lines 143-145)."""
+
+        # Create object that raises when accessed (instance-scoped, no class pollution)
+        class BadData:
+            def __getitem__(self, key):
+                raise TypeError("Test error")
+
+            def get(self, key, default=None):
+                raise TypeError("Test error")
+
+        mock_coordinator.data = BadData()
+
+        # Should handle exception and return False
+        assert charging_sensor.is_on is False

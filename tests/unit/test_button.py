@@ -72,7 +72,7 @@ class TestImouButton:
     async def test_button_press(self, button):
         """Test button press functionality."""
         await button.async_press()
-        button.sensor_instance.async_press.assert_called_once()
+        button.sensor_instance.async_press.assert_awaited_once()
 
     @pytest.mark.asyncio
     async def test_button_press_refresh_data(
@@ -90,10 +90,10 @@ class TestImouButton:
 
         await button.async_press()
 
-        # Verify async_press was called
-        mock_sensor_instance.async_press.assert_called_once()
+        # Verify async_press was awaited
+        mock_sensor_instance.async_press.assert_awaited_once()
         # Verify coordinator refresh was requested (covers line 48)
-        mock_coordinator.async_request_refresh.assert_called_once()
+        mock_coordinator.async_request_refresh.assert_awaited_once()
 
     @pytest.mark.asyncio
     async def test_button_press_refresh_alarm(
@@ -121,15 +121,15 @@ class TestImouButton:
 
         await button.async_press()
 
-        # Verify async_press was called
-        mock_sensor_instance.async_press.assert_called_once()
+        # Verify async_press was awaited
+        mock_sensor_instance.async_press.assert_awaited_once()
         # Verify motion sensor was updated (covers lines 52-54)
         mock_coordinator.device.get_sensor_by_name.assert_called_once_with(
             "motionAlarm"
         )
-        motion_sensor.async_update.assert_called_once()
+        motion_sensor.async_update.assert_awaited_once()
         # Verify HA state was updated (covers lines 56-58)
-        mock_entity.async_update_ha_state.assert_called_once()
+        mock_entity.async_update_ha_state.assert_awaited_once()
 
     def test_entity_registry_enabled_default_disabled_buttons(self):
         """Test that manual/advanced buttons are disabled by default."""

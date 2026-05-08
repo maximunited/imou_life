@@ -1,0 +1,45 @@
+# Qodo Code Review Configuration
+# Documentation: https://qodo-merge-docs.qodo.ai/usage-guide/configuration_options/
+
+[pr_reviewer]
+# Custom instructions for this project's conventions
+extra_instructions = """
+**Project-Specific Conventions**:
+
+1. **Test files (tests/**/*.py) intentionally omit type hints**
+   - All 206+ existing unit tests follow this pattern
+   - See test_camera.py, test_switch.py, test_binary_sensor.py for examples
+   - mypy is not enforced on test files via pre-commit
+   - This is standard pytest ecosystem practice
+
+2. **Black formatter is authoritative for line length**
+   - Maximum 88 characters (Black default)
+   - If Black accepts it, it's valid
+   - Don't flag lines that pass Black formatting
+
+3. **Test pattern consistency**
+   - New tests should match existing test style
+   - Prefer clarity over strict type safety in test code
+   - Focus reviews on production code quality
+
+**Focus Areas**:
+- Bugs in production code (custom_components/imou_life/*.py)
+- Security vulnerabilities
+- Logic errors and edge cases
+- Avoid style nitpicks in test files
+"""
+
+# Only show high-value suggestions
+num_code_suggestions = 3
+inline_comments = true
+
+# Don't require scores/tests review
+require_score_review = false
+require_tests_review = false
+
+# Clean up old comments
+remove_previous_review_comment = false
+
+[pr_code_suggestions]
+# Focus on production code improvements
+num_code_suggestions = 4
