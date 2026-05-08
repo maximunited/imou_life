@@ -1,6 +1,11 @@
 build:
+  environment:
+    python: 3.11
   nodes:
     analysis:
+      dependencies:
+        before:
+          - pip install -r config/requirements_test.txt
       tests:
         override:
           - py-scrutinizer-run
