@@ -62,10 +62,10 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-ha-${{ matrix.ha-version }}-py-${{ matrix.python-version }}-${{ hashFiles('config/requirements_test.txt') }}
+          key: ${{ runner.os }}-pip-${{ matrix.ha-version }}-${{ hashFiles('config/requirements_test.txt') }}
           restore-keys: |
-            ${{ runner.os }}-pip-ha-${{ matrix.ha-version }}-py-${{ matrix.python-version }}-
-            ${{ runner.os }}-pip-ha-${{ matrix.ha-version }}-
+            ${{ runner.os }}-pip-${{ matrix.ha-version }}-
+            ${{ runner.os }}-pip-
 
       - name: Install dependencies
         run: |
@@ -96,6 +96,8 @@ jobs:
             --asyncio-mode=auto \
             --durations=10 \
             --tb=short \
+            --cov=custom_components/imou_life \
+            --cov-fail-under=70 \
             -v \
             tests/unit/
         continue-on-error: ${{ matrix.allow-failure || false }}
@@ -106,6 +108,8 @@ jobs:
             --asyncio-mode=auto \
             --durations=10 \
             --tb=short \
+            --cov=custom_components/imou_life \
+            --cov-append \
             -v \
             tests/integration/
         continue-on-error: ${{ matrix.allow-failure || false }}
