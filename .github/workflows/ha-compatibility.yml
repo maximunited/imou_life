@@ -116,26 +116,19 @@ jobs:
 
       - name: Test component import
         run: |
-          python -c "
+          python - <<'PY'
           import sys
           from homeassistant.const import __version__
           print(f'Python: {sys.version}')
           print(f'Home Assistant: {__version__}')
-
-          # Test integration import
           import custom_components.imou_life
           print('✓ Integration imports successfully')
-
-          # Test coordinator import (uses HA's DataUpdateCoordinator)
           from custom_components.imou_life.coordinator import ImouDataUpdateCoordinator
           print('✓ Coordinator imports successfully')
-
-          # Test config flow (uses HA's config_entries)
           from custom_components.imou_life.config_flow import ImouFlowHandler
           print('✓ Config flow imports successfully')
-
           print('✓ All compatibility checks passed')
-          "
+          PY
 
       - name: Check for deprecated API usage
         run: |
