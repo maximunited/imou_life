@@ -127,7 +127,7 @@ jobs:
           print('✓ Coordinator imports successfully')
 
           # Test config flow (uses HA's config_entries)
-          from custom_components.imou_life.config_flow import ImouConfigFlow
+          from custom_components.imou_life.config_flow import ImouFlowHandler
           print('✓ Config flow imports successfully')
 
           print('✓ All compatibility checks passed')
