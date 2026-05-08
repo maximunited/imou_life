@@ -23,19 +23,6 @@ checks:
     code_rating: true
     duplicate_code: true
 
-coding_style:
-  python:
-    indentation:
-      general:
-        use_tabs: false
-        size: 4
-    spaces:
-      around_operators:
-        concatenation: true
-        assignment: true
-      other:
-        after_comma: true
-
 tools:
   external_code_coverage:
     timeout: 600
