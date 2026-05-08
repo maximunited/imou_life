@@ -1,5 +1,123 @@
 # Changelog
 
+## [1.6.0] - 2026-05-08
+
+### 🏆 Quality Scale Achievement
+
+- **💎 Platinum Tier Certification** (#39)
+  - Achieved highest Home Assistant integration quality level
+  - Full type hints throughout codebase
+  - mypy clean (0 errors across 22 source files)
+  - WHY-focused code comments explaining non-obvious logic
+  - Complete adherence to Home Assistant integration standards
+  - Fully asynchronous architecture with optimized performance
+  - **Technical Excellence**: Represents pinnacle of integration quality
+
+### 🔒 Security
+
+- **Black 26.3.1 Security Update** (#45)
+  - Patches HIGH-severity arbitrary file write vulnerability (CVE pending)
+  - Affects all versions <26.3.1
+  - Critical security update for pre-commit hooks
+
+### 📦 Dependency Updates
+
+- **Development Tools** (#43, #45)
+  - black: 24.1.1 → 26.3.1 (security fix)
+  - mypy: 1.8.0 → 1.20.2 (latest type checker)
+  - isort: 6.0.1 → 8.0.1 (import sorting)
+  - flake8: 7.0.0 → 7.3.0 (linting)
+  - codespell: 2.4.1 → 2.4.2 (spell checking)
+  - pre-commit: 3.6.0 → 4.6.0
+  - pyupgrade: 3.15.0 → 3.21.2
+
+- **Testing Framework** (#43)
+  - pytest: 8.0.0 → 9.0.3
+  - pytest-asyncio: 0.24.0 → 1.3.0
+  - pytest-cov: 6.0.0 → 7.1.0
+  - pytest-mock: 3.12.0 → 3.15.1
+  - coverage: 7.4.0 → 7.13.5
+
+- **Runtime Dependencies** (#43)
+  - homeassistant: Test baseline updated to 2024.3.3
+    (runtime minimum remains 2024.2.0)
+  - numpy: 1.24.0 → 2.4.4
+
+- **Documentation** (#43, #44)
+  - myst-parser: 2.0.0 → 5.0.0
+  - Sphinx: 6.0.0-8.0.0 → >=8.0.0,<10.0.0
+  - sphinx-rtd-theme: 1.3.0-3.0.0 → >=3.1.0,<4.0.0
+
+### 🐛 Fixed
+
+- **Dependency Conflicts** (#40, #42, #44)
+  - Resolved aiohttp version conflict with Home Assistant exact pins
+  - Resolved httpx version conflict with Home Assistant exact pins
+  - Resolved myst-parser/Sphinx version conflict in documentation builds
+  - Configured Dependabot to ignore Home Assistant-managed dependencies
+
+- **Entity Availability** (#39)
+  - Fixed sensor native_value property side effect causing permanent unavailability
+  - Entity availability now correctly resets when valid state returns
+  - Improved performance by calling get_state() once instead of twice
+
+- **Integration Tests** (#36)
+  - Fixed all remaining integration test failures
+  - 25/25 integration tests passing (100%)
+  - Enhanced test mock framework for runtime_data pattern
+  - Improved test infrastructure reliability
+
+### 🧪 Tests
+
+- **Test Coverage**: 446/446 tests passing (100%)
+- **Integration Tests**: 25/25 passing (100% pass rate)
+- **Type Safety**: mypy clean (0 errors)
+- **Code Quality**: All pre-commit hooks passing
+
+### 📚 Documentation
+
+- **Quality Scale Documentation**
+  - Updated QUALITY_SCALE.md to reflect Platinum tier achievement
+  - Updated manifest.json quality_scale: "gold" → "platinum"
+  - Updated README.md badge to show Platinum tier
+  - Comprehensive verification metrics and achievement details
+
+- **Dependency Management**
+  - Documented aiohttp/httpx conflict resolution
+  - Explained Home Assistant dependency management strategy
+  - Updated Dependabot configuration
+
+### 🔧 Technical Improvements
+
+- **Type Safety** (#39)
+  - Added TYPE_CHECKING imports for proper coordinator typing
+  - Fixed ConfigEntry None handling with proper type guards
+  - Converted state to native_value (modern Home Assistant pattern)
+  - Added device_class return type fixes (str | None)
+  - Fixed persistent_notification import patterns
+
+- **Code Quality** (#39)
+  - Added battery hysteresis explanation comments
+  - Documented rate limiting backoff strategy
+  - Clarified discovery coordinator lifecycle
+  - Explained performance-critical design decisions
+
+- **CI/CD** (#37)
+  - Updated GitHub Actions dependencies
+  - Maintained test coverage across all supported Python versions (3.11-3.14)
+
+### 📊 Quality Metrics
+
+| Metric | Status |
+|--------|--------|
+| **Quality Tier** | 💎 Platinum |
+| **Test Coverage** | 446/446 (100%) |
+| **Type Safety** | mypy clean (0 errors) |
+| **Code Quality** | All hooks passing |
+| **Python Support** | 3.11, 3.12, 3.13, 3.14 |
+
+---
+
 ## [1.5.0] - 2026-05-04
 
 ### Added

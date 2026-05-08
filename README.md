@@ -1,15 +1,15 @@
 
 # Imou Life - Home Assistant Integration
 
-[![Home Assistant](https://img.shields.io/badge/home%20assistant-%2341BDF5.svg?logo=home-assistant&logoColor=white)](https://www.home-assistant.io/)
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
-[![Imou Life](https://img.shields.io/badge/imou%20life-%23FF8C00.svg?logo=imou&logoColor=white)](https://open.imoulife.com/)
-[![Latest Release](https://img.shields.io/badge/release-1.5.0-blue.svg)](https://github.com/maximunited/imou_life/releases/tag/v1.5.0)
-[![Pre-release](https://img.shields.io/badge/pre--release-1.5.0-orange.svg)](https://github.com/maximunited/imou_life/releases/tag/v1.5.0)
-[![Quality Scale](https://img.shields.io/badge/quality%20scale-gold%20%E2%9C%85-gold.svg)](https://developers.home-assistant.io/docs/core/integration-quality-scale/)
-[![Buy Me a Coffee](https://img.shields.io/badge/buy%20me%20a%20coffee-%23FFDD00.svg?logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/maxim_united)
+[![Home Assistant][ha-badge]][ha-url]
+[![hacs_badge][hacs-badge]][hacs-url]
+[![Imou Life][imou-badge]][imou-url]
+[![Latest Release][release-badge]][release-url]
+[![Quality Scale][quality-badge]][quality-url]
+[![Buy Me a Coffee][coffee-badge]][coffee-url]
 
-A Home Assistant integration for Imou Life cameras and devices, providing comprehensive monitoring and control capabilities.
+A Home Assistant integration for Imou Life cameras and devices, providing
+comprehensive monitoring and control capabilities.
 
 ## 🚀 Features
 
@@ -256,3 +256,17 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 **Made with ❤️ for the Home Assistant community**
+
+<!-- Badge References -->
+[ha-badge]: https://img.shields.io/badge/home%20assistant-%2341BDF5.svg?logo=home-assistant&logoColor=white
+[ha-url]: https://www.home-assistant.io/
+[hacs-badge]: https://img.shields.io/badge/HACS-Custom-orange.svg
+[hacs-url]: https://github.com/custom-components/hacs
+[imou-badge]: https://img.shields.io/badge/imou%20life-%23FF8C00.svg?logo=imou&logoColor=white
+[imou-url]: https://open.imoulife.com/
+[release-badge]: https://img.shields.io/badge/release-1.6.0-blue.svg
+[release-url]: https://github.com/maximunited/imou_life/releases/tag/v1.6.0
+[quality-badge]: https://img.shields.io/badge/quality%20scale-platinum%20%F0%9F%92%8E-blueviolet.svg
+[quality-url]: https://developers.home-assistant.io/docs/core/integration-quality-scale/
+[coffee-badge]: https://img.shields.io/badge/buy%20me%20a%20coffee-%23FFDD00.svg?logo=buy-me-a-coffee&logoColor=black
+[coffee-url]: https://buymeacoffee.com/maxim_united
