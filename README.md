@@ -26,11 +26,11 @@ comprehensive monitoring and control capabilities.
 ## 📋 Requirements
 
 ### System Requirements
-- **Home Assistant**: 2025.5.0 or later ([compatibility matrix](docs/COMPATIBILITY.md))
-- **Python**: 3.12, 3.13, 3.14
+- **Home Assistant**: 2024.3.3 or later ([compatibility matrix](docs/COMPATIBILITY.md))
+- **Python**: 3.11, 3.12, 3.13, 3.14
 - **Operating System**: Any platform supported by Home Assistant
 
-> **Note**: We test against multiple HA versions (2025.5.0 through latest) to ensure broad compatibility. See [COMPATIBILITY.md](docs/COMPATIBILITY.md) for details.
+> **Note**: We test against multiple HA versions (2024.3.3 through latest) to ensure broad compatibility. See [COMPATIBILITY.md](docs/COMPATIBILITY.md) for details.
 
 ### Python Dependencies
 - **imouapi**: 1.0.15 (automatically installed with the integration)
@@ -223,21 +223,22 @@ Download diagnostics from the device page in Home Assistant for detailed informa
 
 | Python Version | Home Assistant Version Required | Integration Support Status |
 |----------------|--------------------------------|----------------------------|
-| **3.12** | 2025.5+ | ✅ **Fully Supported** |
-| **3.13** | 2025.5+ | ✅ **Fully Supported** |
-| **3.14** | 2026.1+ | ✅ **Fully Supported** |
+| **3.11** | 2024.2+ | ✅ **Fully Supported** |
+| **3.12** | 2024.2+ | ✅ **Fully Supported** |
+| **3.13** | 2024.12+ | ✅ **Fully Supported** |
+| **3.14** | 2026.4+ | ✅ **Fully Supported** |
 
-**Note**: Our integration requires Home Assistant 2025.5.0 or later with Python 3.12+. Python 3.14 is recommended for the latest features and best performance.
+**Note**: Our integration requires Home Assistant 2024.2.0 or later. Python 3.11 and 3.12 work with HA 2024.2+, Python 3.13 requires HA 2024.12+, and Python 3.14 requires HA 2026.4+.
 
 ### Tested Environments
-- **Home Assistant**: 2025.5.0 → 2026.4.0+ (latest)
-- **Python**: 3.12, 3.13, 3.14
+- **Home Assistant**: 2024.2.0 → 2026.4.4+ (latest)
+- **Python**: 3.11, 3.12, 3.13, 3.14
 - **Platforms**: Windows, macOS, Linux, Docker, Home Assistant OS
 - **Architectures**: x86_64, ARM64, ARM32
 
 ### CI/CD Testing
-- **GitHub Actions**: Automated testing on Python 3.12, 3.13, 3.14
-- **HA Compatibility Matrix**: Tests against 5 HA versions (2025.5.0 → 2026.4.0 → dev)
+- **GitHub Actions**: Automated testing on Python 3.11, 3.12, 3.13, 3.14
+- **HA Compatibility Matrix**: Tests against 5 HA versions (2024.3.3 → 2025.1.4 → dev)
 - **Coverage**: Maintains ≥70% test coverage across all versions
 - **Quality**: Scrutinizer CI integration for code quality monitoring
 
@@ -265,7 +266,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 <!-- Badge References -->
 [ha-badge]: https://img.shields.io/badge/home%20assistant-%2341BDF5.svg?logo=home-assistant&logoColor=white
 [ha-url]: https://www.home-assistant.io/
-[ha-compat-badge]: https://img.shields.io/badge/HA%20compatibility-2025.5.0%20%7C%202026.4.0%20%7C%20dev-blue
+[ha-compat-badge]: https://img.shields.io/badge/HA%20compatibility-2024.3.3%20%7C%202025.1.4%20%7C%20dev-blue
 [ha-compat-url]: https://github.com/maximunited/imou_life/blob/master/docs/COMPATIBILITY.md
 [hacs-badge]: https://img.shields.io/badge/HACS-Custom-orange.svg
 [hacs-url]: https://github.com/custom-components/hacs

@@ -8,15 +8,15 @@ The integration is automatically tested against:
 
 | Home Assistant Version | Python Version | Status | Notes |
 |------------------------|----------------|--------|-------|
-| 2025.5.0 | 3.12 | ✅ Supported | Minimum required version |
-| 2025.9.0 | 3.12 | ✅ Supported | Mid-2025 stable |
-| 2026.1.0 | 3.13 | ✅ Supported | Recent stable |
-| 2026.4.0 | 3.13 | ✅ Supported | Latest stable |
+| 2024.3.3 | 3.11 | ✅ Supported | Minimum required version |
+| 2024.6.4 | 3.12 | ✅ Supported | Mid-2024 stable |
+| 2024.12.5 | 3.12 | ✅ Supported | Late 2024 stable |
+| 2025.1.4 | 3.13 | ✅ Supported | Latest stable |
 | dev (nightly) | 3.14 | ⚠️ Testing | Development version |
 
 ## Minimum Requirements
 
-- **Home Assistant**: 2025.5.0 or newer
+- **Home Assistant**: 2024.3.3 or newer
 - **Python**: 3.11 - 3.14
 - **imouapi**: 1.0.15
 
@@ -25,8 +25,8 @@ The integration is automatically tested against:
 ### Supported Versions
 We actively support and test against:
 - **Current release**: Latest stable Home Assistant version
-- **Previous major releases**: Last 12 months of releases
-- **Minimum version**: 2025.5.0 (released May 2025)
+- **Previous major releases**: Last 3 major versions (approximately 9 months)
+- **Minimum version**: 2024.3.3 (released March 2024)
 
 ### End of Life
 Support for older versions may be dropped when:
@@ -38,10 +38,10 @@ Support for older versions may be dropped when:
 
 ### Automated Tests
 Every pull request and weekly scheduled runs test against:
-- Minimum supported version (2025.5.0)
-- Mid-2025 stable version (2025.9.0)
-- Recent stable (2026.1.0)
-- Current stable version (2026.4.0)
+- Minimum supported version (2024.3.3)
+- Mid-2024 stable version (2024.6.4)
+- Late 2024 stable (2024.12.5)
+- Current stable version (2025.1.4)
 - Development version (to catch upcoming breaking changes)
 
 ### Manual Testing
@@ -54,23 +54,23 @@ Before each release, we manually test:
 
 ## Known Compatibility Issues
 
-### Home Assistant 2025.4.x and earlier
-❌ **Not supported** - Requires HA 2025.5.0 or newer
+### Home Assistant 2024.2.x and earlier
+❌ **Not supported** - Requires HA 2024.3.3 or newer
 
-**Reason**: Integration targets current Home Assistant APIs and features
+**Reason**: Uses APIs introduced in HA 2024.3.x
 
-**Workaround**: Upgrade Home Assistant to 2025.5.0 or newer
+**Workaround**: Upgrade Home Assistant to 2024.3.3 or newer
 
 ---
 
-### Python 3.11 and earlier
-❌ **Not supported** - Requires Python 3.12 or newer
+### Python 3.10 and earlier
+❌ **Not supported** - Requires Python 3.11 or newer
 
 **Reason**:
-- Uses Python 3.12+ features
-- Home Assistant 2025.5+ requires Python 3.12+
+- Uses Python 3.11+ type hints syntax
+- Dependencies require Python 3.11+
 
-**Workaround**: Upgrade to Home Assistant running on Python 3.12+
+**Workaround**: Upgrade to Home Assistant running on Python 3.11+
 
 ---
 
