@@ -177,3 +177,4 @@ Thumbs.db
 # Claude Code skills - junctions/symlinks
 .claude/skills/karpathy
 .claude/settings.local.json
+coverage.json

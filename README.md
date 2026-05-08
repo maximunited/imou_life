@@ -6,6 +6,8 @@
 [![Imou Life][imou-badge]][imou-url]
 [![Latest Release][release-badge]][release-url]
 [![Quality Scale][quality-badge]][quality-url]
+[![Coverage Status][coverage-badge]][coverage-url]
+[![Code Quality][scrutinizer-badge]][scrutinizer-url]
 [![Buy Me a Coffee][coffee-badge]][coffee-url]
 
 A Home Assistant integration for Imou Life cameras and devices, providing
@@ -268,5 +270,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 [release-url]: https://github.com/maximunited/imou_life/releases/tag/v1.6.0
 [quality-badge]: https://img.shields.io/badge/quality%20scale-platinum%20%F0%9F%92%8E-blueviolet.svg
 [quality-url]: https://developers.home-assistant.io/docs/core/integration-quality-scale/
+[coverage-badge]: https://coveralls.io/repos/github/maximunited/imou_life/badge.svg?branch=master
+[coverage-url]: https://coveralls.io/github/maximunited/imou_life?branch=master
+[scrutinizer-badge]: https://scrutinizer-ci.com/g/maximunited/imou_life/badges/quality-score.png?b=master
+[scrutinizer-url]: https://scrutinizer-ci.com/g/maximunited/imou_life/?branch=master
 [coffee-badge]: https://img.shields.io/badge/buy%20me%20a%20coffee-%23FFDD00.svg?logo=buy-me-a-coffee&logoColor=black
 [coffee-url]: https://buymeacoffee.com/maxim_united
