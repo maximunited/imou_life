@@ -80,6 +80,9 @@ jobs:
             pip install homeassistant==${{ matrix.ha-version }}
           fi
 
+          # Install integration requirements
+          pip install imouapi==1.0.15
+
           # Install test dependencies (excluding homeassistant to avoid conflicts)
           grep -v "^homeassistant" config/requirements_test.txt > /tmp/requirements_test_no_ha.txt
           pip install -r /tmp/requirements_test_no_ha.txt
