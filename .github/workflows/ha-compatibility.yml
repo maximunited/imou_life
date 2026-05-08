@@ -35,7 +35,7 @@ jobs:
             label: "Minimum"
 
           # Mid-2024 stable (represents typical user installations)
-          - ha-version: "2024.8.3"
+          - ha-version: "2024.10.4"
             python-version: "3.12"
             label: "Mid-2024"
 
@@ -183,7 +183,7 @@ jobs:
 
           ### Tested Versions
           - Minimum Supported: HA 2024.3.3 / Python 3.11
-          - Mid-Year: HA 2024.8.3 / Python 3.12
+          - Mid-Year: HA 2024.10.4 / Python 3.12
           - Late 2024: HA 2024.12.5 / Python 3.12
           - Latest Stable: HA 2025.1.4 / Python 3.13
           - Development: HA dev / Python 3.14 (allowed to fail)
