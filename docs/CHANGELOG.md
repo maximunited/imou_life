@@ -6,7 +6,8 @@
 
 - **💎 Platinum Tier Certification** (#39)
   - Achieved highest Home Assistant integration quality level
-  - Full type hints throughout codebase - mypy clean (0 errors across 22 source files)
+  - Full type hints throughout codebase
+  - mypy clean (0 errors across 22 source files)
   - WHY-focused code comments explaining non-obvious logic
   - Complete adherence to Home Assistant integration standards
   - Fully asynchronous architecture with optimized performance
@@ -38,13 +39,14 @@
   - coverage: 7.4.0 → 7.13.5
 
 - **Runtime Dependencies** (#43)
-  - homeassistant: 2024.2.0 → 2024.3.3
+  - homeassistant: Test baseline updated to 2024.3.3
+    (runtime minimum remains 2024.2.0)
   - numpy: 1.24.0 → 2.4.4
 
 - **Documentation** (#43, #44)
   - myst-parser: 2.0.0 → 5.0.0
-  - Sphinx: 6.0.0-8.0.0 → 8.0.0-10.0.0
-  - sphinx-rtd-theme: 1.3.0-3.0.0 → 3.1.0-4.0.0
+  - Sphinx: 6.0.0-8.0.0 → 8.0.0-<10.0.0
+  - sphinx-rtd-theme: 1.3.0-3.0.0 → 3.1.0-<4.0.0
 
 ### 🐛 Fixed
 
