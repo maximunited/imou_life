@@ -113,8 +113,10 @@ class TestStaleDeviceHandling:
                             event.data = {"entry_id": "test_entry_123"}
                             await stale_device_callback(event)
 
-                            # Verify repair issue was created
-                            mock_create_repair.assert_called_once()
+                            # Verify repair issue was created with correct arguments
+                            mock_create_repair.assert_called_once_with(
+                                hass, entry, coordinator_mock
+                            )
 
 
 class TestDiscoveryHandling:
@@ -225,16 +227,20 @@ class TestDiscoveryHandling:
     async def test_transfer_discovery_no_remaining_entries(self):
         """Test discovery transfer when no remaining entries."""
         hass = MagicMock()
+        hass.config_entries.async_reload = AsyncMock()
         entry = MagicMock()
         entry.entry_id = "entry_1"
 
         hass.config_entries.async_entries.return_value = [entry]
-        hass.data = {DOMAIN: {"discovery": MagicMock()}}
+        original_discovery = MagicMock()
+        hass.data = {DOMAIN: {"discovery": original_discovery}}
 
         await _transfer_discovery_to_next_entry(hass, entry)
 
-        # Should not crash when no remaining entries
-        # Function should exit early
+        # Should not reload any entries when no remaining entries
+        hass.config_entries.async_reload.assert_not_called()
+        # Discovery should remain unchanged (not set to None)
+        assert hass.data[DOMAIN]["discovery"] is original_discovery
 
     @pytest.mark.asyncio
     async def test_cleanup_discovery_callback_triggered(self):
