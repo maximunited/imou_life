@@ -2,6 +2,7 @@
 # Imou Life - Home Assistant Integration
 
 [![Home Assistant][ha-badge]][ha-url]
+[![HA Compatibility][ha-compat-badge]][ha-compat-url]
 [![hacs_badge][hacs-badge]][hacs-url]
 [![Imou Life][imou-badge]][imou-url]
 [![Latest Release][release-badge]][release-url]
@@ -25,9 +26,11 @@ comprehensive monitoring and control capabilities.
 ## 📋 Requirements
 
 ### System Requirements
-- **Home Assistant**: 2024.2.0 or later
+- **Home Assistant**: 2024.3.3 or later ([compatibility matrix](docs/COMPATIBILITY.md))
 - **Python**: 3.11, 3.12, 3.13, 3.14
 - **Operating System**: Any platform supported by Home Assistant
+
+> **Note**: We test against multiple HA versions (2024.3.3 through latest) to ensure broad compatibility. See [COMPATIBILITY.md](docs/COMPATIBILITY.md) for details.
 
 ### Python Dependencies
 - **imouapi**: 1.0.15 (automatically installed with the integration)
@@ -262,6 +265,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 <!-- Badge References -->
 [ha-badge]: https://img.shields.io/badge/home%20assistant-%2341BDF5.svg?logo=home-assistant&logoColor=white
 [ha-url]: https://www.home-assistant.io/
+[ha-compat-badge]: https://img.shields.io/badge/HA%20compatibility-2024.3.3%20%7C%202024.12.5%20%7C%20dev-blue
+[ha-compat-url]: https://github.com/maximunited/imou_life/blob/master/docs/COMPATIBILITY.md
 [hacs-badge]: https://img.shields.io/badge/HACS-Custom-orange.svg
 [hacs-url]: https://github.com/custom-components/hacs
 [imou-badge]: https://img.shields.io/badge/imou%20life-%23FF8C00.svg?logo=imou&logoColor=white
