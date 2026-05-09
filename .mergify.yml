@@ -10,11 +10,8 @@ queue_rules:
       {{ body }}
     queue_conditions:
       - check-success=Pre-commit
-      - check-success=quick-tests
-      - check-success=hacs
-      - check-success=hassfest
-      - check-success=validate
-      - check-success=Compatibility Test Summary
+      - check-success=HACS
+      - check-success=Hassfest
 
 pull_request_rules:
   # Auto-merge Dependabot PRs for patch updates
@@ -22,14 +19,12 @@ pull_request_rules:
     conditions:
       - author=dependabot[bot]
       - check-success=Pre-commit
-      - check-success=quick-tests
-      - check-success=hacs
-      - check-success=hassfest
-      - check-success=validate
-      - check-success=Compatibility Test Summary
+      - check-success=HACS
+      - check-success=Hassfest
       - "title~=chore\\(deps\\):.*patch"
       - -conflict
       - -draft
+      - -label=do-not-merge
     actions:
       queue:
         name: default
@@ -43,14 +38,12 @@ pull_request_rules:
     conditions:
       - author=dependabot[bot]
       - check-success=Pre-commit
-      - check-success=quick-tests
-      - check-success=hacs
-      - check-success=hassfest
-      - check-success=validate
-      - check-success=Compatibility Test Summary
+      - check-success=HACS
+      - check-success=Hassfest
       - "title~=chore\\(deps\\):.*minor"
       - -conflict
       - -draft
+      - -label=do-not-merge
     actions:
       queue:
         name: default
@@ -59,19 +52,18 @@ pull_request_rules:
           - auto-merge
           - dependencies
 
-  # Auto-merge Dependabot PRs for dev dependencies
+  # Auto-merge Dependabot PRs for dev dependencies (no major versions)
   - name: Auto-merge Dependabot dev dependencies
     conditions:
       - author=dependabot[bot]
       - check-success=Pre-commit
-      - check-success=quick-tests
-      - check-success=hacs
-      - check-success=hassfest
-      - check-success=validate
-      - check-success=Compatibility Test Summary
+      - check-success=HACS
+      - check-success=Hassfest
       - "title~=chore\\(deps-dev\\):"
+      - "-title~=major"
       - -conflict
       - -draft
+      - -label=do-not-merge
     actions:
       queue:
         name: default
@@ -80,19 +72,18 @@ pull_request_rules:
           - auto-merge
           - dependencies
 
-  # Auto-merge Dependabot PRs for CI dependencies
+  # Auto-merge Dependabot PRs for CI dependencies (no major versions)
   - name: Auto-merge Dependabot CI dependencies
     conditions:
       - author=dependabot[bot]
       - check-success=Pre-commit
-      - check-success=quick-tests
-      - check-success=hacs
-      - check-success=hassfest
-      - check-success=validate
-      - check-success=Compatibility Test Summary
+      - check-success=HACS
+      - check-success=Hassfest
       - "title~=ci\\(deps\\):"
+      - "-title~=major"
       - -conflict
       - -draft
+      - -label=do-not-merge
     actions:
       queue:
         name: default
@@ -107,14 +98,12 @@ pull_request_rules:
       - author=dependabot[bot]
       - "title~=chore\\(deps\\):.*major"
       - check-success=Pre-commit
-      - check-success=quick-tests
-      - check-success=hacs
-      - check-success=hassfest
-      - check-success=validate
-      - check-success=Compatibility Test Summary
+      - check-success=HACS
+      - check-success=Hassfest
       - "#approved-reviews-by>=1"
       - -conflict
       - -draft
+      - -label=do-not-merge
     actions:
       queue:
         name: default
@@ -129,12 +118,11 @@ pull_request_rules:
     conditions:
       - author=pre-commit-ci[bot]
       - check-success=Pre-commit
-      - check-success=quick-tests
-      - check-success=hacs
-      - check-success=hassfest
-      - check-success=validate
+      - check-success=HACS
+      - check-success=Hassfest
       - -conflict
       - -draft
+      - -label=do-not-merge
     actions:
       queue:
         name: default
@@ -143,16 +131,17 @@ pull_request_rules:
           - auto-merge
           - dependencies
 
-  # Auto-approve Dependabot PRs (still need CI to pass for merge)
+  # Auto-approve Dependabot PRs (except major updates)
   - name: Auto-approve Dependabot
     conditions:
       - author=dependabot[bot]
+      - "-title~=major"
       - -conflict
       - -draft
     actions:
       review:
         type: APPROVE
-        message: "Auto-approved: Dependabot update. Will auto-merge when CI passes."
+        message: "Auto-approved: Dependabot update (non-major)."
 
   # Add labels based on PR title (conventional commits)
   - name: Label enhancement PRs
@@ -234,7 +223,7 @@ pull_request_rules:
         message: |
           ⚠️ This feature PR doesn't appear to include tests.
 
-          Please add tests in `tests/unit/` or `tests/integration/`, or add the `skip-tests` label if tests aren't needed.
+          Please add tests or add the `skip-tests` label.
 
   # Automatic rebase for PRs with conflicts
   - name: Auto-rebase on conflict
@@ -243,13 +232,13 @@ pull_request_rules:
       - -draft
       - -merged
       - -closed
-      - author=@maximunited
+      - author=maximunited
     actions:
       comment:
         message: |
           This PR has merge conflicts.
 
-          Comment `@mergifyio rebase` to automatically rebase this PR.
+          Comment `@mergifyio rebase` to automatically rebase.
 
   # Remind to update changelog for feature changes
   - name: Remind about changelog for features
@@ -263,7 +252,7 @@ pull_request_rules:
         message: |
           📝 Don't forget to update `docs/CHANGELOG.md`!
 
-          If this change doesn't need a changelog entry, add the `skip-changelog` label.
+          Add `skip-changelog` label if not needed.
 
   # Remind to update changelog for bugfixes
   - name: Remind about changelog for bugfixes
@@ -277,7 +266,7 @@ pull_request_rules:
         message: |
           📝 Don't forget to update `docs/CHANGELOG.md`!
 
-          If this change doesn't need a changelog entry, add the `skip-changelog` label.
+          Add `skip-changelog` label if not needed.
 
   # Auto-label PRs that modify workflows
   - name: Label workflow changes
@@ -307,9 +296,10 @@ pull_request_rules:
           - documentation
 
   # Dismiss stale reviews when new commits are pushed
-  - name: Dismiss stale reviews
+  - name: Dismiss stale reviews on new commits
     conditions:
       - base=master
+      - "#commits-behind>0"
     actions:
       dismiss_reviews:
         approved: true

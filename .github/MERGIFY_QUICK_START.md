@@ -58,9 +58,9 @@ Comment on any PR:
 ## 🔧 Override Auto-merge
 
 To prevent auto-merge on a specific PR:
-1. Convert to **Draft**
-2. Add label: `do-not-merge`
-3. Request changes in a review
+1. Add label: `do-not-merge` (auto-merge disabled)
+2. Convert to **Draft** (blocks all auto-actions)
+3. Request changes in a review (blocks merge)
 
 ## 📖 Full Documentation
 

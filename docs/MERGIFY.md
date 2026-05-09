@@ -85,13 +85,11 @@ You can control Mergify with comments on PRs:
 For auto-merge to work, these checks must pass:
 
 1. ✅ **Pre-commit** - Code formatting and linting
-2. ✅ **quick-tests** - Fast unit tests on Python 3.13
-3. ✅ **hacs** - HACS validation
-4. ✅ **hassfest** - Home Assistant validation
-5. ✅ **validate** - Comprehensive validation (all tests + coverage)
-6. ✅ **Compatibility Test Summary** - HA version compatibility matrix
+2. ✅ **HACS** - HACS validation
+3. ✅ **Hassfest** - Home Assistant validation
 
-**Note:** The compatibility matrix only runs on PRs that modify integration code. Pre-commit.ci PRs skip this check.
+**Note:** Only core checks are required (Pre-commit, HACS, Hassfest).
+Optional checks like the compatibility matrix are not required.
 
 ## Bypassing Auto-merge
 
@@ -141,13 +139,13 @@ Common reasons:
 ### Forcing a recheck
 
 Comment on the PR:
-```
+```text
 @mergifyio refresh
 ```
 
 ### Disabling Mergify temporarily
 
-Add the `mergify-disable` label to a PR.
+Add the `do-not-merge` label to prevent auto-merge on a specific PR.
 
 ## Monitoring
 
