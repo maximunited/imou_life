@@ -298,7 +298,6 @@ pull_request_rules:
   - name: Dismiss stale reviews on new commits
     conditions:
       - base=master
-      - "#commits-behind>0"
     actions:
       dismiss_reviews:
         approved: true

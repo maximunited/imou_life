@@ -15,20 +15,20 @@ Mergify will **automatically merge** PRs when ALL conditions are met:
 #### Dependabot Updates
 
 **Minor/Patch updates** (auto-merge without approval):
-- ✅ All CI checks pass (Pre-commit, tests, HACS, hassfest, validate, compatibility)
+- ✅ All CI checks pass (Pre-commit, HACS, Hassfest)
 - ✅ No merge conflicts
 - ✅ Not a draft PR
-- ✅ Title matches: `chore(deps): ... minor|patch` or `ci(deps):`
+- ✅ Title matches: `chore(deps): ... minor|patch`, `chore(deps-dev):`, or `ci(deps):`
 
 **Major updates** (requires approval):
-- ✅ All CI checks pass
+- ✅ All CI checks pass (Pre-commit, HACS, Hassfest)
 - ✅ At least 1 approval from a maintainer
 - ✅ No merge conflicts
 - ✅ Not a draft PR
 
 #### Pre-commit.ci Updates
 
-- ✅ All CI checks pass (except compatibility matrix - not triggered on pre-commit updates)
+- ✅ All CI checks pass (Pre-commit, HACS, Hassfest)
 - ✅ No merge conflicts
 - ✅ Not a draft PR
 
