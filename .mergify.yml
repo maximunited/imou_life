@@ -27,7 +27,7 @@ pull_request_rules:
       - check-success=hassfest
       - check-success=validate
       - check-success=Compatibility Test Summary
-      - title~=chore\(deps\):.*patch
+      - "title~=chore\\(deps\\):.*patch"
       - -conflict
       - -draft
     actions:
@@ -48,7 +48,7 @@ pull_request_rules:
       - check-success=hassfest
       - check-success=validate
       - check-success=Compatibility Test Summary
-      - title~=chore\(deps\):.*minor
+      - "title~=chore\\(deps\\):.*minor"
       - -conflict
       - -draft
     actions:
@@ -69,7 +69,7 @@ pull_request_rules:
       - check-success=hassfest
       - check-success=validate
       - check-success=Compatibility Test Summary
-      - title~=chore\(deps-dev\):
+      - "title~=chore\\(deps-dev\\):"
       - -conflict
       - -draft
     actions:
@@ -90,7 +90,7 @@ pull_request_rules:
       - check-success=hassfest
       - check-success=validate
       - check-success=Compatibility Test Summary
-      - title~=ci\(deps\):
+      - "title~=ci\\(deps\\):"
       - -conflict
       - -draft
     actions:
@@ -105,7 +105,7 @@ pull_request_rules:
   - name: Queue Dependabot major updates with approval
     conditions:
       - author=dependabot[bot]
-      - title~=chore\(deps\):.*major
+      - "title~=chore\\(deps\\):.*major"
       - check-success=Pre-commit
       - check-success=quick-tests
       - check-success=hacs
