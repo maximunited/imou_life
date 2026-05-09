@@ -17,8 +17,8 @@ queue_rules:
       - check-success=Compatibility Test Summary
 
 pull_request_rules:
-  # Auto-merge Dependabot PRs for non-breaking updates
-  - name: Auto-merge Dependabot minor/patch updates
+  # Auto-merge Dependabot PRs for patch updates
+  - name: Auto-merge Dependabot patch updates
     conditions:
       - author=dependabot[bot]
       - check-success=Pre-commit
@@ -27,15 +27,71 @@ pull_request_rules:
       - check-success=hassfest
       - check-success=validate
       - check-success=Compatibility Test Summary
-      # Only auto-merge patch/minor updates, not major versions
-      - or:
-        - title~=^chore\(deps\):.*minor
-        - title~=^chore\(deps\):.*patch
-        - title~=^chore\(deps-dev\):
-        - title~=^ci\(deps\):
-      # Ensure no conflicts
+      - title~=chore\(deps\):.*patch
       - -conflict
-      # Not a draft
+      - -draft
+    actions:
+      queue:
+        name: default
+      label:
+        add:
+          - auto-merge
+          - dependencies
+
+  # Auto-merge Dependabot PRs for minor updates
+  - name: Auto-merge Dependabot minor updates
+    conditions:
+      - author=dependabot[bot]
+      - check-success=Pre-commit
+      - check-success=quick-tests
+      - check-success=hacs
+      - check-success=hassfest
+      - check-success=validate
+      - check-success=Compatibility Test Summary
+      - title~=chore\(deps\):.*minor
+      - -conflict
+      - -draft
+    actions:
+      queue:
+        name: default
+      label:
+        add:
+          - auto-merge
+          - dependencies
+
+  # Auto-merge Dependabot PRs for dev dependencies
+  - name: Auto-merge Dependabot dev dependencies
+    conditions:
+      - author=dependabot[bot]
+      - check-success=Pre-commit
+      - check-success=quick-tests
+      - check-success=hacs
+      - check-success=hassfest
+      - check-success=validate
+      - check-success=Compatibility Test Summary
+      - title~=chore\(deps-dev\):
+      - -conflict
+      - -draft
+    actions:
+      queue:
+        name: default
+      label:
+        add:
+          - auto-merge
+          - dependencies
+
+  # Auto-merge Dependabot PRs for CI dependencies
+  - name: Auto-merge Dependabot CI dependencies
+    conditions:
+      - author=dependabot[bot]
+      - check-success=Pre-commit
+      - check-success=quick-tests
+      - check-success=hacs
+      - check-success=hassfest
+      - check-success=validate
+      - check-success=Compatibility Test Summary
+      - title~=ci\(deps\):
+      - -conflict
       - -draft
     actions:
       queue:
@@ -49,7 +105,7 @@ pull_request_rules:
   - name: Queue Dependabot major updates with approval
     conditions:
       - author=dependabot[bot]
-      - title~=^chore\(deps\):.*major
+      - title~=chore\(deps\):.*major
       - check-success=Pre-commit
       - check-success=quick-tests
       - check-success=hacs
@@ -101,7 +157,7 @@ pull_request_rules:
   # Add labels based on PR title (conventional commits)
   - name: Label enhancement PRs
     conditions:
-      - title~=^feat(\(.*\))?:
+      - title~=^feat
     actions:
       label:
         add:
@@ -109,7 +165,7 @@ pull_request_rules:
 
   - name: Label bugfix PRs
     conditions:
-      - title~=^fix(\(.*\))?:
+      - title~=^fix
     actions:
       label:
         add:
@@ -117,7 +173,7 @@ pull_request_rules:
 
   - name: Label documentation PRs
     conditions:
-      - title~=^docs(\(.*\))?:
+      - title~=^docs
     actions:
       label:
         add:
@@ -125,7 +181,7 @@ pull_request_rules:
 
   - name: Label refactoring PRs
     conditions:
-      - title~=^refactor(\(.*\))?:
+      - title~=^refactor
     actions:
       label:
         add:
@@ -133,7 +189,7 @@ pull_request_rules:
 
   - name: Label test PRs
     conditions:
-      - title~=^test(\(.*\))?:
+      - title~=^test
     actions:
       label:
         add:
@@ -141,7 +197,7 @@ pull_request_rules:
 
   - name: Label CI/CD PRs
     conditions:
-      - title~=^ci(\(.*\))?:
+      - title~=^ci
     actions:
       label:
         add:
@@ -170,7 +226,7 @@ pull_request_rules:
   # Warn about missing tests on feature PRs
   - name: Warn about missing tests
     conditions:
-      - title~=^feat(\(.*\))?:
+      - title~=^feat
       - -files~=^tests/
       - -label=skip-tests
     actions:
@@ -195,12 +251,24 @@ pull_request_rules:
 
           Comment `@mergifyio rebase` to automatically rebase this PR.
 
-  # Remind to update changelog for significant changes
-  - name: Remind about changelog
+  # Remind to update changelog for feature changes
+  - name: Remind about changelog for features
     conditions:
-      - or:
-        - title~=^feat(\(.*\))?:
-        - title~=^fix(\(.*\))?:
+      - title~=^feat
+      - -files~=^docs/CHANGELOG\.md
+      - -label=skip-changelog
+      - -author=dependabot[bot]
+    actions:
+      comment:
+        message: |
+          📝 Don't forget to update `docs/CHANGELOG.md`!
+
+          If this change doesn't need a changelog entry, add the `skip-changelog` label.
+
+  # Remind to update changelog for bugfixes
+  - name: Remind about changelog for bugfixes
+    conditions:
+      - title~=^fix
       - -files~=^docs/CHANGELOG\.md
       - -label=skip-changelog
       - -author=dependabot[bot]
