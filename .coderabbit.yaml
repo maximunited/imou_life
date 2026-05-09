@@ -1,0 +1,130 @@
+# CodeRabbit Configuration
+# Documentation: https://docs.coderabbit.ai/guides/configure-coderabbit
+
+language: en-US
+early_access: false
+reviews:
+  profile: chill
+  request_changes_workflow: false
+  high_level_summary: true
+  poem: false
+  review_status: true
+  collapse_walkthrough: false
+  auto_review:
+    enabled: true
+    auto_incremental_review: true
+    ignore_title_keywords:
+      - WIP
+      - DO NOT REVIEW
+  path_instructions:
+    - path: "**/.mergify.yml"
+      instructions: |
+        This is a Mergify configuration file, NOT a GitHub Actions workflow.
+
+        **Critical: Avoid these false positives:**
+        1. Do NOT suggest GitHub Actions syntax (github.event_name, github.event.action, etc.)
+        2. Do NOT suggest conditions that don't exist in Mergify's syntax
+        3. Mergify conditions use different syntax than GitHub Actions
+        4. The dismiss_reviews action automatically triggers on new commits - no special condition needed
+
+        **Valid Mergify condition types:**
+        - author=username (NOT author=@username)
+        - base=branch
+        - title~=regex
+        - files~=pattern
+        - check-success=CheckName
+        - -conflict, -draft, -closed, -merged, -label=name
+        - #approved-reviews-by>=N
+
+        **Do NOT suggest:**
+        - github.event.* conditions (these are GitHub Actions, not Mergify)
+        - #commits-behind>0 (not a valid Mergify condition)
+        - Event-based triggers (Mergify uses PR state, not events)
+
+        **Mergify actions that auto-trigger:**
+        - dismiss_reviews: Automatically runs when new commits are pushed
+        - delete_head_branch: Runs when PR is merged (no event condition needed)
+
+        When reviewing this file, verify suggestions against official Mergify docs:
+        https://docs.mergify.com/configuration/conditions/
+        https://docs.mergify.com/configuration/actions/
+
+    - path: "**/*.py"
+      instructions: |
+        This is a Home Assistant custom integration for Imou Life cameras.
+
+        **Standards:**
+        - Follow Home Assistant coding standards
+        - Use async/await for all I/O operations
+        - Type hints required (mypy compliance)
+        - Docstrings for public methods
+        - Log with _LOGGER from logging.getLogger(__package__)
+
+        **Integration-specific:**
+        - Config flow VERSION must be incremented if data structure changes
+        - All strings need translation keys in translations/*.json
+        - Use proper device classes for entities
+        - Handle ImouException from imouapi library
+
+    - path: "tests/**/*.py"
+      instructions: |
+        Test files for Home Assistant custom integration.
+
+        **Testing standards:**
+        - Use pytest-homeassistant-custom-component utilities
+        - Mock the imouapi library using fixtures
+        - Minimum 70% test coverage required
+        - Both unit tests (tests/unit/) and integration tests (tests/integration/)
+
+        **Focus areas:**
+        - Verify actual functionality, not just test infrastructure
+        - Integration test failures may be mock issues, not code bugs
+        - Check tests/integration/KNOWN_ISSUES.md for documented test issues
+
+    - path: "docs/**/*.md"
+      instructions: |
+        Documentation files for the integration.
+
+        **Standards:**
+        - Follow Keep a Changelog format for CHANGELOG.md
+        - Use clear, user-friendly language
+        - Include code examples where applicable
+        - Maintain consistency with actual implementation
+
+        **Avoid:**
+        - Don't flag line length in markdown (88 char limit is for code only)
+        - Don't require language specifiers for simple command examples
+
+    - path: ".github/workflows/**/*.yml"
+      instructions: |
+        GitHub Actions workflow files.
+
+        **These ARE GitHub Actions workflows:**
+        - github.event.* syntax is VALID here
+        - Use proper GitHub Actions syntax and conditions
+        - Verify job/check names match what's used in Mergify config
+
+        **Check names must match:**
+        - Workflow job names become check names
+        - Mergify references these in check-success conditions
+        - Inconsistency breaks auto-merge functionality
+
+chat:
+  auto_reply: true
+
+knowledge_base:
+  opt_out: false
+  learnings:
+    scope: auto
+
+# File patterns to ignore completely
+ignore:
+  - "*.min.js"
+  - "*.min.css"
+  - "package-lock.json"
+  - "yarn.lock"
+  - "*.pyc"
+  - "__pycache__/**"
+  - ".pytest_cache/**"
+  - "htmlcov/**"
+  - ".coverage"
