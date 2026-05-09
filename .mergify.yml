@@ -208,9 +208,8 @@ pull_request_rules:
   - name: Delete head branch after merge
     conditions:
       - merged
-      - -closed
     actions:
-      delete_head_branch: {}
+      delete_head_branch:
 
   # Warn about missing tests on feature PRs
   - name: Warn about missing tests
