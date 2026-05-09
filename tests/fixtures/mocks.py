@@ -148,6 +148,8 @@ class MockHomeAssistant:
             data = kwargs.get("data", {})
 
             if context.get("source") == "discovery":
+                # Initialize variables for Scrutinizer
+                device_name = "Unknown"
                 device_id = data.get("device_id", "unknown")
 
                 # Check if this unique_id is already configured
@@ -165,7 +167,6 @@ class MockHomeAssistant:
                     self._discovery_data = data
 
                     # Discovery flow - return discovery_confirm step with placeholders
-                    device_name = "Unknown"
                     device = data.get("device")
                     if device and hasattr(device, "get_name"):
                         try:
@@ -208,6 +209,9 @@ class MockHomeAssistant:
             # Check if this is a discovery flow being confirmed
             if self._discovery_data is not None:
                 # Discovery flow - create entry immediately with discovery data
+                # Initialize for Scrutinizer
+                from custom_components.imou_life.const import DOMAIN
+
                 device_name = user_input.get("device_name", "Unknown")
                 if not device_name:
                     device = self._discovery_data.get("device")
@@ -227,8 +231,6 @@ class MockHomeAssistant:
                 }
 
                 # Track this entry as created
-                from custom_components.imou_life.const import DOMAIN
-
                 entry = MockConfigEntry(
                     domain=DOMAIN,
                     data=entry_data,
@@ -272,10 +274,7 @@ class MockHomeAssistant:
                     )
                 else:
                     # Determine step_id based on flow mode
-                    if self._flow_mode == "discover":
-                        step_id = "discover"
-                    else:
-                        step_id = "manual"
+                    step_id = "discover" if self._flow_mode == "discover" else "manual"
 
                     mock_response.__getitem__ = MagicMock(
                         side_effect=lambda key: {
@@ -293,6 +292,7 @@ class MockHomeAssistant:
                     CONF_DEVICE_ID,
                     CONF_DEVICE_NAME,
                     CONF_DISCOVERED_DEVICE,
+                    DOMAIN,
                 )
 
                 device_name = user_input.get(CONF_DEVICE_NAME, "Unknown Device")
@@ -343,8 +343,6 @@ class MockHomeAssistant:
                 }
 
                 # Create the config entry
-                from custom_components.imou_life.const import DOMAIN
-
                 entry = MockConfigEntry(
                     domain=DOMAIN,
                     data=entry_data,
