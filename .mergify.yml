@@ -1,0 +1,305 @@
+# Mergify Configuration for Auto-merge
+# Docs: https://docs.mergify.com/
+
+queue_rules:
+  - name: default
+    merge_method: squash
+    commit_message_template: |
+      {{ title }} (#{{ number }})
+
+      {{ body }}
+    queue_conditions:
+      - check-success=Pre-commit
+      - check-success=HACS
+      - check-success=Hassfest
+
+pull_request_rules:
+  # Auto-merge Dependabot PRs for patch updates
+  - name: Auto-merge Dependabot patch updates
+    conditions:
+      - author=dependabot[bot]
+      - check-success=Pre-commit
+      - check-success=HACS
+      - check-success=Hassfest
+      - "title~=chore\\(deps\\):.*patch"
+      - -conflict
+      - -draft
+      - -label=do-not-merge
+    actions:
+      queue:
+        name: default
+      label:
+        add:
+          - auto-merge
+          - dependencies
+
+  # Auto-merge Dependabot PRs for minor updates
+  - name: Auto-merge Dependabot minor updates
+    conditions:
+      - author=dependabot[bot]
+      - check-success=Pre-commit
+      - check-success=HACS
+      - check-success=Hassfest
+      - "title~=chore\\(deps\\):.*minor"
+      - -conflict
+      - -draft
+      - -label=do-not-merge
+    actions:
+      queue:
+        name: default
+      label:
+        add:
+          - auto-merge
+          - dependencies
+
+  # Auto-merge Dependabot PRs for dev dependencies (no major versions)
+  - name: Auto-merge Dependabot dev dependencies
+    conditions:
+      - author=dependabot[bot]
+      - check-success=Pre-commit
+      - check-success=HACS
+      - check-success=Hassfest
+      - "title~=chore\\(deps-dev\\):"
+      - "-title~=major"
+      - -conflict
+      - -draft
+      - -label=do-not-merge
+    actions:
+      queue:
+        name: default
+      label:
+        add:
+          - auto-merge
+          - dependencies
+
+  # Auto-merge Dependabot PRs for CI dependencies (no major versions)
+  - name: Auto-merge Dependabot CI dependencies
+    conditions:
+      - author=dependabot[bot]
+      - check-success=Pre-commit
+      - check-success=HACS
+      - check-success=Hassfest
+      - "title~=ci\\(deps\\):"
+      - "-title~=major"
+      - -conflict
+      - -draft
+      - -label=do-not-merge
+    actions:
+      queue:
+        name: default
+      label:
+        add:
+          - auto-merge
+          - dependencies
+
+  # Auto-merge Dependabot with manual approval for major updates
+  - name: Queue Dependabot major updates with approval
+    conditions:
+      - author=dependabot[bot]
+      - "title~=chore\\(deps\\):.*major"
+      - check-success=Pre-commit
+      - check-success=HACS
+      - check-success=Hassfest
+      - "#approved-reviews-by>=1"
+      - -conflict
+      - -draft
+      - -label=do-not-merge
+    actions:
+      queue:
+        name: default
+      label:
+        add:
+          - auto-merge
+          - dependencies
+          - needs-review
+
+  # Auto-merge pre-commit.ci updates
+  - name: Auto-merge pre-commit.ci updates
+    conditions:
+      - author=pre-commit-ci[bot]
+      - check-success=Pre-commit
+      - check-success=HACS
+      - check-success=Hassfest
+      - -conflict
+      - -draft
+      - -label=do-not-merge
+    actions:
+      queue:
+        name: default
+      label:
+        add:
+          - auto-merge
+          - dependencies
+
+  # Auto-approve Dependabot PRs (except major updates)
+  - name: Auto-approve Dependabot
+    conditions:
+      - author=dependabot[bot]
+      - "-title~=major"
+      - -conflict
+      - -draft
+    actions:
+      review:
+        type: APPROVE
+        message: "Auto-approved: Dependabot update (non-major)."
+
+  # Add labels based on PR title (conventional commits)
+  - name: Label enhancement PRs
+    conditions:
+      - title~=^feat
+    actions:
+      label:
+        add:
+          - enhancement
+
+  - name: Label bugfix PRs
+    conditions:
+      - title~=^fix
+    actions:
+      label:
+        add:
+          - bug
+
+  - name: Label documentation PRs
+    conditions:
+      - title~=^docs
+    actions:
+      label:
+        add:
+          - documentation
+
+  - name: Label refactoring PRs
+    conditions:
+      - title~=^refactor
+    actions:
+      label:
+        add:
+          - refactoring
+
+  - name: Label test PRs
+    conditions:
+      - title~=^test
+    actions:
+      label:
+        add:
+          - tests
+
+  - name: Label CI/CD PRs
+    conditions:
+      - title~=^ci
+    actions:
+      label:
+        add:
+          - github-actions
+
+  # Request review from bots on new PRs
+  - name: Request CodeRabbit review
+    conditions:
+      - -author=dependabot[bot]
+      - -author=pre-commit-ci[bot]
+      - -draft
+      - -closed
+      - -merged
+    actions:
+      comment:
+        message: "@coderabbitai review"
+
+  # Delete branch after merge
+  - name: Delete head branch after merge
+    conditions:
+      - merged
+    actions:
+      delete_head_branch:
+
+  # Warn about missing tests on feature PRs
+  - name: Warn about missing tests
+    conditions:
+      - title~=^feat
+      - -files~=^tests/
+      - -label=skip-tests
+    actions:
+      comment:
+        message: |
+          ⚠️ This feature PR doesn't appear to include tests.
+
+          Please add tests or add the `skip-tests` label.
+
+  # Automatic rebase for PRs with conflicts
+  - name: Auto-rebase on conflict
+    conditions:
+      - conflict
+      - -draft
+      - -merged
+      - -closed
+      - author=maximunited
+    actions:
+      comment:
+        message: |
+          This PR has merge conflicts.
+
+          Comment `@mergifyio rebase` to automatically rebase.
+
+  # Remind to update changelog for feature changes
+  - name: Remind about changelog for features
+    conditions:
+      - title~=^feat
+      - -files~=^docs/CHANGELOG\.md
+      - -label=skip-changelog
+      - -author=dependabot[bot]
+    actions:
+      comment:
+        message: |
+          📝 Don't forget to update `docs/CHANGELOG.md`!
+
+          Add `skip-changelog` label if not needed.
+
+  # Remind to update changelog for bugfixes
+  - name: Remind about changelog for bugfixes
+    conditions:
+      - title~=^fix
+      - -files~=^docs/CHANGELOG\.md
+      - -label=skip-changelog
+      - -author=dependabot[bot]
+    actions:
+      comment:
+        message: |
+          📝 Don't forget to update `docs/CHANGELOG.md`!
+
+          Add `skip-changelog` label if not needed.
+
+  # Auto-label PRs that modify workflows
+  - name: Label workflow changes
+    conditions:
+      - files~=^\.github/workflows/
+    actions:
+      label:
+        add:
+          - github-actions
+
+  # Auto-label PRs that modify dependencies
+  - name: Label dependency changes
+    conditions:
+      - files~=^config/requirements
+    actions:
+      label:
+        add:
+          - dependencies
+
+  # Auto-label PRs that modify docs
+  - name: Label documentation changes
+    conditions:
+      - files~=^docs/
+    actions:
+      label:
+        add:
+          - documentation
+
+  # Dismiss stale reviews when new commits are pushed
+  - name: Dismiss stale reviews on new commits
+    conditions:
+      - base=master
+    actions:
+      dismiss_reviews:
+        approved: true
+        changes_requested: false
+        message: "New commits pushed - dismissing approval"
