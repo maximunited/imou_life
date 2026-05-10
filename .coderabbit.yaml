@@ -17,15 +17,15 @@ reviews:
       - WIP
       - DO NOT REVIEW
   path_filters:
-    - "!*.min.js"
-    - "!*.min.css"
-    - "!package-lock.json"
-    - "!yarn.lock"
-    - "!*.pyc"
-    - "!__pycache__/**"
-    - "!.pytest_cache/**"
-    - "!htmlcov/**"
-    - "!.coverage"
+    - "!**/*.min.js"
+    - "!**/*.min.css"
+    - "!**/package-lock.json"
+    - "!**/yarn.lock"
+    - "!**/*.pyc"
+    - "!**/__pycache__/**"
+    - "!**/.pytest_cache/**"
+    - "!**/htmlcov/**"
+    - "!**/.coverage"
   path_instructions:
     - path: "**/.mergify.yml"
       instructions: |
