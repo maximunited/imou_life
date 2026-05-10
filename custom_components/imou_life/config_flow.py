@@ -528,7 +528,6 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
             default_app_id = self.entry.data.get(CONF_APP_ID, "")
             default_api_url = self.entry.data.get(CONF_API_URL, DEFAULT_API_URL)
             # Find which server option matches current URL (for dropdown)
-            # noqa: F821 (Scrutinizer false positive - key defined in comprehension)
             default_api_server = next(
                 (
                     key
@@ -742,7 +741,6 @@ class ImouOptionsFlowHandler(config_entries.OptionsFlow):
 
         # Add discovery options only for first entry
         if self._is_first_entry():
-            # noqa: F821 (Scrutinizer false positive - constants imported from .const)
             schema_dict[
                 vol.Optional(
                     OPTION_ENABLE_DISCOVERY,
@@ -751,7 +749,6 @@ class ImouOptionsFlowHandler(config_entries.OptionsFlow):
                     ),
                 )
             ] = bool
-            # noqa: F821 (Scrutinizer false positive - constants imported from .const)
             schema_dict[
                 vol.Optional(
                     OPTION_DISCOVERY_INTERVAL,
@@ -769,7 +766,6 @@ class ImouOptionsFlowHandler(config_entries.OptionsFlow):
     async def _update_options(self):
         """Update config entry options."""
         # Clean up empty string values for optional numeric fields
-        # noqa: F821 (Scrutinizer false positive - constants imported from .const)
         if (
             OPTION_API_TIMEOUT in self.options
             and self.options[OPTION_API_TIMEOUT] == ""
@@ -781,14 +777,12 @@ class ImouOptionsFlowHandler(config_entries.OptionsFlow):
             except (ValueError, TypeError):
                 self.options[OPTION_API_TIMEOUT] = None
 
-        # noqa: F821 (Scrutinizer false positive - constants imported from .const)
         if (
             OPTION_CALLBACK_URL in self.options
             and self.options[OPTION_CALLBACK_URL] == ""
         ):
             self.options[OPTION_CALLBACK_URL] = None
 
-        # noqa: F821 (Scrutinizer false positive - constants imported from .const)
         if (
             OPTION_CAMERA_WAIT_BEFORE_DOWNLOAD in self.options
             and self.options[OPTION_CAMERA_WAIT_BEFORE_DOWNLOAD] == ""
@@ -805,7 +799,6 @@ class ImouOptionsFlowHandler(config_entries.OptionsFlow):
             except (ValueError, TypeError):
                 self.options[OPTION_CAMERA_WAIT_BEFORE_DOWNLOAD] = None
 
-        # noqa: F821 (Scrutinizer false positive - constants imported from .const)
         if (
             OPTION_WAIT_AFTER_WAKE_UP in self.options
             and self.options[OPTION_WAIT_AFTER_WAKE_UP] == ""

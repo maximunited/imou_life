@@ -16,6 +16,16 @@ reviews:
     ignore_title_keywords:
       - WIP
       - DO NOT REVIEW
+  path_filters:
+    - "!*.min.js"
+    - "!*.min.css"
+    - "!package-lock.json"
+    - "!yarn.lock"
+    - "!*.pyc"
+    - "!__pycache__/**"
+    - "!.pytest_cache/**"
+    - "!htmlcov/**"
+    - "!.coverage"
   path_instructions:
     - path: "**/.mergify.yml"
       instructions: |
@@ -116,15 +126,3 @@ knowledge_base:
   opt_out: false
   learnings:
     scope: auto
-
-# File patterns to ignore completely
-ignore:
-  - "*.min.js"
-  - "*.min.css"
-  - "package-lock.json"
-  - "yarn.lock"
-  - "*.pyc"
-  - "__pycache__/**"
-  - ".pytest_cache/**"
-  - "htmlcov/**"
-  - ".coverage"
