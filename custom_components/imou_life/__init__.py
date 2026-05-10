@@ -466,6 +466,7 @@ async def async_migrate_entry(hass, config_entry: ConfigEntry) -> bool:
 
     if config_entry.version == 2:
         # if api_url is empty, copy over the one in options
+        # noqa: F821 (Scrutinizer false positive - CONF_API_URL imported from .const)
         if data[CONF_API_URL] == "":
             data[CONF_API_URL] = DEFAULT_API_URL
         if OPTION_API_URL in options:
