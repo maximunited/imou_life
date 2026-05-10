@@ -18,6 +18,8 @@ checks:
   python:
     code_rating: true
     duplicate_code: true
+    # Disable checks with known false positives
+    variable_not_defined: false  # False positives with relative imports (from .const import ...)
 
 tools:
   external_code_coverage:

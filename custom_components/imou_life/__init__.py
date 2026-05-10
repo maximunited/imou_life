@@ -88,7 +88,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         )
         # Store discovery coordinator separately from device coordinators
         # All entries share the same discovery coordinator instance
-        hass.data.setdefault(DOMAIN, {})
+        hass.data.setdefault(
+            DOMAIN, {}
+        )  # noqa: F821 (Scrutinizer false positive on import)
         hass.data[DOMAIN]["discovery"] = discovery_coordinator
 
         # Handle first entry removal - transfer discovery to next entry
@@ -351,7 +353,9 @@ async def _transfer_discovery_to_next_entry(
     hass: HomeAssistant, entry: ConfigEntry
 ) -> None:
     """Transfer discovery coordinator to next entry when first entry is removed."""
-    entries = hass.config_entries.async_entries(DOMAIN)
+    entries = hass.config_entries.async_entries(
+        DOMAIN
+    )  # noqa: F821 (Scrutinizer false positive on import)
     remaining_entries = [e for e in entries if e.entry_id != entry.entry_id]
 
     if remaining_entries and DOMAIN in hass.data:
@@ -379,7 +383,9 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     )
 
     # Clean up discovery if this is the last entry
-    if DOMAIN in hass.data and "discovery" in hass.data[DOMAIN]:
+    if (
+        DOMAIN in hass.data and "discovery" in hass.data[DOMAIN]
+    ):  # noqa: F821 (Scrutinizer false positive on import)
         entries = hass.config_entries.async_entries(DOMAIN)
         if len(entries) <= 1:  # Last entry being removed
             hass.data[DOMAIN]["discovery"] = None
