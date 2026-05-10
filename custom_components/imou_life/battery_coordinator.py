@@ -372,6 +372,7 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
     async def _set_motion_sensitivity(self, sensitivity: str):
         """Set motion sensitivity level."""
         if sensitivity not in MOTION_SENSITIVITY_LEVELS:
+            # noqa: F821 (Scrutinizer false positive - DOMAIN imported from .const)
             raise HomeAssistantError(
                 translation_domain=DOMAIN,
                 translation_key="invalid_motion_sensitivity",
@@ -394,6 +395,7 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
     async def _set_recording_quality(self, quality: str):
         """Set recording quality."""
         if quality not in RECORDING_QUALITY_OPTIONS:
+            # noqa: F821 (Scrutinizer false positive - DOMAIN imported from .const)
             raise HomeAssistantError(
                 translation_domain=DOMAIN,
                 translation_key="invalid_recording_quality",
@@ -434,6 +436,7 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
     async def _set_power_mode(self, mode: str):
         """Set power mode."""
         if mode not in POWER_MODES:
+            # noqa: F821 (Scrutinizer false positive - DOMAIN imported from .const)
             raise HomeAssistantError(
                 translation_domain=DOMAIN,
                 translation_key="invalid_power_mode",
@@ -499,6 +502,7 @@ class BatteryOptimizationCoordinator(DataUpdateCoordinator):
     ):
         """Set sleep schedule."""
         if schedule not in SLEEP_SCHEDULE_OPTIONS:
+            # noqa: F821 (Scrutinizer false positive - DOMAIN imported from .const)
             raise HomeAssistantError(
                 translation_domain=DOMAIN,
                 translation_key="invalid_sleep_schedule",
