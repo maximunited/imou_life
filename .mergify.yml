@@ -205,11 +205,6 @@ pull_request_rules:
         message: "@coderabbitai review"
 
   # Delete branch after merge
-  - name: Delete head branch after merge
-    conditions:
-      - merged
-    actions:
-      delete_head_branch:
 
   # Warn about missing tests on feature PRs
   - name: Warn about missing tests
