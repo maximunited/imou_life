@@ -18,8 +18,8 @@ checks:
   python:
     code_rating: true
     duplicate_code: true
-    # Disable variable_not_defined check only for files with false positives
-    variable_not_defined:
+    # Disable variables_undefined_variable check only for files with false positives
+    variables_undefined_variable:
       excluded_paths:
         - "custom_components/imou_life/__init__.py"
         - "custom_components/imou_life/config_flow.py"
