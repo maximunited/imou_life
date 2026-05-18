@@ -24,7 +24,7 @@ homeassistant>=2024.3.3; python_version>="3.11"
 imouapi==1.0.15; python_version>="3.11"
 
 # Additional dependencies for component testing
-numpy>=2.4.4; python_version>="3.11"
+numpy>=2.4.5; python_version>="3.11"
 
 # Core testing
 pytest>=9.0.3; python_version>="3.11"

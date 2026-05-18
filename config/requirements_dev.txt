@@ -3,13 +3,13 @@
 bandit>=1.9.4
 
 # Code quality and formatting
-black>=26.3.1
+black>=26.5.1
 
 # Spell checking
 codespell>=2.4.2
 flake8>=7.3.0
 isort>=8.0.1
-mypy>=2.0.0
+mypy>=2.1.0
 
 # Pre-commit
 pre-commit>=4.6.0
@@ -19,5 +19,5 @@ pydocstyle>=6.3.0
 pyupgrade>=3.21.2
 
 # Type stubs
-types-PyYAML>=6.0.12.20260510
-types-requests>=2.33.0.20260508
+types-PyYAML>=6.0.12.20260518
+types-requests>=2.33.0.20260518
