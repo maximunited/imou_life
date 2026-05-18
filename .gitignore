@@ -200,11 +200,11 @@ lcov.info
 .pytest_cache/
 .testmondata
 
-# Local dev scripts (generated)
-run_tests.bat
-run_tests.ps1
-activate_venv.bat
-activate_venv.ps1
+# Local dev scripts (generated, root-level only)
+/run_tests.bat
+/run_tests.ps1
+/activate_venv.bat
+/activate_venv.ps1
 
 # Editor / OS artifacts
 *.bak
