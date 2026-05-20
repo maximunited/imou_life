@@ -100,7 +100,13 @@
       "message": "Device initialization timed out"
     },
     "rate_limit_retry": {
-      "message": "API rate limit exceeded, will retry later: {error}"
+      "message": "API rate limit. Retrying automatically. Increase scan interval if needed. {error}"
+    },
+    "rate_limit_active": {
+      "message": "Rate limit active. Retry in {backoff_seconds}s (reset {reset_time} UTC). {error}"
+    },
+    "rate_limit_init_error": {
+      "message": "Rate limit hit #{hit_count}. Retry after {reset_time} UTC. {error}"
     },
     "initial_fetch_timeout": {
       "message": "Initial data fetch timed out"
