@@ -37,6 +37,7 @@ from .const import (
     PLATFORMS,
 )
 from .coordinator import ImouDataUpdateCoordinator, ImouDiscoveryCoordinator
+from .rate_limit_manager import RateLimitManager
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -57,8 +58,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     # Initialize API client and device
     api_client, device = await _setup_api_client_and_device(hass, entry)
 
-    # Initialize device with timeout protection
-    await _initialize_device(device, entry)
+    # Initialize device with timeout protection and rate limit checking
+    await _initialize_device(device, entry, hass)
 
     # Create and configure coordinator
     coordinator = await _setup_coordinator(hass, device, entry)
@@ -197,14 +198,38 @@ def _configure_device_options(device: ImouDevice, entry: ConfigEntry):
         device.set_wait_after_wakeup(wait_after_wakeup)
 
 
-async def _initialize_device(device: ImouDevice, entry: ConfigEntry):
-    """Initialize device with timeout protection."""
+async def _initialize_device(
+    device: ImouDevice, entry: ConfigEntry, hass: HomeAssistant
+):
+    """Initialize device with timeout protection and rate limit checking."""
     setup_timeout = entry.options.get(OPTION_SETUP_TIMEOUT, SETUP_TIMEOUT)
+
+    # Get API credentials for rate limit checking
+    app_id = entry.data.get(CONF_APP_ID)
+    app_secret = entry.data.get(CONF_APP_SECRET)
+
+    # Check if we're currently rate limited
+    rate_limit_mgr = RateLimitManager(hass)
+    is_limited, limit_message = rate_limit_mgr.is_rate_limited(app_id, app_secret)
+
+    if is_limited:
+        _LOGGER.warning(
+            "Skipping device initialization due to active rate limit: %s", limit_message
+        )
+        raise ConfigEntryNotReady(
+            translation_domain=DOMAIN,
+            translation_key="rate_limit_retry",
+            translation_placeholders={"error": limit_message or "Rate limit active"},
+        )
 
     try:
         _LOGGER.debug("Initializing device with timeout %d seconds...", setup_timeout)
         await asyncio.wait_for(device.async_initialize(), timeout=setup_timeout)
         _LOGGER.debug("Device initialization completed")
+
+        # Clear rate limit state on successful initialization
+        rate_limit_mgr.clear_rate_limit(app_id, app_secret)
+
     except asyncio.TimeoutError:
         _LOGGER.error("Device initialization timed out after %d seconds", setup_timeout)
         raise ConfigEntryNotReady(
@@ -212,18 +237,29 @@ async def _initialize_device(device: ImouDevice, entry: ConfigEntry):
         )
     except ImouException as exception:
         error_msg = str(exception)
-        # Handle API rate limit errors (OP1013) by requesting retry
+        # Handle API rate limit errors (OP1013) by recording and requesting retry
         if "OP1013" in error_msg or "exceed limit" in error_msg.lower():
+            # Record the rate limit error
+            rate_limit_mgr.record_rate_limit(app_id, app_secret, error_msg)
+
+            # Get the updated state for user-friendly message
+            state = rate_limit_mgr.get_state(app_id, app_secret)
+            if state:
+                friendly_message = (
+                    f"Imou API rate limit exceeded (hit #{state.hit_count}). "
+                    f"Will retry after {state.estimated_reset_time.strftime('%H:%M:%S')} UTC. "
+                    f"Error: {error_msg}"
+                )
+            else:
+                friendly_message = f"Imou API rate limit exceeded. Error: {error_msg}"
+
             _LOGGER.warning(
-                "Imou API rate limit exceeded during initialization. "
-                "Home Assistant will automatically retry. "
-                "Error: %s",
-                error_msg,
+                "API rate limit during initialization: %s", friendly_message
             )
             raise ConfigEntryNotReady(
                 translation_domain=DOMAIN,
                 translation_key="rate_limit_retry",
-                translation_placeholders={"error": error_msg},
+                translation_placeholders={"error": friendly_message},
             )
         _LOGGER.error("Imou exception: %s", error_msg)
         raise
@@ -245,12 +281,21 @@ async def _setup_coordinator(
         entry,
     )
 
+    # Get API credentials for rate limit checking
+    app_id = entry.data.get(CONF_APP_ID)
+    app_secret = entry.data.get(CONF_APP_SECRET)
+    rate_limit_mgr = RateLimitManager(hass)
+
     # Fetch initial data with timeout protection
     setup_timeout = entry.options.get(OPTION_SETUP_TIMEOUT, SETUP_TIMEOUT)
     try:
         _LOGGER.debug("Fetching initial data with timeout %d seconds...", setup_timeout)
         await asyncio.wait_for(coordinator.async_refresh(), timeout=setup_timeout)
         _LOGGER.debug("Initial data fetch completed")
+
+        # Clear rate limit state on successful data fetch
+        rate_limit_mgr.clear_rate_limit(app_id, app_secret)
+
     except asyncio.TimeoutError:
         _LOGGER.error("Initial data fetch timed out after %d seconds", setup_timeout)
         raise ConfigEntryNotReady(
@@ -258,6 +303,14 @@ async def _setup_coordinator(
         )
 
     if not coordinator.last_update_success:
+        # Check if this is a rate limit issue
+        if coordinator.is_rate_limited:
+            # Record the rate limit
+            if coordinator.last_error_message:
+                rate_limit_mgr.record_rate_limit(
+                    app_id, app_secret, coordinator.last_error_message
+                )
+
         raise ConfigEntryNotReady
 
     return coordinator

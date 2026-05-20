@@ -136,6 +136,11 @@ STALE_DEVICE_ERROR_PATTERNS = [
     "not authorized to operate on the device",
 ]
 
+# Rate limit handling
+RATE_LIMIT_BACKOFF_SECONDS = 300  # 5 minutes minimum backoff
+RATE_LIMIT_RESET_ESTIMATE_HOURS = 1  # Imou API typically resets hourly
+RATE_LIMIT_CACHE_KEY = "rate_limit_state"
+
 # switches which are enabled by default
 ENABLED_SWITCHES = [
     "motionDetect",

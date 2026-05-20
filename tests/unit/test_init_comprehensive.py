@@ -126,8 +126,15 @@ class TestDeviceInitialization:
         ]
         entry = MagicMock()
         entry.options = {}
+        entry.data = {
+            "app_id": "test_app_id",
+            "app_secret": "test_secret",
+        }
 
-        await _initialize_device(device, entry)
+        hass = MagicMock()
+        hass.data = {}
+
+        await _initialize_device(device, entry, hass)
 
         device.async_initialize.assert_called_once()
         # Should disable all sensors
@@ -141,9 +148,16 @@ class TestDeviceInitialization:
         device.async_initialize = AsyncMock(side_effect=asyncio.TimeoutError())
         entry = MagicMock()
         entry.options = {OPTION_SETUP_TIMEOUT: 1}
+        entry.data = {
+            "app_id": "test_app_id",
+            "app_secret": "test_secret",
+        }
+
+        hass = MagicMock()
+        hass.data = {}
 
         with pytest.raises(ConfigEntryNotReady):
-            await _initialize_device(device, entry)
+            await _initialize_device(device, entry, hass)
 
 
 class TestCoordinatorSetup:

@@ -100,7 +100,7 @@
       "message": "Device initialization timed out"
     },
     "rate_limit_retry": {
-      "message": "API rate limit exceeded, will retry later: {error}"
+      "message": "Imou API rate limit reached. Setup will automatically retry. If this persists, consider increasing the scan interval in the integration options to reduce API calls. Details: {error}"
     },
     "initial_fetch_timeout": {
       "message": "Initial data fetch timed out"
