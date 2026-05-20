@@ -18,7 +18,7 @@ from .const import (
     RATE_LIMIT_RESET_ESTIMATE_HOURS,
 )
 
-_LOGGER = logging.getLogger(__name__)
+_LOGGER = logging.getLogger(__package__)
 
 
 @dataclass
@@ -51,26 +51,31 @@ class RateLimitManager:
         """Get rate limit storage dict."""
         return self.hass.data[DOMAIN][RATE_LIMIT_CACHE_KEY]
 
-    def _get_credential_key(self, app_id: str, app_secret: str) -> str:
+    def _get_credential_key(self, app_id: str, _app_secret: str) -> str:
         """Generate a key for API credentials.
 
         We only use app_id as the key since it uniquely identifies the account.
-        app_secret is not included to avoid storing sensitive data in the key.
+        app_secret is not used to avoid storing sensitive data in the key.
+
+        Args:
+            app_id: The Imou API App ID
+            _app_secret: Not used, kept for API consistency
+
         """
         return app_id
 
     def record_rate_limit(
-        self, app_id: str, app_secret: str, error_message: str
+        self, app_id: str, _app_secret: str, error_message: str
     ) -> None:
         """Record a rate limit error for API credentials.
 
         Args:
             app_id: The Imou API App ID
-            app_secret: The Imou API App Secret (used for key generation only)
+            _app_secret: Not currently used, kept for API consistency
             error_message: The error message from the API
 
         """
-        key = self._get_credential_key(app_id, app_secret)
+        key = self._get_credential_key(app_id, _app_secret)
         storage = self._get_storage()
         now = dt_util.utcnow()
 
@@ -101,20 +106,22 @@ class RateLimitManager:
             storage[key].estimated_reset_time.isoformat(),
         )
 
-    def is_rate_limited(self, app_id: str, app_secret: str) -> tuple[bool, str | None]:
+    def is_rate_limited(
+        self, app_id: str, _app_secret: str
+    ) -> tuple[bool, dict[str, str | int] | None]:
         """Check if API credentials are currently rate limited.
 
         Args:
             app_id: The Imou API App ID
-            app_secret: The Imou API App Secret (used for key generation only)
+            _app_secret: Not currently used, kept for API consistency
 
         Returns:
-            Tuple of (is_limited, message):
+            Tuple of (is_limited, data):
             - is_limited: True if currently rate limited
-            - message: User-friendly message explaining the rate limit state, or None
+            - data: Dict with backoff_seconds, reset_time, and error, or None
 
         """
-        key = self._get_credential_key(app_id, app_secret)
+        key = self._get_credential_key(app_id, _app_secret)
         storage = self._get_storage()
 
         if key not in storage:
@@ -136,17 +143,17 @@ class RateLimitManager:
         time_since_last_error = (now - state.last_rate_limit_time).total_seconds()
         if time_since_last_error < RATE_LIMIT_BACKOFF_SECONDS:
             backoff_remaining = RATE_LIMIT_BACKOFF_SECONDS - int(time_since_last_error)
-            message = (
-                f"API rate limit active. Retrying in {backoff_remaining}s. "
-                f"Estimated reset: {state.estimated_reset_time.strftime('%H:%M:%S')} UTC. "
-                f"Error: {state.error_message}"
-            )
+            data = {
+                "backoff_seconds": backoff_remaining,
+                "reset_time": state.estimated_reset_time.strftime("%H:%M:%S"),
+                "error": state.error_message,
+            }
             _LOGGER.debug(
                 "Rate limit active for app_id %s: %d seconds remaining in backoff",
                 app_id,
                 backoff_remaining,
             )
-            return True, message
+            return True, data
 
         # We're past the minimum backoff but before estimated reset
         # Allow retry attempt - if it fails, we'll update the state again
@@ -156,31 +163,31 @@ class RateLimitManager:
         )
         return False, None
 
-    def clear_rate_limit(self, app_id: str, app_secret: str) -> None:
+    def clear_rate_limit(self, app_id: str, _app_secret: str) -> None:
         """Clear rate limit state after successful API call.
 
         Args:
             app_id: The Imou API App ID
-            app_secret: The Imou API App Secret (used for key generation only)
+            _app_secret: Not currently used, kept for API consistency
 
         """
-        key = self._get_credential_key(app_id, app_secret)
+        key = self._get_credential_key(app_id, _app_secret)
         storage = self._get_storage()
 
         if key in storage:
             _LOGGER.debug("Clearing rate limit state for app_id %s", app_id)
             del storage[key]
 
-    def get_state(self, app_id: str, app_secret: str) -> RateLimitState | None:
+    def get_state(self, app_id: str, _app_secret: str) -> RateLimitState | None:
         """Get the current rate limit state.
 
         Args:
             app_id: The Imou API App ID
-            app_secret: The Imou API App Secret (used for key generation only)
+            _app_secret: Not currently used, kept for API consistency
 
         Returns:
             RateLimitState if exists, None otherwise
 
         """
-        key = self._get_credential_key(app_id, app_secret)
+        key = self._get_credential_key(app_id, _app_secret)
         return self._get_storage().get(key)

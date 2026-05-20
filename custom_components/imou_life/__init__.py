@@ -200,7 +200,7 @@ def _configure_device_options(device: ImouDevice, entry: ConfigEntry):
 
 async def _initialize_device(
     device: ImouDevice, entry: ConfigEntry, hass: HomeAssistant
-):
+) -> None:
     """Initialize device with timeout protection and rate limit checking."""
     setup_timeout = entry.options.get(OPTION_SETUP_TIMEOUT, SETUP_TIMEOUT)
 
@@ -210,16 +210,17 @@ async def _initialize_device(
 
     # Check if we're currently rate limited
     rate_limit_mgr = RateLimitManager(hass)
-    is_limited, limit_message = rate_limit_mgr.is_rate_limited(app_id, app_secret)
+    is_limited, limit_data = rate_limit_mgr.is_rate_limited(app_id, app_secret)
 
     if is_limited:
         _LOGGER.warning(
-            "Skipping device initialization due to active rate limit: %s", limit_message
+            "Skipping device initialization due to active rate limit: retry in %ds",
+            limit_data.get("backoff_seconds", 0) if limit_data else 0,
         )
         raise ConfigEntryNotReady(
             translation_domain=DOMAIN,
-            translation_key="rate_limit_retry",
-            translation_placeholders={"error": limit_message or "Rate limit active"},
+            translation_key="rate_limit_active",
+            translation_placeholders=limit_data or {},
         )
 
     try:
@@ -234,7 +235,7 @@ async def _initialize_device(
         _LOGGER.error("Device initialization timed out after %d seconds", setup_timeout)
         raise ConfigEntryNotReady(
             translation_domain=DOMAIN, translation_key="device_init_timeout"
-        )
+        ) from None
     except ImouException as exception:
         error_msg = str(exception)
         # Handle API rate limit errors (OP1013) by recording and requesting retry
@@ -242,24 +243,27 @@ async def _initialize_device(
             # Record the rate limit error
             rate_limit_mgr.record_rate_limit(app_id, app_secret, error_msg)
 
-            # Get the updated state for user-friendly message
+            # Get the updated state for translation placeholders
             state = rate_limit_mgr.get_state(app_id, app_secret)
             if state:
-                friendly_message = (
-                    f"Imou API rate limit exceeded (hit #{state.hit_count}). "
-                    f"Will retry after {state.estimated_reset_time.strftime('%H:%M:%S')} UTC. "
-                    f"Error: {error_msg}"
-                )
+                placeholders = {
+                    "hit_count": str(state.hit_count),
+                    "reset_time": state.estimated_reset_time.strftime("%H:%M:%S"),
+                    "error": error_msg,
+                }
+                translation_key = "rate_limit_init_error"
             else:
-                friendly_message = f"Imou API rate limit exceeded. Error: {error_msg}"
+                placeholders = {"error": error_msg}
+                translation_key = "rate_limit_retry"
 
             _LOGGER.warning(
-                "API rate limit during initialization: %s", friendly_message
+                "API rate limit during initialization (hit #%d)",
+                state.hit_count if state else 1,
             )
             raise ConfigEntryNotReady(
                 translation_domain=DOMAIN,
-                translation_key="rate_limit_retry",
-                translation_placeholders={"error": friendly_message},
+                translation_key=translation_key,
+                translation_placeholders=placeholders,
             )
         _LOGGER.error("Imou exception: %s", error_msg)
         raise
@@ -293,25 +297,43 @@ async def _setup_coordinator(
         await asyncio.wait_for(coordinator.async_refresh(), timeout=setup_timeout)
         _LOGGER.debug("Initial data fetch completed")
 
-        # Clear rate limit state on successful data fetch
-        rate_limit_mgr.clear_rate_limit(app_id, app_secret)
-
     except asyncio.TimeoutError:
         _LOGGER.error("Initial data fetch timed out after %d seconds", setup_timeout)
         raise ConfigEntryNotReady(
             translation_domain=DOMAIN, translation_key="initial_fetch_timeout"
-        )
+        ) from None
 
     if not coordinator.last_update_success:
         # Check if this is a rate limit issue
-        if coordinator.is_rate_limited:
+        if coordinator.is_rate_limited and coordinator.last_error_message:
             # Record the rate limit
-            if coordinator.last_error_message:
-                rate_limit_mgr.record_rate_limit(
-                    app_id, app_secret, coordinator.last_error_message
-                )
+            rate_limit_mgr.record_rate_limit(
+                app_id, app_secret, coordinator.last_error_message
+            )
+
+            # Get state for translation placeholders
+            state = rate_limit_mgr.get_state(app_id, app_secret)
+            if state:
+                placeholders = {
+                    "hit_count": str(state.hit_count),
+                    "reset_time": state.estimated_reset_time.strftime("%H:%M:%S"),
+                    "error": coordinator.last_error_message,
+                }
+                translation_key = "rate_limit_init_error"
+            else:
+                placeholders = {"error": coordinator.last_error_message}
+                translation_key = "rate_limit_retry"
+
+            raise ConfigEntryNotReady(
+                translation_domain=DOMAIN,
+                translation_key=translation_key,
+                translation_placeholders=placeholders,
+            )
 
         raise ConfigEntryNotReady
+
+    # Only clear rate limit state on successful data fetch
+    rate_limit_mgr.clear_rate_limit(app_id, app_secret)
 
     return coordinator
 

@@ -14,7 +14,7 @@ from custom_components.imou_life.rate_limit_manager import RateLimitManager
 
 
 @pytest.fixture
-def mock_hass():
+def mock_hass() -> Mock:
     """Create a mock HomeAssistant instance."""
     hass = Mock()
     hass.data = {}
@@ -22,12 +22,12 @@ def mock_hass():
 
 
 @pytest.fixture
-def rate_limit_mgr(mock_hass):
+def rate_limit_mgr(mock_hass: Mock) -> RateLimitManager:
     """Create a rate limit manager instance."""
     return RateLimitManager(mock_hass)
 
 
-def test_initialization(rate_limit_mgr, mock_hass):
+def test_initialization(rate_limit_mgr: RateLimitManager, mock_hass: Mock) -> None:
     """Test manager initializes storage correctly."""
     from custom_components.imou_life.const import DOMAIN, RATE_LIMIT_CACHE_KEY
 
@@ -36,15 +36,15 @@ def test_initialization(rate_limit_mgr, mock_hass):
     assert isinstance(mock_hass.data[DOMAIN][RATE_LIMIT_CACHE_KEY], dict)
 
 
-def test_no_rate_limit_initially(rate_limit_mgr):
+def test_no_rate_limit_initially(rate_limit_mgr: RateLimitManager) -> None:
     """Test that new credentials are not rate limited."""
-    is_limited, message = rate_limit_mgr.is_rate_limited("test_app_id", "test_secret")
+    is_limited, data = rate_limit_mgr.is_rate_limited("test_app_id", "test_secret")
 
     assert is_limited is False
-    assert message is None
+    assert data is None
 
 
-def test_record_rate_limit(rate_limit_mgr):
+def test_record_rate_limit(rate_limit_mgr: RateLimitManager) -> None:
     """Test recording a rate limit error."""
     app_id = "test_app_id"
     app_secret = "test_secret"
@@ -53,13 +53,15 @@ def test_record_rate_limit(rate_limit_mgr):
     rate_limit_mgr.record_rate_limit(app_id, app_secret, error_msg)
 
     # Should now be rate limited
-    is_limited, message = rate_limit_mgr.is_rate_limited(app_id, app_secret)
+    is_limited, data = rate_limit_mgr.is_rate_limited(app_id, app_secret)
     assert is_limited is True
-    assert message is not None
-    assert "rate limit" in message.lower()
+    assert data is not None
+    assert "backoff_seconds" in data
+    assert "reset_time" in data
+    assert "error" in data
 
 
-def test_rate_limit_state_tracking(rate_limit_mgr):
+def test_rate_limit_state_tracking(rate_limit_mgr: RateLimitManager) -> None:
     """Test that rate limit state is tracked correctly."""
     app_id = "test_app_id"
     app_secret = "test_secret"
@@ -75,7 +77,7 @@ def test_rate_limit_state_tracking(rate_limit_mgr):
     assert state.estimated_reset_time > dt_util.utcnow()
 
 
-def test_multiple_rate_limit_hits(rate_limit_mgr):
+def test_multiple_rate_limit_hits(rate_limit_mgr: RateLimitManager) -> None:
     """Test that multiple rate limit hits are counted."""
     app_id = "test_app_id"
     app_secret = "test_secret"
@@ -92,7 +94,7 @@ def test_multiple_rate_limit_hits(rate_limit_mgr):
     assert state2.error_message == "Error 2"  # Updated to latest
 
 
-def test_backoff_period_enforcement(rate_limit_mgr):
+def test_backoff_period_enforcement(rate_limit_mgr: RateLimitManager) -> None:
     """Test that backoff period is enforced."""
     app_id = "test_app_id"
     app_secret = "test_secret"
@@ -122,7 +124,7 @@ def test_backoff_period_enforcement(rate_limit_mgr):
     assert is_limited is False  # Allows retry attempt
 
 
-def test_estimated_reset_time(rate_limit_mgr):
+def test_estimated_reset_time(rate_limit_mgr: RateLimitManager) -> None:
     """Test that estimated reset time works correctly."""
     app_id = "test_app_id"
     app_secret = "test_secret"
@@ -138,7 +140,7 @@ def test_estimated_reset_time(rate_limit_mgr):
     assert time_diff < 2
 
 
-def test_clear_rate_limit(rate_limit_mgr):
+def test_clear_rate_limit(rate_limit_mgr: RateLimitManager) -> None:
     """Test clearing rate limit state."""
     app_id = "test_app_id"
     app_secret = "test_secret"
@@ -156,7 +158,7 @@ def test_clear_rate_limit(rate_limit_mgr):
     assert is_limited is False
 
 
-def test_different_credentials_isolated(rate_limit_mgr):
+def test_different_credentials_isolated(rate_limit_mgr: RateLimitManager) -> None:
     """Test that different credentials are tracked separately."""
     app_id_1 = "app_id_1"
     app_id_2 = "app_id_2"
@@ -174,7 +176,7 @@ def test_different_credentials_isolated(rate_limit_mgr):
     assert is_limited_2 is False
 
 
-def test_reset_after_estimated_time(rate_limit_mgr):
+def test_reset_after_estimated_time(rate_limit_mgr: RateLimitManager) -> None:
     """Test that rate limit allows retry after estimated reset time."""
     app_id = "test_app_id"
     app_secret = "test_secret"
@@ -194,17 +196,18 @@ def test_reset_after_estimated_time(rate_limit_mgr):
     assert is_limited is False
 
 
-def test_message_content(rate_limit_mgr):
-    """Test that rate limit message contains useful information."""
+def test_message_content(rate_limit_mgr: RateLimitManager) -> None:
+    """Test that rate limit data contains useful information."""
     app_id = "test_app_id"
     app_secret = "test_secret"
     error_msg = "OP1013: Call interface times exceed limit (total)"
 
     rate_limit_mgr.record_rate_limit(app_id, app_secret, error_msg)
-    is_limited, message = rate_limit_mgr.is_rate_limited(app_id, app_secret)
+    is_limited, data = rate_limit_mgr.is_rate_limited(app_id, app_secret)
 
     assert is_limited is True
-    assert message is not None
-    assert "rate limit" in message.lower()
-    assert error_msg in message
-    assert "UTC" in message  # Should show reset time in UTC
+    assert data is not None
+    assert "backoff_seconds" in data
+    assert "reset_time" in data  # Should show reset time
+    assert "error" in data
+    assert data["error"] == error_msg
