@@ -178,3 +178,35 @@ Thumbs.db
 .claude/skills/karpathy
 .claude/settings.local.json
 coverage.json
+
+# npm / Node.js
+.npm-cache/
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.npx/
+
+# Coverage reports
+htmlcov/
+coverage.lcov
+lcov.info
+
+# Docker
+.docker/
+
+# Pytest / test artifacts
+.pytest_cache/
+.testmondata
+
+# Local dev scripts (generated, root-level only)
+/run_tests.bat
+/run_tests.ps1
+/activate_venv.bat
+/activate_venv.ps1
+
+# Editor / OS artifacts
+*.bak
+*.tmp
+*.orig
