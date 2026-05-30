@@ -121,3 +121,16 @@ class TestCleanupOrphanDevices:
 
         with patch("custom_components.imou_life.dr.async_get", return_value=registry):
             _cleanup_orphan_devices(hass, active_entry)
+
+    def test_handles_oversized_identifier_tuples(self):
+        """Identifiers with more than 2 elements don't cause ValueError."""
+        bad_device = _make_device_entry("dev1", {(DOMAIN, "id1", "extra1", "extra2")})
+        registry = _make_registry([bad_device])
+
+        active_entry = MockConfigEntry(
+            domain=DOMAIN, data={}, entry_id="active_entry_id"
+        )
+        hass = _make_hass([active_entry])
+
+        with patch("custom_components.imou_life.dr.async_get", return_value=registry):
+            _cleanup_orphan_devices(hass, active_entry)
