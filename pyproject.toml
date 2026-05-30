@@ -148,3 +148,6 @@ type = "github"
 
 [tool.semantic_release.publish]
 upload_to_vcs_release = false
+
+[tool.commitizen]
+name = "cz_conventional_commits"

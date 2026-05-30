@@ -143,7 +143,9 @@ Following [Semantic Versioning](https://semver.org/):
 
 PSR is configured in `pyproject.toml` under `[tool.semantic_release]`:
 - Version is tracked in both `pyproject.toml` and `manifest.json`
-- Auto-changelog generation is disabled (manual `docs/CHANGELOG.md` is maintained)
+- **PSR does NOT update `docs/CHANGELOG.md`** — auto-generation is disabled (`changelog_file = ""`)
+- `docs/CHANGELOG.md` is maintained manually as the curated release history
+- GitHub Release notes are auto-generated from PR labels (via `.github/release.yml`)
 - Tags use `v` prefix (e.g., `v1.7.0`)
 - Releases are created directly as stable (no pre-release graduation)
 

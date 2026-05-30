@@ -18,12 +18,12 @@ PYPROJECT = "pyproject.toml"
 MANIFEST = "custom_components/imou_life/manifest.json"
 
 
-def main():
+def main() -> None:
     with open(PYPROJECT, "rb") as f:
-        version = tomllib.load(f)["project"]["version"]
+        version: str = tomllib.load(f)["project"]["version"]
 
     with open(MANIFEST) as f:
-        manifest = json.load(f)
+        manifest: dict[str, object] = json.load(f)
 
     manifest["version"] = version
 
