@@ -1,6 +1,20 @@
 # CHANGELOG
 
 
+## v1.7.3 (2026-05-30)
+
+### Bug Fixes
+
+- Scale rate limit backoff with hit count ([#62](https://github.com/maximunited/imou_life/pull/62),
+  [`177ce17`](https://github.com/maximunited/imou_life/commit/177ce17775e9b36b903a5400e2e5dcdd8866f2a6))
+
+The backoff was fixed at 300s regardless of how many times the rate limit was hit, causing an
+  infinite retry loop every 5 minutes. Now the backoff scales linearly with hit_count (5min, 10min,
+  15min, ...) so consecutive failures wait progressively longer.
+
+Co-authored-by: Claude Sonnet 4.5 <noreply@anthropic.com>
+
+
 ## v1.7.2 (2026-05-30)
 
 ### Bug Fixes
