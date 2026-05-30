@@ -15,6 +15,7 @@ from .const import (
     DOMAIN,
     RATE_LIMIT_BACKOFF_SECONDS,
     RATE_LIMIT_CACHE_KEY,
+    RATE_LIMIT_MAX_PROBE_RETRIES,
     RATE_LIMIT_RESET_ESTIMATE_HOURS,
 )
 
@@ -80,12 +81,9 @@ class RateLimitManager:
         now = dt_util.utcnow()
 
         if key in storage:
-            # Update existing state
+            # Update existing state but keep original estimated_reset_time
             state = storage[key]
             state.last_rate_limit_time = now
-            state.estimated_reset_time = now + timedelta(
-                hours=RATE_LIMIT_RESET_ESTIMATE_HOURS
-            )
             state.error_message = error_message
             state.hit_count += 1
         else:
@@ -156,8 +154,26 @@ class RateLimitManager:
             )
             return True, data
 
-        # We're past the minimum backoff but before estimated reset
-        # Allow retry attempt - if it fails, we'll update the state again
+        # Past backoff but before estimated reset
+        if state.hit_count >= RATE_LIMIT_MAX_PROBE_RETRIES:
+            # Too many consecutive failures — wait for estimated reset
+            remaining = int((state.estimated_reset_time - now).total_seconds())
+            data = {
+                "backoff_seconds": remaining,
+                "reset_time": state.estimated_reset_time.strftime("%H:%M:%S"),
+                "error": state.error_message,
+            }
+            _LOGGER.debug(
+                "Rate limit for app_id %s: %d consecutive hits, "
+                "waiting for reset at %s (%ds remaining)",
+                app_id,
+                state.hit_count,
+                state.estimated_reset_time.strftime("%H:%M:%S"),
+                remaining,
+            )
+            return True, data
+
+        # Allow probe retry
         _LOGGER.debug(
             "Rate limit backoff period expired for app_id %s, allowing retry attempt",
             app_id,
