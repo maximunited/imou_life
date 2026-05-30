@@ -1,6 +1,20 @@
 # CHANGELOG
 
 
+## v1.7.2 (2026-05-30)
+
+### Bug Fixes
+
+- Handle oversized identifier tuples in orphan cleanup
+  ([#61](https://github.com/maximunited/imou_life/pull/61),
+  [`f98b7af`](https://github.com/maximunited/imou_life/commit/f98b7af1f241f59a94b7f25ea2a188224f7a5fbd))
+
+Device identifiers can have more than 2 elements, causing ValueError on tuple unpacking. Use index
+  access with length guard instead.
+
+Co-authored-by: Claude Sonnet 4.5 <noreply@anthropic.com>
+
+
 ## v1.7.1 (2026-05-30)
 
 ### Bug Fixes
