@@ -1,0 +1,47 @@
+name: Semantic Release
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  release:
+    name: Semantic Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install python-semantic-release
+        run: pip install python-semantic-release
+
+      - name: Run semantic-release
+        id: semrel
+        uses: python-semantic-release/python-semantic-release@v9
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and attach zip artifact
+        if: steps.semrel.outputs.released == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          NAME=$(find custom_components/ -type d -maxdepth 1 \
+            | tail -n 1 | cut -d "/" -f2)
+          cd "custom_components/$NAME"
+          zip -r "../../${NAME}.zip" . \
+            -x "*.pyc" -x "*__pycache__*" -x "*.git*"
+          cd ../..
+          TAG="v${{ steps.semrel.outputs.version }}"
+          gh release upload "$TAG" "${NAME}.zip" --clobber

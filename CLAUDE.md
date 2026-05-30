@@ -182,38 +182,24 @@ python -c "import json; json.load(open('custom_components/imou_life/manifest.jso
 
 ### Version Management & Releases
 
-**Prerequisites:**
-```bash
-# IMPORTANT: Install pre-commit before running git bump
-pip install pre-commit
-pre-commit install
-```
+Releases are automated via [python-semantic-release](https://python-semantic-release.readthedocs.io/).
 
-**Automatic version bumping:**
-```bash
-git bump                                 # Auto-increment patch version
-git bump 1.2.0                           # Specific version
-git bump 1.2.0 "Battery optimization"    # With custom message
-```
+**How it works:**
+1. Use [Conventional Commits](https://www.conventionalcommits.org/) (`fix:`, `feat:`, `feat!:`)
+2. Merge PR to `master`
+3. PSR auto-bumps version in `pyproject.toml` + `manifest.json`, creates tag + GitHub Release
+4. A separate workflow builds and attaches `imou_life.zip`
 
-The `git bump` script (PowerShell alias in `.git/config`):
-- Updates `manifest.json` version
-- Generates changelog entry in `docs/CHANGELOG.md`
-- Commits changes with appropriate message
-- Creates and pushes git tag (triggers release workflow)
-- Requires pre-commit to be installed (will fail if missing)
+**Commit types that trigger releases:**
+- `fix:` -> patch bump (1.6.0 -> 1.6.1)
+- `feat:` -> minor bump (1.6.0 -> 1.7.0)
+- `feat!:` or `BREAKING CHANGE` -> major bump
 
-**IMPORTANT**: The `git bump` script creates a basic changelog entry. For production releases:
-1. Manually edit `docs/CHANGELOG.md` to add detailed sections (Added/Changed/Fixed/Security/Tests)
-2. Follow [Keep a Changelog](https://keepachangelog.com/) format
-3. Then run `git bump` to create the release
+**Changelog:** `docs/CHANGELOG.md` is maintained manually for detailed release notes.
 
-**Release Process:**
-See `docs/RELEASE_PROCESS.md` for complete documentation including:
-- Automated release workflow
-- Manual release when automation fails
-- Troubleshooting common issues
-- Changelog format requirements
+**Dry run:** `semantic-release version --noop`
+
+**Full docs:** See `docs/RELEASE_PROCESS.md`
 
 ## CI/CD Workflows
 
@@ -229,12 +215,16 @@ See `docs/RELEASE_PROCESS.md` for complete documentation including:
 - Code formatting and linting
 - Manifest and translation validation
 
-**releases.yml** - Automated release creation:
-- Triggered by version tags (e.g., `v1.2.0`)
-- Reads changelog using `mindsers/changelog-reader-action`
-- Creates integration zip file (`imou_life.zip`)
-- Creates GitHub pre-release with zip attachment
-- Requires Keep a Changelog format in `docs/CHANGELOG.md`
+**semantic-release.yml** - Automated version bumping:
+- Triggered on push to `master`
+- Analyzes conventional commits to determine version bump
+- Updates `pyproject.toml` and `manifest.json`
+- Creates git tag and GitHub Release
+
+**releases.yml** - Release artifact builder:
+- Triggered when a release is published
+- Creates `imou_life.zip` and attaches it to the release
+- Cleans up old CI draft releases
 
 ## Coding Standards
 

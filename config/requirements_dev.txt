@@ -15,6 +15,9 @@ mypy>=2.1.0
 pre-commit>=4.6.0
 pydocstyle>=6.3.0
 
+# Release automation
+python-semantic-release>=9.0.0
+
 # Code modernization
 pyupgrade>=3.21.2
 
