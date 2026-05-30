@@ -27,6 +27,21 @@ jobs:
         run: pip install python-semantic-release
 
       - name: Run semantic-release
+        id: semrel
         uses: python-semantic-release/python-semantic-release@v9
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and attach zip artifact
+        if: steps.semrel.outputs.released == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          NAME=$(find custom_components/ -type d -maxdepth 1 \
+            | tail -n 1 | cut -d "/" -f2)
+          cd "custom_components/$NAME"
+          zip -r "../../${NAME}.zip" . \
+            -x "*.pyc" -x "*__pycache__*" -x "*.git*"
+          cd ../..
+          TAG="v${{ steps.semrel.outputs.version }}"
+          gh release upload "$TAG" "${NAME}.zip" --clobber
