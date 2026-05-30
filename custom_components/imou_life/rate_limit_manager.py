@@ -139,10 +139,11 @@ class RateLimitManager:
             # Don't delete the state - let a successful API call clear it
             return False, None
 
-        # Check if we're within the minimum backoff period
+        # Scale backoff with hit count to avoid repeated retries
+        scaled_backoff = RATE_LIMIT_BACKOFF_SECONDS * state.hit_count
         time_since_last_error = (now - state.last_rate_limit_time).total_seconds()
-        if time_since_last_error < RATE_LIMIT_BACKOFF_SECONDS:
-            backoff_remaining = RATE_LIMIT_BACKOFF_SECONDS - int(time_since_last_error)
+        if time_since_last_error < scaled_backoff:
+            backoff_remaining = scaled_backoff - int(time_since_last_error)
             data = {
                 "backoff_seconds": backoff_remaining,
                 "reset_time": state.estimated_reset_time.strftime("%H:%M:%S"),
