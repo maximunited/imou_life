@@ -10,6 +10,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.device_registry import DeviceEntry
 from homeassistant.helpers.typing import ConfigType
@@ -55,6 +56,8 @@ async def async_setup(hass: HomeAssistant, config: ConfigType):
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up this integration using UI."""
+    _cleanup_orphan_devices(hass, entry)
+
     # Initialize API client and device
     api_client, device = await _setup_api_client_and_device(hass, entry)
 
@@ -196,6 +199,31 @@ def _configure_device_options(device: ImouDevice, entry: ConfigEntry):
     if wait_after_wakeup is not None:
         _LOGGER.debug("Setting wait after wakeup to %f", wait_after_wakeup)
         device.set_wait_after_wakeup(wait_after_wakeup)
+
+
+def _cleanup_orphan_devices(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    """Remove devices whose config entry no longer exists."""
+    try:
+        device_registry = dr.async_get(hass)
+        active_entry_ids = {
+            e.entry_id for e in hass.config_entries.async_entries(DOMAIN)
+        }
+
+        for device_entry in list(device_registry.devices.values()):
+            imou_ids = [
+                eid for domain, eid in device_entry.identifiers if domain == DOMAIN
+            ]
+            if not imou_ids:
+                continue
+
+            if not any(eid in active_entry_ids for eid in imou_ids):
+                _LOGGER.info(
+                    "Removing orphan device '%s' (no matching config entry)",
+                    device_entry.name,
+                )
+                device_registry.async_remove_device(device_entry.id)
+    except Exception:
+        _LOGGER.debug("Orphan device cleanup skipped (registry not ready)")
 
 
 async def _initialize_device(
