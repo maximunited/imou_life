@@ -1,6 +1,21 @@
 # CHANGELOG
 
 
+## v1.8.0 (2026-05-30)
+
+### Features
+
+- Add tiered polling to reduce API call volume by 66%
+  ([#64](https://github.com/maximunited/imou_life/pull/64),
+  [`13e51a4`](https://github.com/maximunited/imou_life/commit/13e51a47ec7317a2a292a041b669c2bbbe812fa8))
+
+Fast cycles (3 of 4) poll only critical sensors (online status + motion alarm = 2 API calls). Full
+  cycles (every 4th) poll everything (~16 calls). Reduces daily API calls from ~1,536 to ~528 per
+  device, preventing OP1013 daily quota exhaustion.
+
+Co-authored-by: Claude Opus 4.6 <noreply@anthropic.com>
+
+
 ## v1.7.4 (2026-05-30)
 
 ### Bug Fixes
