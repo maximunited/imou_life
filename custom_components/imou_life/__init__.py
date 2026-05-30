@@ -211,7 +211,9 @@ def _cleanup_orphan_devices(hass: HomeAssistant, entry: ConfigEntry) -> None:
 
         for device_entry in list(device_registry.devices.values()):
             imou_ids = [
-                eid for domain, eid in device_entry.identifiers if domain == DOMAIN
+                ident[1]
+                for ident in device_entry.identifiers
+                if len(ident) >= 2 and ident[0] == DOMAIN
             ]
             if not imou_ids:
                 continue
@@ -222,7 +224,7 @@ def _cleanup_orphan_devices(hass: HomeAssistant, entry: ConfigEntry) -> None:
                     device_entry.name,
                 )
                 device_registry.async_remove_device(device_entry.id)
-    except (KeyError, AttributeError) as err:
+    except (KeyError, AttributeError, ValueError) as err:
         _LOGGER.debug("Orphan device cleanup skipped: %s", err)
 
 
