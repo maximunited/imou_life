@@ -222,8 +222,8 @@ def _cleanup_orphan_devices(hass: HomeAssistant, entry: ConfigEntry) -> None:
                     device_entry.name,
                 )
                 device_registry.async_remove_device(device_entry.id)
-    except Exception:
-        _LOGGER.debug("Orphan device cleanup skipped (registry not ready)")
+    except (KeyError, AttributeError) as err:
+        _LOGGER.debug("Orphan device cleanup skipped: %s", err)
 
 
 async def _initialize_device(
