@@ -144,6 +144,12 @@ RATE_LIMIT_RESET_ESTIMATE_HOURS = (
 RATE_LIMIT_MAX_PROBE_RETRIES = 3  # Stop probing after this many consecutive failures
 RATE_LIMIT_CACHE_KEY = "rate_limit_state"
 
+# Tiered polling — reduce API calls by polling slow-changing sensors less often
+FULL_POLL_CYCLE_INTERVAL = (
+    4  # Full poll every 4th cycle; others are fast (critical only)
+)
+CRITICAL_SENSOR_NAMES = {"motionAlarm"}  # Binary sensors polled every cycle
+
 # switches which are enabled by default
 ENABLED_SWITCHES = [
     "motionDetect",

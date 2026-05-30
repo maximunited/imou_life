@@ -17,6 +17,10 @@ def mock_device():
     """Create a mock ImouDevice."""
     device = Mock()
     device.async_get_data = AsyncMock()
+    device.async_refresh_status = AsyncMock()
+    device.is_online = Mock(return_value=True)
+    device.get_sensors_by_platform = Mock(return_value=[])
+    device.get_all_sensors = Mock(return_value=[])
     device.get_name = Mock(return_value="Test Camera")
     device.get_device_id = Mock(return_value="test_device_123")
     device.get_model = Mock(return_value="Test Model")
@@ -38,14 +42,27 @@ def mock_config_entry():
 
 @pytest.fixture
 def coordinator(hass: HomeAssistant, mock_device, mock_config_entry):
-    """Create a coordinator instance for testing."""
-    coordinator = ImouDataUpdateCoordinator(
+    """Create a coordinator instance for testing.
+
+    Sets _poll_cycle so every _async_update_data() call is a full cycle,
+    ensuring async_get_data() is always called (not fast-cycle shortcut).
+    """
+    coord = ImouDataUpdateCoordinator(
         hass,
         mock_device,
         900,
         mock_config_entry,
     )
-    return coordinator
+    coord._poll_cycle = -1
+    # Ensure every call triggers a full cycle by wrapping update
+    _orig_update = coord._async_update_data
+
+    async def _full_cycle_update():
+        coord._poll_cycle = -1
+        return await _orig_update()
+
+    coord._async_update_data = _full_cycle_update
+    return coord
 
 
 async def test_is_stale_device_error_detects_patterns(hass: HomeAssistant, coordinator):
