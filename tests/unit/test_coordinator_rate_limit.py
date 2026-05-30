@@ -25,12 +25,23 @@ class TestCoordinatorRateLimitHandling:
         """Create a mock ImouDevice."""
         device = MagicMock()
         device.async_get_data = AsyncMock()
+        device.async_refresh_status = AsyncMock()
+        device.is_online = MagicMock(return_value=True)
+        device.get_sensors_by_platform = MagicMock(return_value=[])
         return device
 
     @pytest.fixture
     def coordinator(self, hass, mock_device):
-        """Create a coordinator instance."""
-        return ImouDataUpdateCoordinator(hass, mock_device, scan_interval=900)
+        """Create a coordinator with every call forced to full cycle."""
+        coord = ImouDataUpdateCoordinator(hass, mock_device, scan_interval=900)
+        _orig = coord._async_update_data
+
+        async def _full_cycle():
+            coord._poll_cycle = -1
+            return await _orig()
+
+        coord._async_update_data = _full_cycle
+        return coord
 
     @pytest.mark.asyncio
     async def test_successful_update_clears_rate_limit(self, coordinator, mock_device):

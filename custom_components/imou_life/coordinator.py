@@ -15,9 +15,11 @@ from .const import (
     CONF_APP_ID,
     CONF_APP_SECRET,
     CONF_DEVICE_ID,
+    CRITICAL_SENSOR_NAMES,
     DEFAULT_API_URL,
     DEFAULT_DISCOVERY_INTERVAL,
     DOMAIN,
+    FULL_POLL_CYCLE_INTERVAL,
     OPTION_DISCOVERY_INTERVAL,
     STALE_DEVICE_ERROR_PATTERNS,
 )
@@ -54,6 +56,9 @@ class ImouDataUpdateCoordinator(DataUpdateCoordinator):
         self._original_scan_interval: int = scan_interval
         self._is_interval_adjusted: bool = False
 
+        # Tiered polling — full poll every Nth cycle, fast poll otherwise
+        self._poll_cycle: int = -1
+
         # Stale device tracking
         self.stale_device_suspected: bool = False
         self.stale_device_failure_count: int = 0
@@ -87,8 +92,14 @@ class ImouDataUpdateCoordinator(DataUpdateCoordinator):
 
     async def _async_update_data(self):
         """HA calls this every DEFAULT_SCAN_INTERVAL to run the update."""
+        self._poll_cycle += 1
+        is_full_cycle = self._poll_cycle % FULL_POLL_CYCLE_INTERVAL == 0
+
         try:
-            data = await self.device.async_get_data()
+            if is_full_cycle:
+                data = await self.device.async_get_data()
+            else:
+                data = await self._async_fast_update()
 
             # Update succeeded - check if recovering from rate limit
             was_rate_limited = self.is_rate_limited
@@ -197,6 +208,17 @@ class ImouDataUpdateCoordinator(DataUpdateCoordinator):
                 error_msg = f"Imou API error: {error_str}"
                 _LOGGER.error(error_msg)
                 raise UpdateFailed(error_msg) from exception
+
+    async def _async_fast_update(self):
+        """Poll only critical sensors (online status + motion alarm)."""
+        await self.device.async_refresh_status()
+
+        if self.device.is_online():
+            for sensor in self.device.get_sensors_by_platform("binary_sensor"):
+                if sensor.get_name() in CRITICAL_SENSOR_NAMES:
+                    await sensor.async_update()
+
+        return True
 
     def _adjust_scan_interval_for_rate_limit(self):
         """Increase scan interval when rate limited to reduce API calls."""

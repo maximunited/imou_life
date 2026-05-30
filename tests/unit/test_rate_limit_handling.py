@@ -63,6 +63,7 @@ async def test_rate_limit_during_coordinator_update(hass):
     )
 
     # Update should raise UpdateFailed (not the raw APIError)
+    coordinator._poll_cycle = -1
     with pytest.raises(UpdateFailed):
         await coordinator._async_update_data()
 
@@ -117,6 +118,7 @@ async def test_rate_limit_variations(hass):
 
     for error_msg in rate_limit_messages:
         mock_device.async_get_data.side_effect = APIError(error_msg)
+        coordinator._poll_cycle = -1
 
         with pytest.raises(UpdateFailed):
             await coordinator._async_update_data()
