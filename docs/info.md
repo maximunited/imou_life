@@ -31,7 +31,7 @@ This integration supports a wide range of Imou devices including:
 
 ## 📋 Requirements
 
-- Home Assistant 2023.8.0 or newer
+- Home Assistant 2024.2.0 or newer
 - Valid Imou App ID and App Secret
 - Internet connection for API communication
 

@@ -1,336 +1,194 @@
 # Release Process
 
-This document describes the automated release process for the Imou Life integration and how to fix issues when automation fails.
+This document describes the automated release process for the Imou Life integration.
 
 ## Overview
 
-The release process is managed by two main components:
+Releases are fully automated using [python-semantic-release](https://python-semantic-release.readthedocs.io/) (PSR). When you merge a PR to `master`, PSR analyzes the conventional commit messages and automatically:
 
-1. **`git bump` command** (PowerShell script: `tools/scripts/git-bump.ps1`)
-   - Updates `manifest.json` version
-   - Generates changelog entry in `docs/CHANGELOG.md`
-   - Commits changes
-   - Creates and pushes git tag
-   - Triggers GitHub Actions workflow
+1. Determines the next version (patch, minor, or major)
+2. Updates `pyproject.toml` and `manifest.json` with the new version
+3. Creates a git tag (`vX.Y.Z`)
+4. Creates a GitHub Release with auto-generated notes
 
-2. **Release Management workflow** (`.github/workflows/releases.yml`)
-   - Triggered by tag push (e.g., `v1.2.0`)
-   - Reads version from git tag
-   - Extracts changelog using `mindsers/changelog-reader-action`
-   - Creates integration zip file (`imou_life.zip`)
-   - Creates GitHub release with zip attachment
+A separate workflow then builds the `imou_life.zip` artifact and attaches it to the release.
 
-## Automated Release (Happy Path)
+## How It Works
 
-### Step 1: Ensure Clean Changelog Format
+```
+Feature Branch          master              GitHub
+     |                    |                   |
+     |-- PR merged ------>|                   |
+     |                    |-- PSR runs ------>|
+     |                    |   (bump version,  |
+     |                    |    create tag,     |
+     |                    |    create release) |
+     |                    |                   |-- zip workflow
+     |                    |                   |   (build & attach)
+     |                    |                   |
+```
 
-Before bumping version, ensure `docs/CHANGELOG.md` follows [Keep a Changelog](https://keepachangelog.com/) format:
+## Release Workflow
+
+### Step 1: Create a Feature Branch
+
+```bash
+git checkout master
+git pull origin master
+git checkout -b feat/my-feature
+```
+
+### Step 2: Make Changes with Conventional Commits
+
+Use [Conventional Commits](https://www.conventionalcommits.org/) format:
+
+```bash
+# Patch release (1.6.0 -> 1.6.1)
+git commit -m "fix: resolve API timeout on battery devices"
+
+# Minor release (1.6.0 -> 1.7.0)
+git commit -m "feat: add PTZ preset support"
+
+# Major release (1.6.0 -> 2.0.0)
+git commit -m "feat!: redesign configuration flow"
+# or
+git commit -m "feat: redesign configuration flow
+
+BREAKING CHANGE: config flow version incremented, existing entries need migration"
+```
+
+**Commit types that trigger releases:**
+- `fix:` -> patch bump
+- `feat:` -> minor bump
+- `feat!:` or `BREAKING CHANGE` -> major bump
+
+**Commit types that do NOT trigger releases:**
+- `docs:`, `chore:`, `test:`, `ci:`, `refactor:`, `style:`, `perf:`
+
+### Step 3: Update Changelog (Optional)
+
+For significant releases, update `docs/CHANGELOG.md` with detailed release notes before merging:
 
 ```markdown
-# Changelog
+## [1.7.0] - 2026-06-01
 
-## [1.2.0] (2026-04-29)
 ### Added
-- New feature 1
-- New feature 2
-
-### Changed
-- Changed behavior 1
+- PTZ preset support for compatible cameras
 
 ### Fixed
-- Bug fix 1
-- **SECURITY**: Security fix description
-
-### Tests
-- Test updates
+- API timeout on battery-powered devices
 ```
 
-**Important**: The changelog-reader-action expects:
-- Version format: `## [X.Y.Z] (YYYY-MM-DD)`
-- Date format: `YYYY-MM-DD`
-- Standard sections: Added, Changed, Deprecated, Removed, Fixed, Security, Tests
-
-### Step 2: Run git bump
+### Step 4: Create and Merge PR
 
 ```bash
-# Auto-increment patch version (1.1.2 → 1.1.3)
-git bump
-
-# Specify exact version with description
-git bump 1.2.0 "Battery optimization refactoring and critical security fixes"
-
-# The script will:
-# 1. Update manifest.json
-# 2. Add basic changelog entry (if not exists)
-# 3. Commit changes
-# 4. Create and push tag v1.2.0
-# 5. Trigger GitHub Actions
+git push origin feat/my-feature
+gh pr create --title "feat: add PTZ preset support" --body "Description of changes"
 ```
 
-**Note**: The `git bump` script creates a basic changelog entry. For detailed release notes, manually edit the changelog BEFORE running `git bump`.
+After review, merge the PR to `master`.
 
-### Step 3: Monitor Workflow
+### Step 5: Automatic Release
+
+On merge to `master`, the following happens automatically:
+
+1. **Semantic Release workflow** analyzes commits since the last tag
+2. If release-worthy commits exist, PSR bumps the version and creates a GitHub Release
+3. **Release Artifacts workflow** triggers on the new release, builds `imou_life.zip`, and attaches it
+
+### Step 6: Verify
 
 ```bash
-# Check workflow status
-gh run list --limit 5
-
-# View specific run
-gh run view <run-id>
-
-# View failed logs
-gh run view <run-id> --log-failed
+gh release list --limit 3
+gh release view v1.7.0
 ```
 
-The workflow should:
-1. ✅ Extract version from tag
-2. ✅ Read changelog entry
-3. ✅ Create zip file
-4. ✅ Create GitHub pre-release
+## Manual Release
 
-### Step 4: Verify Release
+If automation fails or you need to create a release manually:
 
 ```bash
-# List releases
-gh release list
+# Create zip file
+cd custom_components
+zip -r ../imou_life.zip imou_life/ -x "*.pyc" -x "*__pycache__*" -x "*.git*"
+cd ..
 
-# View specific release
-gh release view v1.2.0
+# Create release
+gh release create v1.7.0 \
+  --title "v1.7.0" \
+  --generate-notes \
+  imou_life.zip
+
+# Clean up
+rm imou_life.zip
 ```
 
-The release should include:
-- Release notes from changelog
-- Attached `imou_life.zip` file
-- Pre-release status (for version tags like v1.2.0)
+## Running PSR Locally
 
-## Manual Release (When Automation Fails)
-
-### Common Failure: "No log entry found for version X.Y.Z"
-
-**Cause**: The changelog format doesn't match Keep a Changelog standard, or the version header is malformed.
-
-**Fix**:
-
-1. **Check the workflow logs**:
-   ```bash
-   gh run view <run-id> --log-failed
-   ```
-
-2. **Verify changelog format**:
-   - Version header must be: `## [X.Y.Z] (YYYY-MM-DD)`
-   - Must have at least one section (Added/Changed/Fixed/etc.)
-   - Date format must be `YYYY-MM-DD` (not `DD-MM-YYYY`)
-
-3. **Fix the changelog** in `docs/CHANGELOG.md`:
-   ```markdown
-   ## [1.2.0] (2026-04-29)
-   ### Added
-   - Comprehensive CLAUDE.md with project architecture
-
-   ### Fixed
-   - **SECURITY**: Removed hardcoded credentials from camera.py
-   ```
-
-4. **Manually create the release**:
-   ```bash
-   # Delete failed draft release if exists
-   gh release delete ci-v1.2.0 -y
-
-   # Create zip file
-   cd custom_components
-   zip -r ../imou_life.zip imou_life/ -x "*.pyc" -x "*__pycache__*" -x "*.git*"
-   cd ..
-
-   # Extract changelog for this version
-   python -c "
-   import re
-   with open('docs/CHANGELOG.md', 'r', encoding='utf-8') as f:
-       content = f.read()
-   match = re.search(r'## \[1\.2\.0\].*?(?=## \[1\.1\.)', content, re.DOTALL)
-   if match:
-       with open('release_notes.txt', 'w', encoding='utf-8') as f:
-           f.write(match.group(0).strip())
-   "
-
-   # Create pre-release
-   gh release create v1.2.0 \
-     --title "v1.2.0 - Brief Description" \
-     --notes-file release_notes.txt \
-     --prerelease \
-     imou_life.zip
-
-   # Clean up
-   rm release_notes.txt imou_life.zip
-   ```
-
-### Manual Release with Enhanced Notes
-
-If you want to enhance release notes after initial creation:
+For dry-run testing:
 
 ```bash
-# Update existing release
-gh release edit v1.2.0 \
-  --title "v1.2.0 - Battery Optimization & Security Fixes" \
-  --notes-file release_notes.txt
-
-# Add missing zip file
-gh release upload v1.2.0 imou_life.zip
+pip install python-semantic-release
+semantic-release version --noop
 ```
 
-## Release Types
+## Version Numbering
 
-### Pre-release (default for version tags)
+Following [Semantic Versioning](https://semver.org/):
+- **Patch** (1.0.X): Bug fixes, small changes
+- **Minor** (1.X.0): New features, backward compatible
+- **Major** (X.0.0): Breaking changes
 
-Created when pushing a version tag (e.g., `v1.2.0`):
-- Marked as pre-release in GitHub
-- Used for testing before stable release
-- Can be graduated to stable release
+## Configuration
 
-### Stable Release
+PSR is configured in `pyproject.toml` under `[tool.semantic_release]`:
+- Version is tracked in both `pyproject.toml` and `manifest.json`
+- Auto-changelog generation is disabled (manual `docs/CHANGELOG.md` is maintained)
+- Tags use `v` prefix (e.g., `v1.7.0`)
+- Releases are created directly as stable (no pre-release graduation)
 
-To graduate a pre-release to stable:
+## Commit Message Validation
+
+A [commitizen](https://commitizen-tools.github.io/commitizen/) pre-commit hook validates that all commit messages follow the conventional commits format. Install hooks with:
 
 ```bash
-# Method 1: Push 'stable' tag
-git tag stable
-git push origin stable
-
-# Method 2: Edit release manually
-gh release edit v1.2.0 --prerelease=false
-
-# Method 3: Use workflow dispatch
-# Go to GitHub Actions → Release Management → Run workflow
-# Select "release" type
+pre-commit install --hook-type commit-msg
 ```
-
-### CI Draft Releases
-
-Automatically created on pushes to master/main:
-- Tag format: `ci-vX.Y.Z`
-- Draft status
-- For internal testing only
-- Usually cleaned up after testing
-
-## Best Practices
-
-1. **Always enhance changelog before release**:
-   - Run `git bump` creates basic entry
-   - Edit `docs/CHANGELOG.md` to add detailed sections
-   - Commit enhanced changelog
-   - Then the tag will have proper notes
-
-2. **Test the changelog parser**:
-   ```bash
-   # Install the changelog reader locally if needed
-   npm install -g changelog-reader
-
-   # Test parsing
-   changelog-reader --version 1.2.0 ./docs/CHANGELOG.md
-   ```
-
-3. **Version numbering**:
-   - Patch (1.0.X): Bug fixes, small changes
-   - Minor (1.X.0): New features, backward compatible
-   - Major (X.0.0): Breaking changes
-
-4. **Tag management**:
-   ```bash
-   # List all tags
-   git tag
-
-   # Delete local tag
-   git tag -d v1.2.0
-
-   # Delete remote tag
-   git push origin :refs/tags/v1.2.0
-
-   # Re-create tag at specific commit
-   git tag v1.2.0 <commit-sha>
-   git push origin v1.2.0
-   ```
 
 ## Troubleshooting
 
+### No release created after merge
+
+**Check:** Were there release-worthy commits (`fix:` or `feat:`)?
+```bash
+git log --oneline v1.6.0..HEAD
+```
+Commits with `docs:`, `chore:`, `test:`, etc. don't trigger releases.
+
 ### Workflow doesn't trigger
 
-**Check**:
 ```bash
-# Verify tag was pushed
-git ls-remote --tags origin
-
-# Check workflow file
-cat .github/workflows/releases.yml | grep "tags:"
+gh run list --limit 5
+gh run view <run-id> --log-failed
 ```
 
-**Fix**: Ensure tag starts with `v` (e.g., `v1.2.0`, not `1.2.0`)
+### Zip not attached to release
 
-### Zip file not created
-
-**Check logs**:
+Run the artifacts workflow manually:
 ```bash
-gh run view <run-id> --log | grep "Create zip"
+gh workflow run "Release Artifacts" -f tag=v1.7.0
 ```
 
-**Manual fix**: See "Manual Release" section above
+### Version mismatch between files
 
-### Changelog reader fails with validation errors
-
-**Disable validation**:
-Edit `.github/workflows/releases.yml`:
-```yaml
-- name: Get Changelog Entry
-  uses: mindsers/changelog-reader-action@v2
-  with:
-    validation_depth: 10
-    validation_level: none  # Add this line
-    version: ${{ steps.version.outputs.version }}
-    path: ./docs/CHANGELOG.md
-```
-
-### Release already exists
-
-**Options**:
+PSR updates both `pyproject.toml` and `manifest.json`. If they're out of sync:
 ```bash
-# Delete and recreate
-gh release delete v1.2.0 -y
-gh release create v1.2.0 ...
-
-# Update existing
-gh release edit v1.2.0 --notes-file new_notes.txt
+semantic-release version --noop  # Check what PSR thinks the version should be
 ```
-
-## Workflow Configuration
-
-The Release Management workflow (`.github/workflows/releases.yml`) supports:
-
-- **Triggers**:
-  - Tag push: `v*` (creates pre-release)
-  - Tag push: `stable` (graduates latest pre-release to stable)
-  - Branch push: master/main (creates CI draft)
-  - Manual dispatch (custom release type)
-
-- **Outputs**:
-  - GitHub release (pre-release, stable, or draft)
-  - Integration zip file (`imou_life.zip`)
-  - Changelog-based release notes
-
-- **Configuration**:
-  - Uses `mindsers/changelog-reader-action@v2` for changelog parsing
-  - Requires Keep a Changelog format
-  - Validates last 10 changelog entries
-  - Can be customized via workflow inputs
 
 ## References
 
-- [Keep a Changelog](https://keepachangelog.com/) - Changelog format standard
-- [Semantic Versioning](https://semver.org/) - Version numbering standard
-- [mindsers/changelog-reader-action](https://github.com/mindsers/changelog-reader-action) - GitHub Action documentation
-- [GitHub CLI](https://cli.github.com/manual/gh_release) - `gh release` command reference
-
-## Support
-
-For issues with the release process:
-1. Check workflow logs: `gh run view <run-id> --log-failed`
-2. Verify changelog format matches Keep a Changelog standard
-3. Test manually create release before debugging automation
-4. Report issues at: https://github.com/maximunited/imou_life/issues
+- [python-semantic-release docs](https://python-semantic-release.readthedocs.io/)
+- [Conventional Commits](https://www.conventionalcommits.org/)
+- [Semantic Versioning](https://semver.org/)
+- [Commitizen](https://commitizen-tools.github.io/commitizen/)

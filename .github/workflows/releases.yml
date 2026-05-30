@@ -1,227 +1,53 @@
-name: Release Management
-
-# Smart Tag-Based Release System:
-# - v1.0.21 → Creates pre-release (testing)
-# - stable → Graduates pre-release to stable release (keeps both tags)
-# - ci-v1.0.21 → CI drafts (on branch pushes)
+name: Release Artifacts
 
 on:
-  # Manual trigger for pre-releases
+  release:
+    types: [published]
   workflow_dispatch:
     inputs:
-      release_type:
-        description: 'Release type'
+      tag:
+        description: 'Release tag to attach zip to (e.g., v1.7.0)'
         required: true
-        default: 'pre-release'
-        type: choice
-        options:
-          - pre-release
-          - release
-          - draft
-      version_override:
-        description: 'Override version (leave empty to use manifest)'
-        required: false
         type: string
-  # Auto-create drafts on push to master (for CI) and tag-based releases
-  push:
-    branches:
-      - master
-      - main
-    tags:
-      - 'v*'        # Pre-releases: v1.0.21, v1.0.22, etc.
-      - 'stable'    # Stable release trigger (graduation)
-    paths-ignore:
-      - '**.md'
-      - '**.txt'
-      - 'tests/**'
-      - '.github/**'
 
 jobs:
-  release:
-    name: Release Manager
+  attach-zip:
+    name: Build and Attach Zip
     runs-on: ubuntu-latest
     permissions:
       contents: write
     env:
-      ACTIONS_STEP_DEBUG: false
-      ACTIONS_RUNNER_DEBUG: false
       GH_TOKEN: ${{ github.token }}
     steps:
       - name: Check out the repository
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.release.tag_name || github.event.inputs.tag }}
 
       - name: Get integration name
-        id: information
-        shell: bash
+        id: info
         run: |
           name=$(find custom_components/ -type d -maxdepth 1 | tail -n 1 | cut -d "/" -f2)
-          echo "name: $name"
           echo "name=$name" >> $GITHUB_OUTPUT
 
-      - name: Get integration version from git tag or manifest
-        id: version
-        shell: bash
+      - name: Create zip file
         run: |
-          if [ "${{ github.event.inputs.version_override }}" != "" ]; then
-            # Manual override
-            version="${{ github.event.inputs.version_override }}"
-          elif [[ "${{ github.ref }}" == refs/tags/* ]]; then
-            # Extract version from git tag
-            if [[ "${{ github.ref }}" == refs/tags/stable ]]; then
-              # For stable tag, we need to find the latest version pre-release (not CI) by creation date
-              version=$(gh release list --json tagName,isPrerelease,createdAt | jq -r '.[] | select(.isPrerelease == true and (.tagName | startswith("v"))) | [.tagName, .createdAt] | @tsv' | sort -k2 -r | head -1 | cut -f1 | sed 's/^v//')
-              if [ -z "$version" ]; then
-                echo "No pre-release found to graduate to stable"
-                exit 1
-              fi
-            else
-              # Extract version from version tag (remove 'v' prefix)
-              version=${GITHUB_REF#refs/tags/}
-              version=${version#v}
-            fi
-          else
-            # Use manifest version (for CI drafts)
-            version=$(jq -r '.version' custom_components/${{ steps.information.outputs.name }}/manifest.json)
-          fi
-          echo "version: $version"
-          echo "version=$version" >> $GITHUB_OUTPUT
+          cd "${{ github.workspace }}/custom_components/${{ steps.info.outputs.name }}"
+          zip -r ../../${{ steps.info.outputs.name }}.zip . -x "*.pyc" -x "*__pycache__*" -x "*.git*"
 
-      - name: Get Changelog Entry
-        id: changelog_reader
-        uses: mindsers/changelog-reader-action@v2
-        with:
-          validation_depth: 10
-          version: ${{ steps.version.outputs.version }}
-          path: ./docs/CHANGELOG.md
-
-      - name: Create zip file for the integration
+      - name: Upload zip to release
         run: |
-          cd "${{ github.workspace }}/custom_components/${{ steps.information.outputs.name }}"
-          zip -r ../../${{ steps.information.outputs.name }}.zip . -x "*.pyc" -x "*__pycache__*" -x "*.git*"
-          ls -la "${{ github.workspace }}/"
-          echo "Verifying zip structure:"
-          unzip -l "${{ github.workspace }}/${{ steps.information.outputs.name }}.zip" | head -20
+          TAG="${{ github.event.release.tag_name || github.event.inputs.tag }}"
+          gh release upload "$TAG" "${{ github.workspace }}/${{ steps.info.outputs.name }}.zip" --clobber
 
-      - name: Determine release configuration
-        id: config
+      - name: Cleanup old CI draft releases
+        if: always()
         run: |
-          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            # Manual trigger
-            case "${{ github.event.inputs.release_type }}" in
-              "pre-release")
-                echo "draft=false" >> $GITHUB_OUTPUT
-                echo "prerelease=true" >> $GITHUB_OUTPUT
-                echo "tag_prefix=v" >> $GITHUB_OUTPUT
-                echo "name_prefix=Pre-release" >> $GITHUB_OUTPUT
-                ;;
-              "release")
-                echo "draft=false" >> $GITHUB_OUTPUT
-                echo "prerelease=false" >> $GITHUB_OUTPUT
-                echo "tag_prefix=v" >> $GITHUB_OUTPUT
-                echo "name_prefix=Release" >> $GITHUB_OUTPUT
-                ;;
-              "draft")
-                echo "draft=true" >> $GITHUB_OUTPUT
-                echo "prerelease=false" >> $GITHUB_OUTPUT
-                echo "tag_prefix=v" >> $GITHUB_OUTPUT
-                echo "name_prefix=Draft Release" >> $GITHUB_OUTPUT
-                ;;
-            esac
-           elif [[ "${{ github.ref }}" == refs/tags/* ]]; then
-             # Tag-based trigger
-             if [[ "${{ github.ref }}" == refs/tags/stable ]]; then
-               # Stable release - graduate from pre-release
-               echo "draft=false" >> $GITHUB_OUTPUT
-               echo "prerelease=false" >> $GITHUB_OUTPUT
-               echo "tag_prefix=v" >> $GITHUB_OUTPUT
-               echo "name_prefix=Release" >> $GITHUB_OUTPUT
-               echo "graduate=true" >> $GITHUB_OUTPUT
-             else
-               # Pre-release
-               echo "draft=false" >> $GITHUB_OUTPUT
-               echo "prerelease=true" >> $GITHUB_OUTPUT
-               echo "tag_prefix=v" >> $GITHUB_OUTPUT
-               echo "name_prefix=Pre-release" >> $GITHUB_OUTPUT
-               echo "graduate=false" >> $GITHUB_OUTPUT
-             fi
-          else
-            # Auto-trigger on push (CI mode)
-            echo "draft=true" >> $GITHUB_OUTPUT
-            echo "prerelease=true" >> $GITHUB_OUTPUT
-            echo "tag_prefix=ci-v" >> $GITHUB_OUTPUT
-            echo "name_prefix=CI Draft" >> $GITHUB_OUTPUT
-            echo "graduate=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Check if release already exists
-        id: check_release
-        if: steps.config.outputs.draft == 'true'
-        run: |
-          if gh release list --json tagName,isDraft | jq -e '.[] | select(.tagName == "${{ steps.config.outputs.tag_prefix }}${{ steps.version.outputs.version }}" and .isDraft == true)' > /dev/null; then
-            echo "exists=true" >> $GITHUB_OUTPUT
-          else
-            echo "exists=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Handle pre-release graduation
-        if: steps.config.outputs.graduate == 'true'
-        run: |
-          echo "Graduating pre-release v${{ steps.version.outputs.version }} to stable release"
-
-          # Find the pre-release and update it to stable (don't delete)
-          if gh release list --json tagName,isPrerelease | jq -e '.[] | select(.tagName == "v${{ steps.version.outputs.version }}" and .isPrerelease == true)' > /dev/null; then
-            echo "Found pre-release v${{ steps.version.outputs.version }}, updating to stable..."
-            # Update the existing release to remove pre-release status
-            gh release edit "v${{ steps.version.outputs.version }}" --prerelease=false
-            echo "Pre-release v${{ steps.version.outputs.version }} graduated to stable release"
-          else
-            echo "No pre-release found for v${{ steps.version.outputs.version }}"
-            exit 1
-          fi
-
-      - name: Create/Update GitHub Release
-        if: steps.config.outputs.exists != 'true' && steps.config.outputs.graduate != 'true'
-        uses: softprops/action-gh-release@v3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          name: "${{ steps.config.outputs.name_prefix }} - ${{ steps.version.outputs.version }}"
-          tag_name: "${{ steps.config.outputs.tag_prefix }}${{ steps.version.outputs.version }}"
-          body: |
-            ## ${{ steps.config.outputs.name_prefix }} - ${{ steps.version.outputs.version }}
-
-            ${{ steps.config.outputs.draft == 'true' && 'This is an automatic draft release created after all tests passed successfully.' || (steps.config.outputs.graduate == 'true' && 'This is a stable release graduated from pre-release.' || 'This is a manually created release.') }}
-
-            ### Changes
-            ${{ steps.changelog_reader.outputs.changes }}
-
-            ### Installation
-            1. Download the `${{ steps.information.outputs.name }}.zip` file from this release
-            2. Extract to your Home Assistant `custom_components` directory
-            3. Restart Home Assistant
-            4. Add the integration via Settings > Devices & Services
-
-            ### Requirements
-            - Home Assistant 2023.8.0 or later
-            - imouapi==1.0.15
-
-            ${{ steps.config.outputs.draft == 'true' && '### Status
-            ✅ All tests passed
-            ✅ Code quality checks passed
-            ✅ HACS validation passed
-            ✅ Hassfest validation passed' || '' }}
-
-            ${{ steps.config.outputs.graduate == 'true' && '### Release Status
-            🎉 **Stable Release** - This version has been tested and is ready for production use.
-            ✅ Graduated from pre-release v${{ steps.version.outputs.version }}' || '' }}
-
-          files: |
-            ${{ github.workspace }}/${{ steps.information.outputs.name }}.zip
-          draft: ${{ steps.config.outputs.draft }}
-          prerelease: ${{ steps.config.outputs.prerelease }}
-
-      - name: Skip duplicate release
-        if: steps.config.outputs.exists == 'true'
-        run: |
-          echo "Release already exists for version ${{ steps.version.outputs.version }}"
-          echo "Skipping creation of duplicate release"
+          echo "Cleaning up CI draft releases older than 7 days..."
+          CUTOFF=$(date -d '7 days ago' -u +%Y-%m-%dT%H:%M:%SZ)
+          gh release list --json tagName,isDraft,createdAt | \
+            jq -r ".[] | select(.isDraft == true and (.tagName | startswith(\"ci-v\")) and .createdAt < \"$CUTOFF\") | .tagName" | \
+            while read -r tag; do
+              echo "Deleting old CI draft: $tag"
+              gh release delete "$tag" -y --cleanup-tag 2>/dev/null || true
+            done

@@ -37,6 +37,7 @@ dev = [
     "pytest>=7.0.0",
     "pytest-cov>=4.0.0",
     "coverage>=7.0.0",
+    "python-semantic-release>=9.0.0",
 ]
 docs = [
     "sphinx>=8.0.0,<10.0.0",
@@ -130,3 +131,20 @@ extend-exclude = '''
 '''
 
 # isort configuration moved to .pre-commit-config.yaml to avoid conflicts
+
+[tool.semantic_release]
+version_toml = ["pyproject.toml:project.version"]
+tag_format = "v{version}"
+commit_message = "chore(release): bump version to {version}"
+major_on_zero = false
+branch = "master"
+build_command = "python tools/scripts/sync_version.py"
+
+[tool.semantic_release.changelog]
+changelog_file = ""
+
+[tool.semantic_release.remote]
+type = "github"
+
+[tool.semantic_release.publish]
+upload_to_vcs_release = false

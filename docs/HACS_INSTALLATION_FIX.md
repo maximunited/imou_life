@@ -256,7 +256,7 @@ unzip -l "${{ github.workspace }}/${{ steps.information.outputs.name }}.zip" | h
 {
   "name": "Imou Life",
   "render_readme": true,
-  "homeassistant": "2023.8.0",
+  "homeassistant": "2024.2.0",
   "zip_release": true,
   "filename": "imou_life.zip",
   "hide_default_branch": true,

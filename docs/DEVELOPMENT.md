@@ -25,7 +25,7 @@ This guide covers development setup, testing, and contribution guidelines for th
 Before setting up the development environment, ensure you have:
 
 - **Python**: 3.9 or later
-- **Home Assistant**: 2023.8.0 or later
+- **Home Assistant**: 2024.2.0 or later
 - **Git**: Latest version
 - **Docker**: For containerized testing (optional)
 
