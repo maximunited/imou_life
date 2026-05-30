@@ -1,6 +1,33 @@
 # CHANGELOG
 
 
+## v1.7.4 (2026-05-30)
+
+### Bug Fixes
+
+- Stop probing after 3 rate limit failures and wait for reset
+  ([#63](https://github.com/maximunited/imou_life/pull/63),
+  [`27e218e`](https://github.com/maximunited/imou_life/commit/27e218e5d1d9ab044dc9c8fee0cffe3c2be4a379))
+
+* fix: scale rate limit backoff with hit count
+
+The backoff was fixed at 300s regardless of how many times the rate limit was hit, causing an
+  infinite retry loop every 5 minutes. Now the backoff scales linearly with hit_count (5min, 10min,
+  15min, ...) so consecutive failures wait progressively longer.
+
+Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>
+
+* fix: stop probing after 3 rate limit failures and wait for reset
+
+The OP1013 "total" limit is a daily quota, not hourly. Three changes: - Increase estimated reset
+  from 1h to 6h for daily quotas - Stop probing after 3 consecutive failures (wait for reset
+  instead) - Don't push estimated_reset_time forward on each hit (keep original)
+
+---------
+
+Co-authored-by: Claude Sonnet 4.5 <noreply@anthropic.com>
+
+
 ## v1.7.3 (2026-05-30)
 
 ### Bug Fixes
