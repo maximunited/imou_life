@@ -138,7 +138,10 @@ STALE_DEVICE_ERROR_PATTERNS = [
 
 # Rate limit handling
 RATE_LIMIT_BACKOFF_SECONDS = 300  # 5 minutes minimum backoff
-RATE_LIMIT_RESET_ESTIMATE_HOURS = 1  # Imou API typically resets hourly
+RATE_LIMIT_RESET_ESTIMATE_HOURS = (
+    6  # OP1013 "total" limit is daily; wait conservatively
+)
+RATE_LIMIT_MAX_PROBE_RETRIES = 3  # Stop probing after this many consecutive failures
 RATE_LIMIT_CACHE_KEY = "rate_limit_state"
 
 # switches which are enabled by default
