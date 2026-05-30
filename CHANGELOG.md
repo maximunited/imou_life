@@ -1,6 +1,34 @@
 # CHANGELOG
 
 
+## v1.7.1 (2026-05-30)
+
+### Bug Fixes
+
+- Auto-cleanup orphan devices on entry setup
+  ([#60](https://github.com/maximunited/imou_life/pull/60),
+  [`ba890a2`](https://github.com/maximunited/imou_life/commit/ba890a2f6e751ca3ffd3b962f186dfac9bca067f))
+
+* fix: auto-cleanup orphan devices on entry setup
+
+When a config entry is deleted and re-added, the old device registry entry (keyed by the previous
+  entry_id) was left behind as an orphan. This adds cleanup at the start of async_setup_entry that
+  removes any device whose (DOMAIN, entry_id) identifier no longer matches a live config entry.
+  Rate-limited or temporarily unavailable devices are safe since their config entries still exist.
+
+Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>
+
+* fix: narrow exception handling and add tests for orphan cleanup
+
+Address CodeRabbit and Qodo review feedback: - Catch (KeyError, AttributeError) instead of broad
+  Exception - Log actual error details instead of generic message - Add 6 unit tests covering orphan
+  removal, active device retention, foreign device safety, and error handling
+
+---------
+
+Co-authored-by: Claude Sonnet 4.5 <noreply@anthropic.com>
+
+
 ## v1.7.0 (2026-05-30)
 
 ### Bug Fixes
