@@ -1,6 +1,35 @@
 # CHANGELOG
 
 
+## v1.8.1 (2026-05-31)
+
+### Bug Fixes
+
+- Reset rate limit cycle when estimated reset time expires
+  ([#65](https://github.com/maximunited/imou_life/pull/65),
+  [`011fe94`](https://github.com/maximunited/imou_life/commit/011fe94ea7de6136667d635b0dcb7b194ee97ce7))
+
+* fix: reset rate limit cycle when estimated reset time expires
+
+When a rate limit hit occurred after estimated_reset_time had passed, record_rate_limit() kept the
+  old (now past) reset time and just incremented hit_count. This caused is_rate_limited() to always
+  return False (since now >= estimated_reset_time), letting the integration retry every ~80 seconds
+  indefinitely (100+ API hits observed).
+
+Now starts a fresh cycle (hit_count=1, new 6-hour reset window) when recording a hit after the
+  previous reset time expired.
+
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
+
+* test: use RATE_LIMIT_MAX_PROBE_RETRIES constant instead of magic number
+
+Addresses Qodo review feedback on PR #65.
+
+---------
+
+Co-authored-by: Claude Opus 4.6 <noreply@anthropic.com>
+
+
 ## v1.8.0 (2026-05-30)
 
 ### Features
