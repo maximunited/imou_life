@@ -81,11 +81,17 @@ class RateLimitManager:
         now = dt_util.utcnow()
 
         if key in storage:
-            # Update existing state but keep original estimated_reset_time
             state = storage[key]
+            if now >= state.estimated_reset_time:
+                # Previous wait expired but API is still limited — fresh cycle
+                state.estimated_reset_time = now + timedelta(
+                    hours=RATE_LIMIT_RESET_ESTIMATE_HOURS
+                )
+                state.hit_count = 1
+            else:
+                state.hit_count += 1
             state.last_rate_limit_time = now
             state.error_message = error_message
-            state.hit_count += 1
         else:
             # Create new state
             storage[key] = RateLimitState(
