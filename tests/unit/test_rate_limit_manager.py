@@ -8,6 +8,7 @@ from homeassistant.util import dt as dt_util
 
 from custom_components.imou_life.const import (
     RATE_LIMIT_BACKOFF_SECONDS,
+    RATE_LIMIT_MAX_PROBE_RETRIES,
     RATE_LIMIT_RESET_ESTIMATE_HOURS,
 )
 from custom_components.imou_life.rate_limit_manager import RateLimitManager
@@ -194,6 +195,44 @@ def test_reset_after_estimated_time(rate_limit_mgr: RateLimitManager) -> None:
     # Should no longer be limited (allows retry)
     is_limited, _ = rate_limit_mgr.is_rate_limited(app_id, app_secret)
     assert is_limited is False
+
+
+def test_fresh_cycle_after_expired_reset(rate_limit_mgr: RateLimitManager) -> None:
+    """Test that a new rate limit hit after expired reset starts a fresh cycle.
+
+    Regression test: previously, recording a hit after estimated_reset_time
+    kept the old (past) reset time, so is_rate_limited always returned False
+    and the integration hammered the API indefinitely.
+    """
+    app_id = "test_app_id"
+    app_secret = "test_secret"
+
+    # Exhaust probe retries
+    for _ in range(RATE_LIMIT_MAX_PROBE_RETRIES):
+        rate_limit_mgr.record_rate_limit(app_id, app_secret, "OP1013")
+
+    state = rate_limit_mgr.get_state(app_id, app_secret)
+    assert state.hit_count == RATE_LIMIT_MAX_PROBE_RETRIES
+
+    # Simulate reset time passing
+    state.estimated_reset_time = dt_util.utcnow() - timedelta(minutes=1)
+    state.last_rate_limit_time = dt_util.utcnow() - timedelta(hours=1)
+
+    # Should allow retry now
+    is_limited, _ = rate_limit_mgr.is_rate_limited(app_id, app_secret)
+    assert is_limited is False
+
+    # API still rate limited — record hit #4
+    rate_limit_mgr.record_rate_limit(app_id, app_secret, "OP1013 again")
+
+    # Must start a fresh cycle: hit_count resets, new estimated_reset_time
+    state = rate_limit_mgr.get_state(app_id, app_secret)
+    assert state.hit_count == 1
+    assert state.estimated_reset_time > dt_util.utcnow()
+
+    # Should be rate limited again (within backoff)
+    is_limited, _ = rate_limit_mgr.is_rate_limited(app_id, app_secret)
+    assert is_limited is True
 
 
 def test_message_content(rate_limit_mgr: RateLimitManager) -> None:
