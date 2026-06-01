@@ -122,7 +122,9 @@ class ImouDataUpdateCoordinator(DataUpdateCoordinator):
             return data
 
         except ImouException as exception:
-            error_str = str(exception)
+            error_str = str(exception) or (
+                f"{type(exception).__name__} ({exception.get_title()})"
+            )
 
             # Check for authentication errors first
             auth_error_patterns = [
