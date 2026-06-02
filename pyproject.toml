@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "imou_life"
-version = "1.8.1"
+version = "1.8.2"
 description = "Home Assistant integration for Imou Life cameras and devices"
 readme = "README.md"
 license = "MIT"
