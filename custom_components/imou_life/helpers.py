@@ -2,6 +2,8 @@
 
 import re
 
+from imouapi.exceptions import ImouException
+
 
 def camel_to_snake(name: str) -> str:
     """Convert camelCase to snake_case for translation keys.
@@ -23,3 +25,9 @@ def camel_to_snake(name: str) -> str:
     if not isinstance(name, str):
         return str(name)
     return re.sub(r"(?<!^)(?=[A-Z])", "_", name).lower()
+
+
+def exception_message(exception: ImouException) -> str:
+    """Extract a useful message from an ImouException, even if empty."""
+    msg = str(exception).strip()
+    return msg or f"{type(exception).__name__} ({exception.get_title()})"

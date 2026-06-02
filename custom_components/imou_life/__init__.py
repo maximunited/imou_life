@@ -38,6 +38,7 @@ from .const import (
     PLATFORMS,
 )
 from .coordinator import ImouDataUpdateCoordinator, ImouDiscoveryCoordinator
+from .helpers import exception_message
 from .rate_limit_manager import RateLimitManager
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -267,9 +268,7 @@ async def _initialize_device(
             translation_domain=DOMAIN, translation_key="device_init_timeout"
         ) from None
     except ImouException as exception:
-        error_msg = str(exception) or (
-            f"{type(exception).__name__} ({exception.get_title()})"
-        )
+        error_msg = exception_message(exception)
         # Handle API rate limit errors (OP1013) by recording and requesting retry
         if "OP1013" in error_msg or "exceed limit" in error_msg.lower():
             # Record the rate limit error
