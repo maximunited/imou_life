@@ -38,6 +38,7 @@ from .const import (
     PLATFORMS,
 )
 from .coordinator import ImouDataUpdateCoordinator, ImouDiscoveryCoordinator
+from .helpers import exception_message
 from .rate_limit_manager import RateLimitManager
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -243,7 +244,7 @@ async def _initialize_device(
     is_limited, limit_data = rate_limit_mgr.is_rate_limited(app_id, app_secret)
 
     if is_limited:
-        _LOGGER.warning(
+        _LOGGER.debug(
             "Skipping device initialization due to active rate limit: retry in %ds",
             limit_data.get("backoff_seconds", 0) if limit_data else 0,
         )
@@ -267,7 +268,7 @@ async def _initialize_device(
             translation_domain=DOMAIN, translation_key="device_init_timeout"
         ) from None
     except ImouException as exception:
-        error_msg = str(exception)
+        error_msg = exception_message(exception)
         # Handle API rate limit errors (OP1013) by recording and requesting retry
         if "OP1013" in error_msg or "exceed limit" in error_msg.lower():
             # Record the rate limit error

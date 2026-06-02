@@ -23,6 +23,7 @@ from .const import (
     OPTION_DISCOVERY_INTERVAL,
     STALE_DEVICE_ERROR_PATTERNS,
 )
+from .helpers import exception_message
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -122,7 +123,7 @@ class ImouDataUpdateCoordinator(DataUpdateCoordinator):
             return data
 
         except ImouException as exception:
-            error_str = str(exception)
+            error_str = exception_message(exception)
 
             # Check for authentication errors first
             auth_error_patterns = [
