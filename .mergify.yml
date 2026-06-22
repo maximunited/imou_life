@@ -14,14 +14,13 @@ queue_rules:
       - check-success=Hassfest
 
 pull_request_rules:
-  # Auto-merge Dependabot PRs for patch updates
-  - name: Auto-merge Dependabot patch updates
+  # Auto-merge all Dependabot updates
+  - name: Auto-merge Dependabot updates
     conditions:
       - author=dependabot[bot]
       - check-success=Pre-commit
       - check-success=HACS
       - check-success=Hassfest
-      - "title~=chore\\(deps\\):.*patch"
       - -conflict
       - -draft
       - -label=do-not-merge
@@ -32,86 +31,6 @@ pull_request_rules:
         add:
           - auto-merge
           - dependencies
-
-  # Auto-merge Dependabot PRs for minor updates
-  - name: Auto-merge Dependabot minor updates
-    conditions:
-      - author=dependabot[bot]
-      - check-success=Pre-commit
-      - check-success=HACS
-      - check-success=Hassfest
-      - "title~=chore\\(deps\\):.*minor"
-      - -conflict
-      - -draft
-      - -label=do-not-merge
-    actions:
-      queue:
-        name: default
-      label:
-        add:
-          - auto-merge
-          - dependencies
-
-  # Auto-merge Dependabot PRs for dev dependencies (no major versions)
-  - name: Auto-merge Dependabot dev dependencies
-    conditions:
-      - author=dependabot[bot]
-      - check-success=Pre-commit
-      - check-success=HACS
-      - check-success=Hassfest
-      - "title~=chore\\(deps-dev\\):"
-      - "-title~=major"
-      - -conflict
-      - -draft
-      - -label=do-not-merge
-    actions:
-      queue:
-        name: default
-      label:
-        add:
-          - auto-merge
-          - dependencies
-
-  # Auto-merge Dependabot PRs for CI dependencies (no major versions)
-  - name: Auto-merge Dependabot CI dependencies
-    conditions:
-      - author=dependabot[bot]
-      - check-success=Pre-commit
-      - check-success=HACS
-      - check-success=Hassfest
-      - "title~=ci\\(deps\\):"
-      - "-title~=major"
-      - -conflict
-      - -draft
-      - -label=do-not-merge
-    actions:
-      queue:
-        name: default
-      label:
-        add:
-          - auto-merge
-          - dependencies
-
-  # Auto-merge Dependabot with manual approval for major updates
-  - name: Queue Dependabot major updates with approval
-    conditions:
-      - author=dependabot[bot]
-      - "title~=chore\\(deps\\):.*major"
-      - check-success=Pre-commit
-      - check-success=HACS
-      - check-success=Hassfest
-      - "#approved-reviews-by>=1"
-      - -conflict
-      - -draft
-      - -label=do-not-merge
-    actions:
-      queue:
-        name: default
-      label:
-        add:
-          - auto-merge
-          - dependencies
-          - needs-review
 
   # Auto-merge pre-commit.ci updates
   - name: Auto-merge pre-commit.ci updates
@@ -131,17 +50,16 @@ pull_request_rules:
           - auto-merge
           - dependencies
 
-  # Auto-approve Dependabot PRs (except major updates)
+  # Auto-approve Dependabot PRs
   - name: Auto-approve Dependabot
     conditions:
       - author=dependabot[bot]
-      - "-title~=major"
       - -conflict
       - -draft
     actions:
       review:
         type: APPROVE
-        message: "Auto-approved: Dependabot update (non-major)."
+        message: "Auto-approved: Dependabot update."
 
   # Add labels based on PR title (conventional commits)
   - name: Label enhancement PRs
