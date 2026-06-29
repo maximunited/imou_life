@@ -62,7 +62,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Cache pip dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-${{ matrix.ha-version }}-${{ hashFiles('config/requirements_test.txt') }}
