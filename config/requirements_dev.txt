@@ -9,7 +9,7 @@ black>=26.5.1
 codespell>=2.4.2
 flake8>=7.3.0
 isort>=8.0.1
-mypy>=2.1.0
+mypy>=2.2.0
 
 # Pre-commit
 pre-commit>=4.6.0
@@ -23,4 +23,4 @@ pyupgrade>=3.21.2
 
 # Type stubs
 types-PyYAML>=6.0.12.20260518
-types-requests>=2.33.0.20260518
+types-requests>=2.33.0.20260712
