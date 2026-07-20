@@ -1,17 +1,6 @@
 # Mergify Configuration for Auto-merge
 # Docs: https://docs.mergify.com/
 
-queue_rules:
-  - name: default
-    merge_method: squash
-    commit_message_format:
-      title: pr-title
-      body: pr-body
-    queue_conditions:
-      - check-success=Pre-commit
-      - check-success=HACS
-      - check-success=Hassfest
-
 pull_request_rules:
   # Auto-merge all Dependabot updates
   - name: Auto-merge Dependabot updates
@@ -24,8 +13,8 @@ pull_request_rules:
       - -draft
       - -label=do-not-merge
     actions:
-      queue:
-        name: default
+      merge:
+        method: squash
       label:
         add:
           - auto-merge
@@ -42,8 +31,8 @@ pull_request_rules:
       - -draft
       - -label=do-not-merge
     actions:
-      queue:
-        name: default
+      merge:
+        method: squash
       label:
         add:
           - auto-merge
@@ -206,10 +195,12 @@ pull_request_rules:
         add:
           - documentation
 
-  # Dismiss stale reviews when new commits are pushed
+  # Dismiss stale reviews when new commits are pushed (excludes bots)
   - name: Dismiss stale reviews on new commits
     conditions:
       - base=master
+      - -author=dependabot[bot]
+      - -author=pre-commit-ci[bot]
     actions:
       dismiss_reviews:
         approved: true
