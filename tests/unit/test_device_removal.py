@@ -32,6 +32,7 @@ async def test_async_remove_config_entry_device_matching_device(hass: HomeAssist
         manufacturer="Imou",
         model="Test Model",
         name="Test Camera",
+        config_entry_id="test_entry_id",
     )
 
     # Should return True - device belongs to this config entry
@@ -63,6 +64,7 @@ async def test_async_remove_config_entry_device_non_matching_device(
         manufacturer="Imou",
         model="Test Model",
         name="Different Camera",
+        config_entry_id="test_entry_id",
     )
 
     # Should return False - device doesn't belong to this config entry
@@ -98,6 +100,7 @@ async def test_async_remove_config_entry_device_multiple_identifiers(
         manufacturer="Imou",
         model="Test Model",
         name="Test Camera",
+        config_entry_id="test_entry_id",
     )
 
     # Should return True - one of the identifiers matches
@@ -131,6 +134,7 @@ async def test_async_remove_config_entry_device_no_device_id(hass: HomeAssistant
         manufacturer="Imou",
         model="Test Model",
         name="Test Camera",
+        config_entry_id="test_entry_id",
     )
 
     # Should return False - identifier doesn't match config_entry.entry_id

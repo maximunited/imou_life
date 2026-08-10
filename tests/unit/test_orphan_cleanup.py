@@ -11,7 +11,9 @@ from tests.fixtures.mocks import MockConfigEntry
 
 def _make_device_entry(device_id, identifiers):
     """Create a DeviceEntry with given identifiers."""
-    return DeviceEntry(id=device_id, identifiers=identifiers)
+    return DeviceEntry(
+        id=device_id, identifiers=identifiers, config_entry_id="config_entry_id"
+    )
 
 
 def _make_registry(device_entries):
