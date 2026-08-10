@@ -1,8 +1,7 @@
 """Test orphan device cleanup functionality."""
 
+from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
-
-from homeassistant.helpers.device_registry import DeviceEntry
 
 from custom_components.imou_life import _cleanup_orphan_devices
 from custom_components.imou_life.const import DOMAIN
@@ -10,10 +9,13 @@ from tests.fixtures.mocks import MockConfigEntry
 
 
 def _make_device_entry(device_id, identifiers):
-    """Create a DeviceEntry with given identifiers."""
-    return DeviceEntry(
-        id=device_id, identifiers=identifiers, config_entry_id="config_entry_id"
-    )
+    """Create a device-entry-like object with the given identifiers.
+
+    Uses SimpleNamespace instead of the real DeviceEntry dataclass so the
+    test doesn't couple to Home Assistant's constructor, which has changed
+    its required fields across HA releases.
+    """
+    return SimpleNamespace(id=device_id, identifiers=identifiers, name=device_id)
 
 
 def _make_registry(device_entries):
