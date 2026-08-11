@@ -1,8 +1,9 @@
 """Test device removal functionality."""
 
+from types import SimpleNamespace
+
 import pytest
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.device_registry import DeviceEntry
 
 from custom_components.imou_life import async_remove_config_entry_device
 from custom_components.imou_life.const import CONF_DEVICE_ID, CONF_DEVICE_NAME, DOMAIN
@@ -26,7 +27,10 @@ async def test_async_remove_config_entry_device_matching_device(hass: HomeAssist
 
     # Create a mock device entry with matching identifier
     # Note: Entities use config_entry.entry_id as device identifier, not device_id
-    device_entry = DeviceEntry(
+    # Uses SimpleNamespace instead of the real DeviceEntry dataclass so the test
+    # doesn't couple to Home Assistant's constructor, which has changed its
+    # required fields across HA releases.
+    device_entry = SimpleNamespace(
         id="device_id_123",
         identifiers={(DOMAIN, "test_entry_id")},  # Matches config_entry.entry_id
         manufacturer="Imou",
@@ -57,7 +61,7 @@ async def test_async_remove_config_entry_device_non_matching_device(
     )
 
     # Create a mock device entry with different identifier
-    device_entry = DeviceEntry(
+    device_entry = SimpleNamespace(
         id="device_id_456",
         identifiers={(DOMAIN, "different_device_456")},
         manufacturer="Imou",
@@ -89,7 +93,7 @@ async def test_async_remove_config_entry_device_multiple_identifiers(
 
     # Create a mock device entry with multiple identifiers (one matches)
     # Note: Entities use config_entry.entry_id as device identifier
-    device_entry = DeviceEntry(
+    device_entry = SimpleNamespace(
         id="device_id_123",
         identifiers={
             ("other_domain", "other_id"),
@@ -125,7 +129,7 @@ async def test_async_remove_config_entry_device_no_device_id(hass: HomeAssistant
     )
 
     # Create a mock device entry with non-matching identifier
-    device_entry = DeviceEntry(
+    device_entry = SimpleNamespace(
         id="device_id_123",
         identifiers={(DOMAIN, "test_device_123")},  # Doesn't match entry_id
         manufacturer="Imou",
