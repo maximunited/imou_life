@@ -69,7 +69,8 @@ SETUP_TIMEOUT = 30
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     """Set up the Imou Life integration (services; YAML config not supported)."""
     # Register PTZ entity services at integration setup so registration does
-    # not depend on camera platform load (HA 2025.10+ pattern).
+    # not depend on camera platform load. Requires Home Assistant 2025.10+
+    # (async_register_platform_entity_service); matches hacs.json floor.
     service.async_register_platform_entity_service(
         hass,
         DOMAIN,
