@@ -1,6 +1,6 @@
 """Comprehensive tests for the Imou Life Camera platform."""
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from homeassistant.exceptions import HomeAssistantError
@@ -40,18 +40,10 @@ class TestCameraSetup:
         from custom_components.imou_life.camera import async_setup_entry
 
         async_add_devices = MagicMock()
-        mock_platform = MagicMock()
 
-        with patch(
-            "custom_components.imou_life.camera.entity_platform.async_get_current_platform",
-            return_value=mock_platform,
-        ):
-            await async_setup_entry(MagicMock(), mock_config_entry, async_add_devices)
+        await async_setup_entry(MagicMock(), mock_config_entry, async_add_devices)
 
-        # Should register PTZ services
-        assert mock_platform.async_register_entity_service.call_count == 2
-
-        # Should call async_add_devices with empty list
+        # PTZ services are registered in integration async_setup, not here
         async_add_devices.assert_called_once()
         added_devices = async_add_devices.call_args[0][0]
         assert len(added_devices) == 0
@@ -80,13 +72,8 @@ class TestCameraSetup:
         ]
 
         async_add_devices = MagicMock()
-        mock_platform = MagicMock()
 
-        with patch(
-            "custom_components.imou_life.camera.entity_platform.async_get_current_platform",
-            return_value=mock_platform,
-        ):
-            await async_setup_entry(MagicMock(), mock_config_entry, async_add_devices)
+        await async_setup_entry(MagicMock(), mock_config_entry, async_add_devices)
 
         # Should add 2 camera entities
         async_add_devices.assert_called_once()

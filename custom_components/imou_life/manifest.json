@@ -8,6 +8,7 @@
     "config_flow": true,
     "dependencies": [],
     "documentation": "https://github.com/maximunited/imou_life",
+    "integration_type": "device",
     "iot_class": "cloud_polling",
     "issue_tracker": "https://github.com/maximunited/imou_life/issues",
     "quality_scale": "platinum",
