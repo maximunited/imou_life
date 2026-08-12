@@ -1,8 +1,12 @@
 """Class to manage fetching data from the API."""
 
+from __future__ import annotations
+
 import logging
 from datetime import datetime, timedelta
+from typing import TypeAlias
 
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
@@ -247,6 +251,10 @@ class ImouDataUpdateCoordinator(DataUpdateCoordinator):
                 "Restored original scan interval to %ds (rate limit cleared)",
                 self._original_scan_interval,
             )
+
+
+# Typed config entry used across the integration (runtime_data = coordinator)
+ImouConfigEntry: TypeAlias = ConfigEntry[ImouDataUpdateCoordinator]
 
 
 class ImouDiscoveryCoordinator(DataUpdateCoordinator):

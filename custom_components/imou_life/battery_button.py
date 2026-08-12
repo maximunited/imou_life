@@ -3,7 +3,6 @@
 import logging
 
 from homeassistant.components.button import ButtonEntity
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -19,12 +18,16 @@ from .const import (
     DEFAULT_RECORDING_QUALITY,
     DOMAIN,
 )
+from .coordinator import ImouConfigEntry
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
+# Serialize entity updates to prevent API rate limiting
+PARALLEL_UPDATES = 1
+
 
 async def async_setup_entry(
-    hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
+    hass: HomeAssistant, entry: ImouConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
     """Set up the Imou battery optimization button platform."""
     coordinator = entry.runtime_data

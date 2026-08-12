@@ -3,7 +3,6 @@
 import logging
 from typing import TYPE_CHECKING
 
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
@@ -12,6 +11,7 @@ from .helpers import camel_to_snake
 
 if TYPE_CHECKING:
     from .battery_coordinator import BatteryOptimizationCoordinator
+    from .coordinator import ImouConfigEntry
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -24,7 +24,7 @@ class ImouBatteryEntity(CoordinatorEntity):
     def __init__(
         self,
         coordinator: "BatteryOptimizationCoordinator",
-        config_entry: ConfigEntry,
+        config_entry: "ImouConfigEntry",
         entity_type: str,
         description: str,
         unique_id_suffix: str,
