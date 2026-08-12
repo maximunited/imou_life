@@ -9,12 +9,12 @@ from homeassistant.components.camera import (
     Camera,
     CameraEntityFeature,
 )
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 from imouapi.exceptions import ImouException
 
 from .const import DOMAIN, ENABLED_CAMERAS
+from .coordinator import ImouConfigEntry
 from .helpers import camel_to_snake
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -25,7 +25,7 @@ PARALLEL_UPDATES = 1
 
 
 async def async_setup_entry(
-    hass: HomeAssistant, entry: ConfigEntry, async_add_devices: Callable
+    hass: HomeAssistant, entry: ImouConfigEntry, async_add_devices: Callable
 ):
     """Configure platform.
 

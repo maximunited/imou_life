@@ -11,9 +11,7 @@ from .const import DOMAIN
 from .helpers import camel_to_snake
 
 if TYPE_CHECKING:
-    from homeassistant.config_entries import ConfigEntry
-
-    from .coordinator import ImouDataUpdateCoordinator
+    from .coordinator import ImouConfigEntry, ImouDataUpdateCoordinator
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -27,7 +25,7 @@ class ImouEntity(CoordinatorEntity):
     def __init__(
         self,
         coordinator: "ImouDataUpdateCoordinator",
-        config_entry: "ConfigEntry",
+        config_entry: "ImouConfigEntry",
         sensor_instance: Any,  # Type from external imouapi library
         entity_format: str,
     ) -> None:

@@ -1,12 +1,14 @@
 """Common platform setup utilities for Imou integration."""
 
+from __future__ import annotations
+
 import logging
 from collections.abc import Callable
 from typing import Type
 
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 
+from .coordinator import ImouConfigEntry
 from .entity import ImouEntity
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -14,7 +16,7 @@ _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 async def setup_platform(
     hass: HomeAssistant,
-    entry: ConfigEntry,
+    entry: ImouConfigEntry,
     platform_name: str,
     entity_class: Type[ImouEntity],
     entity_id_format: str,

@@ -3,10 +3,10 @@
 # https://developers.home-assistant.io/docs/core/integration-quality-scale/rules/
 
 rules:
-  # 🥉 Bronze Tier (19 rules) - Baseline quality
+  # Bronze Tier (19 rules) - Baseline quality
   action-setup: done  # PTZ services registered in camera platform
   appropriate-polling: done  # 15min default, configurable
-  brands: done  # icon.png (256×256) and icon@2x.png (512×512) from HA brands repo
+  brands: done  # icon.png (256x256) and icon@2x.png (512x512) from HA brands repo
   common-modules: done  # entity.py, entity_mixins.py, platform_setup.py
   config-flow-test-coverage: done  # 10/10 tests passing
   config-flow: done  # UI-based setup
@@ -18,27 +18,27 @@ rules:
   entity-event-setup: done  # Motion is binary_sensor (state), lastAlarm is timestamp (historical)
   entity-unique-id: done  # Using device IDs
   has-entity-name: done  # Implemented _attr_has_entity_name = True in base entity
-  runtime-data: done  # Migrated from hass.data[DOMAIN] to entry.runtime_data
+  runtime-data: done  # entry.runtime_data + typed ImouConfigEntry alias
   test-before-configure: done  # Validates credentials in config flow
   test-before-setup: done  # Validates device initialization
   unique-config-entry: done  # Uses device_id as unique_id
 
-  # 🥈 Silver Tier (10 rules) - Stable user experience
-  action-exceptions: todo  # Service exception handling needs verification
+  # Silver Tier (10 rules) - Stable user experience
+  action-exceptions: todo  # PTZ/battery wrap ImouException; select/button/siren/switch turn_* do not
   config-entry-unloading: done  # async_unload_entry implemented
   docs-configuration-parameters: done  # docs/CONFIGURATION.md
   docs-installation-parameters: done  # docs/INSTALLATION.md
   entity-unavailable: done  # Sets unavailable when offline
   integration-owner: done  # CODEOWNERS file
-  log-when-unavailable: todo  # Logging needs verification
-  parallel-updates: todo  # Not specified in platforms
-  reauthentication-flow: todo  # Not implemented
-  test-coverage: todo  # ~70% currently, need 95%
+  log-when-unavailable: done  # Coordinator raises UpdateFailed (built-in once log); entity tracks transitions
+  parallel-updates: done  # PARALLEL_UPDATES = 1 on all platforms including battery_*
+  reauthentication-flow: done  # async_step_reauth / async_step_reauth_confirm in config_flow.py
+  test-coverage: todo  # Need verified >=95%; do not claim without fresh coverage run
 
-  # 🥇 Gold Tier (23 rules) - Comprehensive support
+  # Gold Tier (23 rules) - Comprehensive support
   devices: done  # Creates devices
   diagnostics: done  # diagnostics.py implemented
-  discovery-update-info: todo  # Needs verification
+  discovery-update-info: exempt  # Cloud OpenAPI; no local host/IP from network discovery to update
   discovery: done  # Device discovery in config flow
   docs-data-update: todo  # Needs documentation
   docs-examples: todo  # No automation examples yet
@@ -47,24 +47,29 @@ rules:
   docs-supported-functions: todo  # Needs comprehensive entity documentation
   docs-troubleshooting: done  # docs/PERFORMANCE_TROUBLESHOOTING.md
   docs-use-cases: todo  # No use case examples
-  dynamic-devices: todo  # Cannot add devices after setup
+  dynamic-devices: exempt  # One device per config entry; new devices via new entries/discovery
   entity-category: done  # API status sensor uses diagnostic category
-  entity-device-class: todo  # Needs verification
-  entity-disabled-by-default: todo  # Needs verification
+  entity-device-class: todo  # Partial (motion/battery/restart/timestamp); not audited for all sensors
+  entity-disabled-by-default: done  # Diagnostic API status + advanced buttons disabled by default
   entity-translations: done  # 8 languages supported
-  exception-translations: todo  # Needs verification
+  exception-translations: done  # translations/*/exceptions + translation_key on HomeAssistantError raises
   icon-translations: done  # icons.json added
-  reconfiguration-flow: todo  # Not implemented
-  repair-issues: todo  # No repair flows
-  stale-devices: todo  # No stale device cleanup
+  reconfiguration-flow: done  # async_step_reconfigure / async_step_reconfigure_confirm
+  repair-issues: done  # async_step_repair_stale_device + _create_stale_device_repair_issue
+  stale-devices: done  # Stale detection in coordinator + repair flow / orphan cleanup
 
-  # 🏆 Platinum Tier (3 rules) - Technical excellence
+  # Platinum Tier (3 rules) - Technical excellence
   async-dependency: exempt  # imouapi library is synchronous, cannot fix without new library
   inject-websession: exempt  # imouapi doesn't accept websession, library limitation
-  strict-typing: todo  # Have type hints but not strict mode
+  strict-typing: todo  # Type hints present; mypy --strict not enabled
 
 # Exemption Notes:
 # - async-dependency: The imouapi library (1.0.15) is synchronous. Migration to async would
 #   require either switching to pyimouapi (different API) or wrapping all calls.
 # - inject-websession: imouapi library doesn't support passing aiohttp ClientSession.
 #   This is a library limitation that cannot be fixed in the integration code.
+# - discovery-update-info: Integration talks to Imou cloud OpenAPI, not LAN hosts; there is
+#   no CONF_HOST/IP to refresh from dhcp/ssdp/zeroconf discovery.
+# - dynamic-devices: Architecture is one Imou device per config entry. Additional devices
+#   are added by creating another config entry (discovery or manual), not by expanding
+#   entities under an existing entry.
