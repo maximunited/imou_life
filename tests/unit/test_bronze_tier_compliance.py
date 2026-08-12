@@ -171,7 +171,8 @@ class TestBronzeTierCompliance:
     async def test_service_registration_ptz(self, hass, api_ok):
         """Test: action-setup - PTZ services are registered.
 
-        Bronze tier requires service actions to be registered in platform setup.
+        PTZ entity services are registered from integration async_setup via
+        service.async_register_platform_entity_service.
         """
         from tests.fixtures.mocks import MockConfigEntry
 

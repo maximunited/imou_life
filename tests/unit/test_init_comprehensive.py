@@ -29,11 +29,17 @@ class TestAsyncSetup:
 
     @pytest.mark.asyncio
     async def test_async_setup_returns_true(self):
-        """Test async_setup returns True (YAML not supported)."""
+        """Test async_setup registers PTZ services and returns True."""
         hass = MagicMock()
         config = {}
-        result = await async_setup(hass, config)
+        with patch(
+            "custom_components.imou_life.service.async_register_platform_entity_service"
+        ) as mock_register:
+            result = await async_setup(hass, config)
         assert result is True
+        assert mock_register.call_count == 2
+        service_names = {call.args[2] for call in mock_register.call_args_list}
+        assert service_names == {"ptz_location", "ptz_move"}
 
 
 class TestTimeoutParsing:
