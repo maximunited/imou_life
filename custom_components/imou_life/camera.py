@@ -4,30 +4,17 @@ import logging
 from collections.abc import Callable
 
 import imouapi
-import voluptuous as vol
 from homeassistant.components.camera import (
     ENTITY_ID_FORMAT,
     Camera,
     CameraEntityFeature,
 )
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
-from homeassistant.helpers import entity_platform
-from imouapi.const import PTZ_OPERATIONS
 from imouapi.exceptions import ImouException
 
-from .const import (
-    ATTR_PTZ_DURATION,
-    ATTR_PTZ_HORIZONTAL,
-    ATTR_PTZ_OPERATION,
-    ATTR_PTZ_VERTICAL,
-    ATTR_PTZ_ZOOM,
-    DOMAIN,
-    ENABLED_CAMERAS,
-    SERVIZE_PTZ_LOCATION,
-    SERVIZE_PTZ_MOVE,
-)
+from .const import DOMAIN, ENABLED_CAMERAS
+from .coordinator import ImouConfigEntry
 from .helpers import camel_to_snake
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -37,36 +24,14 @@ _LOGGER: logging.Logger = logging.getLogger(__package__)
 PARALLEL_UPDATES = 1
 
 
-# async def async_setup_entry(hass, entry, async_add_devices):
 async def async_setup_entry(
-    hass: HomeAssistant, entry: ConfigEntry, async_add_devices: Callable
+    hass: HomeAssistant, entry: ImouConfigEntry, async_add_devices: Callable
 ):
-    """Configure platform."""
-    platform = entity_platform.async_get_current_platform()
+    """Configure platform.
 
-    # Create PTZ location service
-    platform.async_register_entity_service(
-        SERVIZE_PTZ_LOCATION,
-        {
-            vol.Required(ATTR_PTZ_HORIZONTAL, default=0): vol.Range(min=-1, max=1),
-            vol.Required(ATTR_PTZ_VERTICAL, default=0): vol.Range(min=-1, max=1),
-            vol.Required(ATTR_PTZ_ZOOM, default=0): vol.Range(min=0, max=1),
-        },
-        "async_service_ptz_location",
-    )
-
-    # Create PTZ move service
-    platform.async_register_entity_service(
-        SERVIZE_PTZ_MOVE,
-        {
-            vol.Required(ATTR_PTZ_OPERATION, default=0): vol.In(list(PTZ_OPERATIONS)),
-            vol.Required(ATTR_PTZ_DURATION, default=1000): vol.Range(
-                min=100, max=10000
-            ),
-        },
-        "async_service_ptz_move",
-    )
-
+    PTZ entity services are registered in the integration's async_setup via
+    service.async_register_platform_entity_service (not here).
+    """
     coordinator = entry.runtime_data
     device = coordinator.device
     sensors = []

@@ -29,19 +29,20 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Minimum supported version (from manifest requirement)
-          - ha-version: "2024.3.3"
-            python-version: "3.11"
+          # Minimum supported version (HACS / docs floor)
+          # Floor is 2025.10: async_register_platform_entity_service for PTZ
+          - ha-version: "2025.10.4"
+            python-version: "3.13"
             label: "Minimum"
 
-          # Late 2024 stable
-          - ha-version: "2024.12.5"
-            python-version: "3.12"
-            label: "Late 2024"
-
-          # Latest stable release (2025.1.x line)
-          - ha-version: "2025.1.4"
+          # Late 2025 stable pin
+          - ha-version: "2025.12.5"
             python-version: "3.13"
+            label: "Late 2025"
+
+          # Latest stable (HA 2026.3+ requires Python >=3.14.2)
+          - ha-version: "2026.8.1"
+            python-version: "3.14"
             label: "Latest Stable"
 
           # Development/nightly (catch upcoming breaking changes)
@@ -81,6 +82,12 @@ jobs:
           else
             echo "Installing Home Assistant ${{ matrix.ha-version }}"
             pip install homeassistant==${{ matrix.ha-version }}
+          fi
+
+          # HA 2025.10 + aiodns 3.5.0 breaks on pycares 5 (missing ares_query_a_result).
+          # HA 2026.8 needs pycares 5 (DNSRecord). Pin only for the 2025.10 matrix cell.
+          if [[ "${{ matrix.ha-version }}" == 2025.10* ]]; then
+            pip install 'pycares>=4.9.0,<5'
           fi
 
           # Install integration requirements
@@ -177,13 +184,14 @@ jobs:
           **Trigger**: ${{ github.event_name }}
 
           ### Tested Versions
-          - Minimum Supported: HA 2024.3.3 / Python 3.11
-          - Late 2024: HA 2024.12.5 / Python 3.12
-          - Latest Stable: HA 2025.1.4 / Python 3.13
+          - Minimum Supported: HA 2025.10.4 / Python 3.13
+          - Late 2025: HA 2025.12.5 / Python 3.13
+          - Latest Stable: HA 2026.8.1 / Python 3.14
           - Development: HA dev / Python 3.14 (allowed to fail)
 
           ### Note
-          Mid-2024 versions (2024.6-2024.11) skipped due to josepy dependency conflicts in CI.
+          Intermediate HA releases are not matrixed; use the pins above plus weekly
+          `dev` runs to catch breaking changes.
 
           ### Status
           See detailed results in Actions tab for pass/fail status.

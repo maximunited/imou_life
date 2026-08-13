@@ -4,11 +4,11 @@ import logging
 from collections.abc import Callable
 
 from homeassistant.components.switch import ENTITY_ID_FORMAT, SwitchEntity
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 
 from .const import DOMAIN, ENABLED_SWITCHES, OPTION_CALLBACK_URL
+from .coordinator import ImouConfigEntry
 from .entity import ImouEntity
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -18,7 +18,7 @@ PARALLEL_UPDATES = 1
 
 
 async def async_setup_entry(
-    hass: HomeAssistant, entry: ConfigEntry, async_add_devices: Callable
+    hass: HomeAssistant, entry: ImouConfigEntry, async_add_devices: Callable
 ):
     """Configure platform."""
     _LOGGER.debug("Setting up switch platform for entry %s", entry.entry_id)

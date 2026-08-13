@@ -8,14 +8,19 @@ from custom_components.imou_life.const import DOMAIN
 from tests.fixtures.mocks import MockConfigEntry
 
 
-def _make_device_entry(device_id, identifiers):
+def _make_device_entry(device_id, identifiers, config_entry_id=None):
     """Create a device-entry-like object with the given identifiers.
 
     Uses SimpleNamespace instead of the real DeviceEntry dataclass so the
     test doesn't couple to Home Assistant's constructor, which has changed
     its required fields across HA releases.
     """
-    return SimpleNamespace(id=device_id, identifiers=identifiers, name=device_id)
+    return SimpleNamespace(
+        id=device_id,
+        identifiers=identifiers,
+        name=device_id,
+        config_entry_id=config_entry_id,
+    )
 
 
 def _make_registry(device_entries):
@@ -138,3 +143,41 @@ class TestCleanupOrphanDevices:
 
         with patch("custom_components.imou_life.dr.async_get", return_value=registry):
             _cleanup_orphan_devices(hass, active_entry)
+
+    def test_removes_orphan_via_config_entry_id(self):
+        """Orphan detected via config_entry_id (HA 2026.8) is removed."""
+        orphan = _make_device_entry(
+            "dev1",
+            {(DOMAIN, "deleted_entry_id")},
+            config_entry_id="deleted_entry_id",
+        )
+        registry = _make_registry([orphan])
+
+        active_entry = MockConfigEntry(
+            domain=DOMAIN, data={}, entry_id="active_entry_id"
+        )
+        hass = _make_hass([active_entry])
+
+        with patch("custom_components.imou_life.dr.async_get", return_value=registry):
+            _cleanup_orphan_devices(hass, active_entry)
+
+        registry.async_remove_device.assert_called_once_with("dev1")
+
+    def test_keeps_device_via_config_entry_id(self):
+        """Active device kept when config_entry_id matches live entry."""
+        active_device = _make_device_entry(
+            "dev1",
+            {(DOMAIN, "active_entry_id")},
+            config_entry_id="active_entry_id",
+        )
+        registry = _make_registry([active_device])
+
+        active_entry = MockConfigEntry(
+            domain=DOMAIN, data={}, entry_id="active_entry_id"
+        )
+        hass = _make_hass([active_entry])
+
+        with patch("custom_components.imou_life.dr.async_get", return_value=registry):
+            _cleanup_orphan_devices(hass, active_entry)
+
+        registry.async_remove_device.assert_not_called()

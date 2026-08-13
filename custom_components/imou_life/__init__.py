@@ -2,23 +2,32 @@
 
 # https://github.com/maximunited/imou_life
 
+from __future__ import annotations
+
 import asyncio
 import logging
 
+import voluptuous as vol
 from homeassistant.components import persistent_notification
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import device_registry as dr
+from homeassistant.helpers import service
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.device_registry import DeviceEntry
 from homeassistant.helpers.typing import ConfigType
 from imouapi.api import ImouAPIClient
+from imouapi.const import PTZ_OPERATIONS
 from imouapi.device import ImouDevice
 from imouapi.exceptions import ImouException
 
 from .const import (
+    ATTR_PTZ_DURATION,
+    ATTR_PTZ_HORIZONTAL,
+    ATTR_PTZ_OPERATION,
+    ATTR_PTZ_VERTICAL,
+    ATTR_PTZ_ZOOM,
     CONF_API_URL,
     CONF_APP_ID,
     CONF_APP_SECRET,
@@ -36,10 +45,19 @@ from .const import (
     OPTION_SETUP_TIMEOUT,
     OPTION_WAIT_AFTER_WAKE_UP,
     PLATFORMS,
+    SERVIZE_PTZ_LOCATION,
+    SERVIZE_PTZ_MOVE,
 )
-from .coordinator import ImouDataUpdateCoordinator, ImouDiscoveryCoordinator
+from .coordinator import (
+    ImouConfigEntry,
+    ImouDataUpdateCoordinator,
+    ImouDiscoveryCoordinator,
+)
 from .helpers import exception_message
 from .rate_limit_manager import RateLimitManager
+
+# String domain avoids importing homeassistant.components.camera (turbojpeg).
+CAMERA_DOMAIN = "camera"
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -50,12 +68,40 @@ CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 SETUP_TIMEOUT = 30
 
 
-async def async_setup(hass: HomeAssistant, config: ConfigType):
-    """Set up this integration using YAML is not supported."""
+async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
+    """Set up the Imou Life integration (services; YAML config not supported)."""
+    # Register PTZ entity services at integration setup so registration does
+    # not depend on camera platform load. Requires Home Assistant 2025.10+
+    # (async_register_platform_entity_service); matches hacs.json floor.
+    service.async_register_platform_entity_service(
+        hass,
+        DOMAIN,
+        SERVIZE_PTZ_LOCATION,
+        entity_domain=CAMERA_DOMAIN,
+        schema={
+            vol.Required(ATTR_PTZ_HORIZONTAL, default=0): vol.Range(min=-1, max=1),
+            vol.Required(ATTR_PTZ_VERTICAL, default=0): vol.Range(min=-1, max=1),
+            vol.Required(ATTR_PTZ_ZOOM, default=0): vol.Range(min=0, max=1),
+        },
+        func="async_service_ptz_location",
+    )
+    service.async_register_platform_entity_service(
+        hass,
+        DOMAIN,
+        SERVIZE_PTZ_MOVE,
+        entity_domain=CAMERA_DOMAIN,
+        schema={
+            vol.Required(ATTR_PTZ_OPERATION, default=0): vol.In(list(PTZ_OPERATIONS)),
+            vol.Required(ATTR_PTZ_DURATION, default=1000): vol.Range(
+                min=100, max=10000
+            ),
+        },
+        func="async_service_ptz_move",
+    )
     return True
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
+async def async_setup_entry(hass: HomeAssistant, entry: ImouConfigEntry):
     """Set up this integration using UI."""
     _cleanup_orphan_devices(hass, entry)
 
@@ -118,7 +164,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     return True
 
 
-async def _setup_api_client_and_device(hass: HomeAssistant, entry: ConfigEntry):
+async def _setup_api_client_and_device(hass: HomeAssistant, entry: ImouConfigEntry):
     """Set up API client and device instance."""
     session = async_get_clientsession(hass)
 
@@ -143,7 +189,7 @@ async def _setup_api_client_and_device(hass: HomeAssistant, entry: ConfigEntry):
     return api_client, device
 
 
-def _create_api_client(device_config: dict, session, entry: ConfigEntry):
+def _create_api_client(device_config: dict, session, entry: ImouConfigEntry):
     """Create and configure the API client."""
     api_client = ImouAPIClient(
         device_config["app_id"], device_config["app_secret"], session
@@ -172,7 +218,7 @@ def _parse_timeout_option(timeout_value):
     return timeout_value
 
 
-def _create_device_instance(api_client, device_config: dict, entry: ConfigEntry):
+def _create_device_instance(api_client, device_config: dict, entry: ImouConfigEntry):
     """Create and configure the device instance."""
     device = ImouDevice(api_client, device_config["device_id"])
 
@@ -185,7 +231,7 @@ def _create_device_instance(api_client, device_config: dict, entry: ConfigEntry)
     return device
 
 
-def _configure_device_options(device: ImouDevice, entry: ConfigEntry):
+def _configure_device_options(device: ImouDevice, entry: ImouConfigEntry):
     """Configure device-specific options."""
     camera_wait_before_download = entry.options.get(
         OPTION_CAMERA_WAIT_BEFORE_DOWNLOAD, None
@@ -202,8 +248,12 @@ def _configure_device_options(device: ImouDevice, entry: ConfigEntry):
         device.set_wait_after_wakeup(wait_after_wakeup)
 
 
-def _cleanup_orphan_devices(hass: HomeAssistant, entry: ConfigEntry) -> None:
-    """Remove devices whose config entry no longer exists."""
+def _cleanup_orphan_devices(hass: HomeAssistant, entry: ImouConfigEntry) -> None:
+    """Remove orphan Imou devices whose config entry no longer exists.
+
+    Uses DeviceEntry.config_entry_id (HA 2026.8 single-owner model) when
+    present; falls back to this integration's (DOMAIN, entry_id) identifiers.
+    """
     try:
         device_registry = dr.async_get(hass)
         active_entry_ids = {
@@ -219,7 +269,14 @@ def _cleanup_orphan_devices(hass: HomeAssistant, entry: ConfigEntry) -> None:
             if not imou_ids:
                 continue
 
-            if not any(eid in active_entry_ids for eid in imou_ids):
+            # Prefer config_entry_id over deprecated config_entries / identifiers
+            owner_id = getattr(device_entry, "config_entry_id", None)
+            if owner_id is not None:
+                is_orphan = owner_id not in active_entry_ids
+            else:
+                is_orphan = not any(eid in active_entry_ids for eid in imou_ids)
+
+            if is_orphan:
                 _LOGGER.info(
                     "Removing orphan device '%s' (no matching config entry)",
                     device_entry.name,
@@ -230,7 +287,7 @@ def _cleanup_orphan_devices(hass: HomeAssistant, entry: ConfigEntry) -> None:
 
 
 async def _initialize_device(
-    device: ImouDevice, entry: ConfigEntry, hass: HomeAssistant
+    device: ImouDevice, entry: ImouConfigEntry, hass: HomeAssistant
 ) -> None:
     """Initialize device with timeout protection and rate limit checking."""
     setup_timeout = entry.options.get(OPTION_SETUP_TIMEOUT, SETUP_TIMEOUT)
@@ -306,7 +363,7 @@ async def _initialize_device(
 
 
 async def _setup_coordinator(
-    hass: HomeAssistant, device: ImouDevice, entry: ConfigEntry
+    hass: HomeAssistant, device: ImouDevice, entry: ImouConfigEntry
 ):
     """Set up and initialize coordinator."""
     coordinator = ImouDataUpdateCoordinator(
@@ -369,7 +426,7 @@ async def _setup_coordinator(
     return coordinator
 
 
-async def _setup_platforms(hass: HomeAssistant, entry: ConfigEntry, coordinator):
+async def _setup_platforms(hass: HomeAssistant, entry: ImouConfigEntry, coordinator):
     """Set up all platforms."""
     # Add platforms to coordinator
     for platform in PLATFORMS:
@@ -380,7 +437,7 @@ async def _setup_platforms(hass: HomeAssistant, entry: ConfigEntry, coordinator)
     entry.add_update_listener(async_reload_entry)
 
 
-def _check_rate_limit_status(hass: HomeAssistant, entry: ConfigEntry, coordinator):
+def _check_rate_limit_status(hass: HomeAssistant, entry: ImouConfigEntry, coordinator):
     """Check for rate limiting and notify user if detected."""
     if coordinator.is_rate_limited:
         device_name = coordinator.device.get_name()
@@ -409,7 +466,7 @@ def _check_rate_limit_status(hass: HomeAssistant, entry: ConfigEntry, coordinato
 
 async def _create_stale_device_repair_issue(
     hass: HomeAssistant,
-    entry: ConfigEntry,
+    entry: ImouConfigEntry,
     coordinator: ImouDataUpdateCoordinator,
 ) -> None:
     """Create a repair issue for stale device."""
@@ -429,7 +486,7 @@ async def _create_stale_device_repair_issue(
     )
 
 
-def _is_first_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+def _is_first_entry(hass: HomeAssistant, entry: ImouConfigEntry) -> bool:
     """Check if this is the first config entry."""
     entries = hass.config_entries.async_entries(DOMAIN)
     if not entries:
@@ -438,7 +495,7 @@ def _is_first_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 
 async def _setup_discovery_coordinator(
-    hass: HomeAssistant, api_client, entry: ConfigEntry
+    hass: HomeAssistant, api_client, entry: ImouConfigEntry
 ):
     """Set up discovery coordinator."""
     # Check if discovery is enabled
@@ -454,7 +511,7 @@ async def _setup_discovery_coordinator(
 
 
 async def _transfer_discovery_to_next_entry(
-    hass: HomeAssistant, entry: ConfigEntry
+    hass: HomeAssistant, entry: ImouConfigEntry
 ) -> None:
     """Transfer discovery coordinator to next entry when first entry is removed."""
     entries = hass.config_entries.async_entries(DOMAIN)
@@ -474,7 +531,7 @@ async def _transfer_discovery_to_next_entry(
         await hass.config_entries.async_reload(remaining_entries[0].entry_id)
 
 
-async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+async def async_unload_entry(hass: HomeAssistant, entry: ImouConfigEntry) -> bool:
     """Handle removal of an entry."""
     _LOGGER.debug("Unloading entry %s", entry.entry_id)
 
@@ -505,7 +562,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 
 async def async_remove_config_entry_device(
-    hass: HomeAssistant, config_entry: ConfigEntry, device_entry: DeviceEntry
+    hass: HomeAssistant, config_entry: ImouConfigEntry, device_entry: DeviceEntry
 ) -> bool:
     """Remove a device from the integration.
 
@@ -526,8 +583,22 @@ async def async_remove_config_entry_device(
         config_entry.entry_id,
     )
 
-    # Check if this device belongs to this config entry by comparing identifiers
+    # Prefer config_entry_id (HA 2026.8 single-owner); fall back to identifiers
     # Note: Entities use config_entry.entry_id as the device identifier, not device_id
+    owner_id = getattr(device_entry, "config_entry_id", None)
+    if owner_id is not None:
+        if owner_id == config_entry.entry_id:
+            _LOGGER.debug(
+                "Device '%s' belongs to this config entry, allowing removal",
+                device_name,
+            )
+            return True
+        _LOGGER.debug(
+            "Device does not belong to config entry %s, preventing removal",
+            config_entry.entry_id,
+        )
+        return False
+
     for identifier in device_entry.identifiers:
         if identifier[0] == DOMAIN and identifier[1] == config_entry.entry_id:
             _LOGGER.debug(
@@ -536,7 +607,6 @@ async def async_remove_config_entry_device(
             )
             return True
 
-    # If the device doesn't match this config entry, don't allow removal
     _LOGGER.debug(
         "Device does not belong to config entry %s, preventing removal",
         config_entry.entry_id,
@@ -544,13 +614,13 @@ async def async_remove_config_entry_device(
     return False
 
 
-async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
+async def async_reload_entry(hass: HomeAssistant, entry: ImouConfigEntry) -> None:
     """Reload config entry."""
     await async_unload_entry(hass, entry)
     await async_setup_entry(hass, entry)
 
 
-async def async_migrate_entry(hass, config_entry: ConfigEntry) -> bool:
+async def async_migrate_entry(hass, config_entry: ImouConfigEntry) -> bool:
     """Migrate old entry."""
     _LOGGER.debug("Migrating from version %s", config_entry.version)
     data = {**config_entry.data}

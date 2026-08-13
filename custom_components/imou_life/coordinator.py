@@ -1,8 +1,12 @@
 """Class to manage fetching data from the API."""
 
+from __future__ import annotations
+
 import logging
 from datetime import datetime, timedelta
+from typing import TYPE_CHECKING, TypeAlias
 
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
@@ -247,6 +251,14 @@ class ImouDataUpdateCoordinator(DataUpdateCoordinator):
                 "Restored original scan interval to %ds (rate limit cleared)",
                 self._original_scan_interval,
             )
+
+
+# Runtime-safe alias: ConfigEntry was not subscriptable on older HA cores
+# (Quick Tests still install homeassistant>=2024.3.3 on Python 3.11).
+if TYPE_CHECKING:
+    ImouConfigEntry: TypeAlias = ConfigEntry[ImouDataUpdateCoordinator]
+else:
+    ImouConfigEntry = ConfigEntry
 
 
 class ImouDiscoveryCoordinator(DataUpdateCoordinator):
