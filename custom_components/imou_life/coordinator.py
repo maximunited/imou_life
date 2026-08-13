@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime, timedelta
-from typing import TypeAlias
+from typing import TYPE_CHECKING, TypeAlias
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -253,8 +253,12 @@ class ImouDataUpdateCoordinator(DataUpdateCoordinator):
             )
 
 
-# Typed config entry used across the integration (runtime_data = coordinator)
-ImouConfigEntry: TypeAlias = ConfigEntry[ImouDataUpdateCoordinator]
+# Runtime-safe alias: ConfigEntry was not subscriptable on older HA cores
+# (Quick Tests still install homeassistant>=2024.3.3 on Python 3.11).
+if TYPE_CHECKING:
+    ImouConfigEntry: TypeAlias = ConfigEntry[ImouDataUpdateCoordinator]
+else:
+    ImouConfigEntry = ConfigEntry
 
 
 class ImouDiscoveryCoordinator(DataUpdateCoordinator):

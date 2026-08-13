@@ -9,7 +9,6 @@ import logging
 
 import voluptuous as vol
 from homeassistant.components import persistent_notification
-from homeassistant.components.camera import DOMAIN as CAMERA_DOMAIN
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers import config_validation as cv
@@ -56,6 +55,9 @@ from .coordinator import (
 )
 from .helpers import exception_message
 from .rate_limit_manager import RateLimitManager
+
+# String domain avoids importing homeassistant.components.camera (turbojpeg).
+CAMERA_DOMAIN = "camera"
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 

@@ -31,7 +31,7 @@ jobs:
         include:
           # Minimum supported version (HACS / docs floor)
           # Floor is 2025.10: async_register_platform_entity_service for PTZ
-          - ha-version: "2025.10.0"
+          - ha-version: "2025.10.4"
             python-version: "3.13"
             label: "Minimum"
 
@@ -40,9 +40,9 @@ jobs:
             python-version: "3.13"
             label: "Late 2025"
 
-          # Latest stable release (2026.8.x line)
+          # Latest stable (HA 2026.3+ requires Python >=3.14.2)
           - ha-version: "2026.8.1"
-            python-version: "3.13"
+            python-version: "3.14"
             label: "Latest Stable"
 
           # Development/nightly (catch upcoming breaking changes)
@@ -178,9 +178,9 @@ jobs:
           **Trigger**: ${{ github.event_name }}
 
           ### Tested Versions
-          - Minimum Supported: HA 2025.10.0 / Python 3.13
+          - Minimum Supported: HA 2025.10.4 / Python 3.13
           - Late 2025: HA 2025.12.5 / Python 3.13
-          - Latest Stable: HA 2026.8.1 / Python 3.13
+          - Latest Stable: HA 2026.8.1 / Python 3.14
           - Development: HA dev / Python 3.14 (allowed to fail)
 
           ### Note

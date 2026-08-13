@@ -21,17 +21,17 @@ Python and Home Assistant version support for the Imou Life integration.
 
 | Home Assistant | Role | Python in CI | Status |
 | -------------- | ---- | ------------ | ------ |
-| 2025.10.0 | Minimum (HACS / matrix floor) | 3.13 | Supported |
+| 2025.10.4 | Minimum (HACS / matrix floor) | 3.13 | Supported |
 | 2025.12.5 | Late previous-year pin | 3.13 | Supported |
-| 2026.8.1 | Latest stable | 3.13 | Supported |
+| 2026.8.1 | Latest stable | 3.14 | Supported |
 | `dev` | Development / nightly | 3.14 | Allowed to fail in CI |
 
 ### Requirements
 
-- **Minimum**: Home Assistant 2025.10.0 (same as `hacs.json` and the compatibility workflow)
+- **Minimum**: Home Assistant 2025.10.4 (same as `hacs.json` and the compatibility workflow)
 - **Recommended**: Latest stable (currently 2026.8.x)
-- **Python 3.13**: Requires Home Assistant 2024.12.0 or later
-- **Python 3.14**: Prefer current stable or `dev`; covered by the allow-failure matrix job
+- **Python 3.13**: Requires Home Assistant 2024.12.0 or later; HA 2026.3+ needs Python 3.14.2+
+- **Python 3.14**: Required for Home Assistant 2026.3+ (including 2026.8.x); also covered by the allow-failure `dev` job
 
 ## Compatibility Matrix
 
@@ -55,9 +55,9 @@ The `.github/workflows/ha-compatibility.yml` matrix runs:
 
 | Label | HA version | Python |
 | ----- | ---------- | ------ |
-| Minimum | 2025.10.0 | 3.13 |
+| Minimum | 2025.10.4 | 3.13 |
 | Late 2025 | 2025.12.5 | 3.13 |
-| Latest Stable | 2026.8.1 | 3.13 |
+| Latest Stable | 2026.8.1 | 3.14 |
 | Development | `dev` | 3.14 (allow-failure) |
 
 Separate unit CI also exercises Python 3.11–3.14.
@@ -77,13 +77,14 @@ Separate unit CI also exercises Python 3.11–3.14.
 ### Minimum viable
 
 - **Python**: 3.13 (3.11–3.12 still accepted by project tooling)
-- **Home Assistant**: 2025.10.0 or later
+- **Home Assistant**: 2025.10.4 or later
 
 ## Notes
 
 1. Python 3.10 and below are not supported.
-2. Home Assistant below 2025.10.0 is outside the declared support floor (HACS and CI).
+2. Home Assistant below 2025.10.4 is outside the declared support floor (HACS and CI).
 3. Python 3.13 with Home Assistant older than 2024.12.0 is not supported by Home Assistant itself.
+4. Home Assistant 2026.3+ requires Python 3.14.2+.
 
 ## Troubleshooting
 
@@ -92,7 +93,7 @@ python --version
 # Expect 3.11, 3.12, 3.13, or 3.14
 ```
 
-In Home Assistant: **Settings → About** (or Configuration → Info) and confirm Core is 2025.10.0 or later.
+In Home Assistant: **Settings → About** (or Configuration → Info) and confirm Core is 2025.10.4 or later.
 
 When opening an issue, include Python version, Home Assistant Core version, and integration version.
 
