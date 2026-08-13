@@ -33,7 +33,8 @@ class TestAsyncSetup:
         hass = MagicMock()
         config = {}
         with patch(
-            "custom_components.imou_life.service.async_register_platform_entity_service"
+            "custom_components.imou_life.service.async_register_platform_entity_service",
+            create=True,
         ) as mock_register:
             result = await async_setup(hass, config)
         assert result is True

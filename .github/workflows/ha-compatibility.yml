@@ -84,6 +84,10 @@ jobs:
             pip install homeassistant==${{ matrix.ha-version }}
           fi
 
+          # pycares 5.x removed ares_query_a_result; aiodns used by HA 2025.10
+          # still references it. Pin until aiodns/HA resolve the mismatch.
+          pip install 'pycares>=4.9.0,<5'
+
           # Install integration requirements
           pip install imouapi==1.0.15
 
