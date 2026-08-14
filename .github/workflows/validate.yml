@@ -90,6 +90,10 @@ jobs:
     - name: Validate manifest
       run: |
         python -c "import json; json.load(open('custom_components/imou_life/manifest.json')); print('Manifest validation passed')"
+    - name: Verify manifest version matches pyproject.toml
+      run: |
+        python tools/scripts/sync_version.py
+        git diff --exit-code custom_components/imou_life/manifest.json
     - name: Validate translations
       run: |
         python -c "import json; import glob; [json.load(open(f)) for f in glob.glob('custom_components/imou_life/translations/*.json')]; print('Translation validation passed')"

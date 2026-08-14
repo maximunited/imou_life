@@ -142,7 +142,8 @@ Following [Semantic Versioning](https://semver.org/):
 ## Configuration
 
 PSR is configured in `pyproject.toml` under `[tool.semantic_release]`:
-- Version is tracked in both `pyproject.toml` and `manifest.json`
+- Version is tracked in both `pyproject.toml` (`version_toml`) and `manifest.json` (`version_variables`)
+- CI runs `tools/scripts/sync_version.py` and fails if `manifest.json` drifts from `pyproject.toml`
 - **PSR does NOT update `docs/CHANGELOG.md`** — auto-generation is disabled (`changelog_file = ""`)
 - `docs/CHANGELOG.md` is maintained manually as the curated release history
 - GitHub Release notes are auto-generated from PR labels (via `.github/release.yml`)
@@ -183,8 +184,9 @@ gh workflow run "Release Artifacts" -f tag=v1.7.0
 
 ### Version mismatch between files
 
-PSR updates both `pyproject.toml` and `manifest.json`. If they're out of sync:
+PSR updates both `pyproject.toml` and `manifest.json` in the same release commit. If they're out of sync locally:
 ```bash
+python tools/scripts/sync_version.py
 semantic-release version --noop  # Check what PSR thinks the version should be
 ```
 
