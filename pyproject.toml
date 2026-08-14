@@ -141,6 +141,7 @@ extend-exclude = '''
 
 [tool.semantic_release]
 version_toml = ["pyproject.toml:project.version"]
+version_variables = ["custom_components/imou_life/manifest.json:version"]
 tag_format = "v{version}"
 commit_message = "chore(release): bump version to {version}"
 major_on_zero = false
