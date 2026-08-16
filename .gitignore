@@ -177,6 +177,15 @@ Thumbs.db
 # Claude Code skills - junctions/symlinks
 .claude/skills/karpathy
 .claude/settings.local.json
+
+# OpenWolf / agent context (local session state)
+.wolf/
+
+# Codegraph index (local)
+.codegraph/
+
+# Cursor local settings (rules are committed under .cursor/rules/)
+.cursor/settings.json
 coverage.json
 
 # npm / Node.js
