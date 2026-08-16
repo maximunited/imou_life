@@ -15,5 +15,5 @@
     "requirements": [
         "imouapi==1.0.15"
     ],
-    "version": "1.9.1"
+    "version": "1.10.0"
 }
