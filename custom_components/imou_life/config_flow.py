@@ -602,17 +602,19 @@ class ImouFlowHandler(config_entries.ConfigFlow, domain="imou_life"):
             elif action == "retry":
                 # Reset counter and reload the entry
                 coordinator = entry.runtime_data
-                coordinator.stale_device_failure_count = 0
-                coordinator.stale_device_suspected = False
+                if coordinator is not None:
+                    coordinator.stale_device_failure_count = 0
+                    coordinator.stale_device_suspected = False
                 await self.hass.config_entries.async_reload(entry_id)
                 return self.async_abort(reason="retrying")
 
             elif action == "ignore":
                 # Reset all stale tracking state but don't reload
                 coordinator = entry.runtime_data
-                coordinator.stale_device_failure_count = 0
-                coordinator.stale_device_suspected = False
-                coordinator.stale_device_last_error = None
+                if coordinator is not None:
+                    coordinator.stale_device_failure_count = 0
+                    coordinator.stale_device_suspected = False
+                    coordinator.stale_device_last_error = None
                 return self.async_abort(reason="ignored")
 
         return self.async_show_form(

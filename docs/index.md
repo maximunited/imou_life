@@ -8,6 +8,15 @@ Welcome to the Imou Life documentation. This integration provides comprehensive 
 - [Installation](INSTALLATION.md) - Detailed installation instructions
 - [Configuration](CONFIGURATION.md) - Configure your devices
 
+## User Guide
+
+- [Entities & Functions](ENTITIES.md) - Platforms, device classes, and entity reference
+- [Data Updates](DATA_UPDATE.md) - How polling and coordinator refresh work
+- [Automation Examples](EXAMPLES.md) - Sample YAML automations
+- [Use Cases](USE_CASES.md) - Common deployment patterns
+- [Supported Devices](SUPPORTED_DEVICES.md) - Device compatibility guidance
+- [Known Limitations](LIMITATIONS.md) - API and platform constraints
+
 ## Development
 
 - [Development Guide](DEVELOPMENT.md) - Contributing to the project

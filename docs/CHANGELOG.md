@@ -1,5 +1,16 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- Gold-tier user documentation: data updates, examples, limitations, supported devices, entities, use cases
+- Unit tests for config flow reconfigure, stale-device repair, and discovery confirmation (96% coverage)
+
+### Changed
+
+- Quality scale: `test-coverage`, Gold docs rules, and `entity-device-class` marked done
+
 ## [1.6.0] - 2026-05-08
 
 ### 🏆 Quality Scale Achievement
