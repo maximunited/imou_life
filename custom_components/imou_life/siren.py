@@ -3,8 +3,12 @@
 import logging
 
 from homeassistant.components.siren import SirenEntity, SirenEntityFeature
+from homeassistant.exceptions import HomeAssistantError
+from imouapi.exceptions import ImouException
 
+from .const import DOMAIN
 from .entity import ImouEntity
+from .helpers import exception_message
 from .platform_setup import setup_platform
 
 ENTITY_ID_FORMAT = "siren" + ".{}"
@@ -34,7 +38,18 @@ class ImouSiren(ImouEntity, SirenEntity):
 
     async def async_turn_on(self, **kwargs):  # pylint: disable=unused-argument
         """Turn on the siren."""
-        await self.sensor_instance.async_turn_on()
+        try:
+            await self.sensor_instance.async_turn_on()
+        except ImouException as exception:
+            raise HomeAssistantError(
+                translation_domain=DOMAIN,
+                translation_key="siren_action_failed",
+                translation_placeholders={
+                    "action": "turn on",
+                    "entity": self.sensor_instance.get_description(),
+                    "error": exception_message(exception),
+                },
+            ) from exception
         # save the new state to the state machine (otherwise will be reset by HA
         # and set to the correct value only upon the next update)
         self.async_write_ha_state()
@@ -46,7 +61,18 @@ class ImouSiren(ImouEntity, SirenEntity):
 
     async def async_turn_off(self, **kwargs):  # pylint: disable=unused-argument
         """Turn off the siren."""
-        await self.sensor_instance.async_turn_off()
+        try:
+            await self.sensor_instance.async_turn_off()
+        except ImouException as exception:
+            raise HomeAssistantError(
+                translation_domain=DOMAIN,
+                translation_key="siren_action_failed",
+                translation_placeholders={
+                    "action": "turn off",
+                    "entity": self.sensor_instance.get_description(),
+                    "error": exception_message(exception),
+                },
+            ) from exception
         # save the new state to the state machine (otherwise will be reset by HA
         # and set to the correct value only upon the next update)
         self.async_write_ha_state()
@@ -58,7 +84,18 @@ class ImouSiren(ImouEntity, SirenEntity):
 
     async def async_toggle(self, **kwargs):  # pylint: disable=unused-argument
         """Toggle the siren."""
-        await self.sensor_instance.async_toggle()
+        try:
+            await self.sensor_instance.async_toggle()
+        except ImouException as exception:
+            raise HomeAssistantError(
+                translation_domain=DOMAIN,
+                translation_key="siren_action_failed",
+                translation_placeholders={
+                    "action": "toggle",
+                    "entity": self.sensor_instance.get_description(),
+                    "error": exception_message(exception),
+                },
+            ) from exception
         # save the new state to the state machine (otherwise will be reset by HA
         # and set to the correct value only upon the next update)
         self.async_write_ha_state()

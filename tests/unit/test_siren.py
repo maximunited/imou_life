@@ -74,10 +74,17 @@ class TestImouSiren:
         assert siren.available is True
 
     @pytest.mark.asyncio
-    async def test_siren_turn_on(self, siren):
-        """Test siren turn on."""
-        await siren.async_turn_on()
-        siren.sensor_instance.async_turn_on.assert_called_once()
+    async def test_siren_turn_on_imou_exception(self, siren, mock_sensor_instance):
+        """Test siren turn on wraps ImouException in HomeAssistantError."""
+        from homeassistant.exceptions import HomeAssistantError
+        from imouapi.exceptions import ImouException
+
+        mock_sensor_instance.async_turn_on.side_effect = ImouException("API error")
+
+        with pytest.raises(HomeAssistantError) as exc_info:
+            await siren.async_turn_on()
+
+        assert exc_info.value.translation_key == "siren_action_failed"
 
     @pytest.mark.asyncio
     async def test_siren_turn_off(self, siren):

@@ -132,6 +132,12 @@
     "select_config_failed": {
       "message": "Failed to update config for {setting}: {error}"
     },
+    "switch_action_failed": {
+      "message": "Failed to {action} {entity}: {error}"
+    },
+    "siren_action_failed": {
+      "message": "Failed to {action} {entity}: {error}"
+    },
     "invalid_motion_sensitivity": {
       "message": "Invalid motion sensitivity: {value}"
     },

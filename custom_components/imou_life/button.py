@@ -3,9 +3,13 @@
 import logging
 
 from homeassistant.components.button import ENTITY_ID_FORMAT, ButtonEntity
+from homeassistant.exceptions import HomeAssistantError
+from imouapi.exceptions import ImouException
 
+from .const import DOMAIN
 from .entity import ImouEntity
 from .entity_mixins import DeviceClassMixin
+from .helpers import exception_message
 from .platform_setup import setup_platform
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -36,26 +40,35 @@ class ImouButton(ImouEntity, ButtonEntity, DeviceClassMixin):
 
     async def async_press(self) -> None:
         """Handle the button press."""
-        # press the button
-        await self.sensor_instance.async_press()
-        _LOGGER.debug(
-            "[%s] Pressed %s",
-            self.device.get_name(),
-            self.sensor_instance.get_description(),
-        )
-        # ask the coordinator to refresh data to all the sensors
-        if self.sensor_instance.get_name() == "refreshData":
-            await self.coordinator.async_request_refresh()
-        # refresh the motionAlarm sensor
-        if self.sensor_instance.get_name() == "refreshAlarm":
-            # update the motionAlarm sensor
-            await self.coordinator.device.get_sensor_by_name(
-                "motionAlarm"
-            ).async_update()
-            # ask HA to update its state based on the new value
-            for entity in self.coordinator.entities:
-                if entity.sensor_instance.get_name() in "motionAlarm":
-                    await entity.async_update_ha_state()
+        try:
+            await self.sensor_instance.async_press()
+            _LOGGER.debug(
+                "[%s] Pressed %s",
+                self.device.get_name(),
+                self.sensor_instance.get_description(),
+            )
+            # ask the coordinator to refresh data to all the sensors
+            if self.sensor_instance.get_name() == "refreshData":
+                await self.coordinator.async_request_refresh()
+            # refresh the motionAlarm sensor
+            if self.sensor_instance.get_name() == "refreshAlarm":
+                # update the motionAlarm sensor
+                await self.coordinator.device.get_sensor_by_name(
+                    "motionAlarm"
+                ).async_update()
+                # ask HA to update its state based on the new value
+                for entity in self.coordinator.entities:
+                    if entity.sensor_instance.get_name() in "motionAlarm":
+                        await entity.async_update_ha_state()
+        except ImouException as exception:
+            raise HomeAssistantError(
+                translation_domain=DOMAIN,
+                translation_key="button_action_failed",
+                translation_placeholders={
+                    "action": self.sensor_instance.get_description(),
+                    "error": exception_message(exception),
+                },
+            ) from exception
 
     @property
     def device_class(self) -> str | None:  # type: ignore[override]

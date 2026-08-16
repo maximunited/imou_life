@@ -24,7 +24,7 @@ rules:
   unique-config-entry: done  # Uses device_id as unique_id
 
   # Silver Tier (10 rules) - Stable user experience
-  action-exceptions: todo  # PTZ/battery wrap ImouException; select/button/siren/switch turn_* do not
+  action-exceptions: done  # switch/select/button/siren + battery + camera PTZ wrap ImouException
   config-entry-unloading: done  # async_unload_entry implemented
   docs-configuration-parameters: done  # docs/CONFIGURATION.md
   docs-installation-parameters: done  # docs/INSTALLATION.md
