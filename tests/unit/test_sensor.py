@@ -88,6 +88,25 @@ class TestImouSensor:
         assert "last_update" in attrs
         assert attrs["last_update"] == "2023-01-01T00:00:00Z"
 
+    def test_sensor_battery_notes_attributes(self, mock_coordinator):
+        """Test battery sensor exposes Battery Notes integration attributes."""
+        mock_sensor = MagicMock()
+        mock_sensor.get_name.return_value = "battery"
+        mock_sensor.get_description.return_value = "Battery"
+        mock_sensor.get_state.return_value = 72
+        mock_sensor.get_attributes.return_value = {}
+
+        mock_coordinator.device.get_model.return_value = "IPC-A26HP"
+
+        sensor = ImouSensor(
+            mock_coordinator, MOCK_CONFIG_ENTRY, mock_sensor, "sensor.{}"
+        )
+        attrs = sensor.extra_state_attributes
+
+        assert attrs["battery_type"] == "Rechargeable Li-ion 5200mAh"
+        assert attrs["battery_quantity"] == 1
+        assert attrs["is_rechargeable"] is True
+
     def test_sensor_timestamp_device_class(self, mock_coordinator):
         """Test sensor with timestamp device class."""
         mock_sensor = MagicMock()

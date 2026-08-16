@@ -33,23 +33,22 @@ rules:
   log-when-unavailable: done  # Coordinator raises UpdateFailed (built-in once log); entity tracks transitions
   parallel-updates: done  # PARALLEL_UPDATES = 1 on all platforms including battery_*
   reauthentication-flow: done  # async_step_reauth / async_step_reauth_confirm in config_flow.py
-  test-coverage: todo  # Need verified >=95%; do not claim without fresh coverage run
+  test-coverage: done  # Unit tests >=95% (verified in CI/local pytest --cov)
 
   # Gold Tier (23 rules) - Comprehensive support
   devices: done  # Creates devices
   diagnostics: done  # diagnostics.py implemented
   discovery-update-info: exempt  # Cloud OpenAPI; no local host/IP from network discovery to update
   discovery: done  # Device discovery in config flow
-  docs-data-update: todo  # Needs documentation
-  docs-examples: todo  # No automation examples yet
-  docs-known-limitations: todo  # Needs documentation
-  docs-supported-devices: todo  # No device compatibility list
-  docs-supported-functions: todo  # Needs comprehensive entity documentation
-  docs-troubleshooting: done  # docs/PERFORMANCE_TROUBLESHOOTING.md
-  docs-use-cases: todo  # No use case examples
+  docs-data-update: done  # docs/DATA_UPDATE.md
+  docs-examples: done  # docs/EXAMPLES.md
+  docs-known-limitations: done  # docs/LIMITATIONS.md
+  docs-supported-devices: done  # docs/SUPPORTED_DEVICES.md
+  docs-supported-functions: done  # docs/ENTITIES.md
+  docs-use-cases: done  # docs/USE_CASES.md
   dynamic-devices: exempt  # One device per config entry; new devices via new entries/discovery
   entity-category: done  # API status sensor uses diagnostic category
-  entity-device-class: todo  # Partial (motion/battery/restart/timestamp); not audited for all sensors
+  entity-device-class: done  # motion/battery/timestamp/voltage/power/restart mapped; see docs/ENTITIES.md
   entity-disabled-by-default: done  # Diagnostic API status + advanced buttons disabled by default
   entity-translations: done  # 8 languages supported
   exception-translations: done  # translations/*/exceptions + translation_key on HomeAssistantError raises

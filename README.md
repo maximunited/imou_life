@@ -206,6 +206,12 @@ Download diagnostics from the device page in Home Assistant for detailed informa
 ## 📚 Documentation
 
 - **[Complete Installation Guide](docs/INSTALLATION.md)** - Detailed setup and configuration
+- **[Entities & Functions](docs/ENTITIES.md)** - Entity reference and device classes
+- **[Automation Examples](docs/EXAMPLES.md)** - Sample Home Assistant automations
+- **[Data Updates](docs/DATA_UPDATE.md)** - Polling and refresh behavior
+- **[Use Cases](docs/USE_CASES.md)** - Common setup patterns
+- **[Supported Devices](docs/SUPPORTED_DEVICES.md)** - Compatibility guidance
+- **[Known Limitations](docs/LIMITATIONS.md)** - API and platform constraints
 - **[Development Guide](docs/DEVELOPMENT.md)** - Contributing and development setup
 - **[Performance Guide](docs/PERFORMANCE_TROUBLESHOOTING.md)** - Optimization tips
 - **[HACS Guide](docs/HACS_ENHANCEMENTS.md)** - HACS-specific features
