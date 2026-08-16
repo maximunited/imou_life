@@ -273,3 +273,45 @@ class TestImouSwitch:
             assert (
                 switch.entity_registry_enabled_default is True
             ), f"Switch '{switch_name}' should be enabled by default"
+
+    @pytest.mark.asyncio
+    async def test_switch_async_turn_on_imou_exception(
+        self, switch_entity, mock_sensor_instance
+    ):
+        """Test switch turn on wraps ImouException in HomeAssistantError."""
+        from imouapi.exceptions import ImouException
+
+        mock_sensor_instance.async_turn_on.side_effect = ImouException("API error")
+
+        with pytest.raises(HomeAssistantError) as exc_info:
+            await switch_entity.async_turn_on()
+
+        assert exc_info.value.translation_key == "switch_turn_on_failed"
+
+    @pytest.mark.asyncio
+    async def test_switch_async_turn_off_imou_exception(
+        self, switch_entity, mock_sensor_instance
+    ):
+        """Test switch turn off wraps ImouException in HomeAssistantError."""
+        from imouapi.exceptions import ImouException
+
+        mock_sensor_instance.async_turn_off.side_effect = ImouException("API error")
+
+        with pytest.raises(HomeAssistantError) as exc_info:
+            await switch_entity.async_turn_off()
+
+        assert exc_info.value.translation_key == "switch_turn_off_failed"
+
+    @pytest.mark.asyncio
+    async def test_switch_async_toggle_imou_exception(
+        self, switch_entity, mock_sensor_instance
+    ):
+        """Test switch toggle wraps ImouException in HomeAssistantError."""
+        from imouapi.exceptions import ImouException
+
+        mock_sensor_instance.async_toggle.side_effect = ImouException("API error")
+
+        with pytest.raises(HomeAssistantError) as exc_info:
+            await switch_entity.async_toggle()
+
+        assert exc_info.value.translation_key == "switch_toggle_failed"

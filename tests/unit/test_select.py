@@ -85,6 +85,23 @@ class TestImouSelect:
         await select.async_select_option("on")
         select.sensor_instance.async_select_option.assert_called_once_with("on")
 
+    @pytest.mark.asyncio
+    async def test_select_select_option_imou_exception(
+        self, select, mock_sensor_instance
+    ):
+        """Test select option wraps ImouException in HomeAssistantError."""
+        from homeassistant.exceptions import HomeAssistantError
+        from imouapi.exceptions import ImouException
+
+        mock_sensor_instance.async_select_option.side_effect = ImouException(
+            "API error"
+        )
+
+        with pytest.raises(HomeAssistantError) as exc_info:
+            await select.async_select_option("on")
+
+        assert exc_info.value.translation_key == "select_option_failed"
+
     def test_select_device_info(self, select):
         """Test select device info."""
         device_info = select.device_info

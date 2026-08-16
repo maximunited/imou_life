@@ -76,5 +76,25 @@
         }
       }
     }
+  },
+  "exceptions": {
+    "switch_turn_on_failed": {
+      "message": "Failed to turn on {entity}: {error}"
+    },
+    "switch_turn_off_failed": {
+      "message": "Failed to turn off {entity}: {error}"
+    },
+    "switch_toggle_failed": {
+      "message": "Failed to toggle {entity}: {error}"
+    },
+    "siren_turn_on_failed": {
+      "message": "Failed to turn on {entity}: {error}"
+    },
+    "siren_turn_off_failed": {
+      "message": "Failed to turn off {entity}: {error}"
+    },
+    "siren_toggle_failed": {
+      "message": "Failed to toggle {entity}: {error}"
+    }
   }
 }

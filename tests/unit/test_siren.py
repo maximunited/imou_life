@@ -80,6 +80,45 @@ class TestImouSiren:
         siren.sensor_instance.async_turn_on.assert_called_once()
 
     @pytest.mark.asyncio
+    async def test_siren_turn_on_imou_exception(self, siren, mock_sensor_instance):
+        """Test siren turn on wraps ImouException in HomeAssistantError."""
+        from homeassistant.exceptions import HomeAssistantError
+        from imouapi.exceptions import ImouException
+
+        mock_sensor_instance.async_turn_on.side_effect = ImouException("API error")
+
+        with pytest.raises(HomeAssistantError) as exc_info:
+            await siren.async_turn_on()
+
+        assert exc_info.value.translation_key == "siren_turn_on_failed"
+
+    @pytest.mark.asyncio
+    async def test_siren_turn_off_imou_exception(self, siren, mock_sensor_instance):
+        """Test siren turn off wraps ImouException in HomeAssistantError."""
+        from homeassistant.exceptions import HomeAssistantError
+        from imouapi.exceptions import ImouException
+
+        mock_sensor_instance.async_turn_off.side_effect = ImouException("API error")
+
+        with pytest.raises(HomeAssistantError) as exc_info:
+            await siren.async_turn_off()
+
+        assert exc_info.value.translation_key == "siren_turn_off_failed"
+
+    @pytest.mark.asyncio
+    async def test_siren_toggle_imou_exception(self, siren, mock_sensor_instance):
+        """Test siren toggle wraps ImouException in HomeAssistantError."""
+        from homeassistant.exceptions import HomeAssistantError
+        from imouapi.exceptions import ImouException
+
+        mock_sensor_instance.async_toggle.side_effect = ImouException("API error")
+
+        with pytest.raises(HomeAssistantError) as exc_info:
+            await siren.async_toggle()
+
+        assert exc_info.value.translation_key == "siren_toggle_failed"
+
+    @pytest.mark.asyncio
     async def test_siren_turn_off(self, siren):
         """Test siren turn off."""
         await siren.async_turn_off()

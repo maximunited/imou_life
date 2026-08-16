@@ -6,10 +6,12 @@ from collections.abc import Callable
 from homeassistant.components.switch import ENTITY_ID_FORMAT, SwitchEntity
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
+from imouapi.exceptions import ImouException
 
 from .const import DOMAIN, ENABLED_SWITCHES, OPTION_CALLBACK_URL
 from .coordinator import ImouConfigEntry
 from .entity import ImouEntity
+from .helpers import exception_message
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -80,24 +82,34 @@ class ImouSwitch(ImouEntity, SwitchEntity):
 
     async def async_turn_on(self, **kwargs):  # pylint: disable=unused-argument
         """Turn on the switch."""
-        # pushNotifications switch
-        if self.sensor_instance.get_name() == "pushNotifications":
-            callback_url = None
-            # if a callback url is provided as an option, use it as is
-            if (
-                OPTION_CALLBACK_URL in self.config_entry.options
-                and self.config_entry.options[OPTION_CALLBACK_URL] != ""
-            ):
-                callback_url = self.config_entry.options[OPTION_CALLBACK_URL]
-            if callback_url is None:
-                raise HomeAssistantError(
-                    translation_domain=DOMAIN, translation_key="no_callback_url"
-                )
-            _LOGGER.debug("Callback URL: %s", callback_url)
-            await self.sensor_instance.async_turn_on(url=callback_url)
-        # control all other switches
-        else:
-            await self.sensor_instance.async_turn_on()
+        try:
+            # pushNotifications switch
+            if self.sensor_instance.get_name() == "pushNotifications":
+                callback_url = None
+                # if a callback url is provided as an option, use it as is
+                if (
+                    OPTION_CALLBACK_URL in self.config_entry.options
+                    and self.config_entry.options[OPTION_CALLBACK_URL] != ""
+                ):
+                    callback_url = self.config_entry.options[OPTION_CALLBACK_URL]
+                if callback_url is None:
+                    raise HomeAssistantError(
+                        translation_domain=DOMAIN, translation_key="no_callback_url"
+                    )
+                _LOGGER.debug("Callback URL: %s", callback_url)
+                await self.sensor_instance.async_turn_on(url=callback_url)
+            # control all other switches
+            else:
+                await self.sensor_instance.async_turn_on()
+        except ImouException as exception:
+            raise HomeAssistantError(
+                translation_domain=DOMAIN,
+                translation_key="switch_turn_on_failed",
+                translation_placeholders={
+                    "entity": self.sensor_instance.get_description(),
+                    "error": exception_message(exception),
+                },
+            ) from exception
         # save the new state to the state machine (otherwise will be reset by HA
         # and set to the correct value only upon the next update)
         self.async_write_ha_state()
@@ -109,8 +121,17 @@ class ImouSwitch(ImouEntity, SwitchEntity):
 
     async def async_turn_off(self, **kwargs):  # pylint: disable=unused-argument
         """Turn off the switch."""
-        # control the switch
-        await self.sensor_instance.async_turn_off()
+        try:
+            await self.sensor_instance.async_turn_off()
+        except ImouException as exception:
+            raise HomeAssistantError(
+                translation_domain=DOMAIN,
+                translation_key="switch_turn_off_failed",
+                translation_placeholders={
+                    "entity": self.sensor_instance.get_description(),
+                    "error": exception_message(exception),
+                },
+            ) from exception
         # save the new state to the state machine (otherwise will be reset by HA
         # and set to the correct value only upon the next update)
         self.async_write_ha_state()
@@ -122,7 +143,17 @@ class ImouSwitch(ImouEntity, SwitchEntity):
 
     async def async_toggle(self, **kwargs):  # pylint: disable=unused-argument
         """Toggle the switch."""
-        await self.sensor_instance.async_toggle()
+        try:
+            await self.sensor_instance.async_toggle()
+        except ImouException as exception:
+            raise HomeAssistantError(
+                translation_domain=DOMAIN,
+                translation_key="switch_toggle_failed",
+                translation_placeholders={
+                    "entity": self.sensor_instance.get_description(),
+                    "error": exception_message(exception),
+                },
+            ) from exception
         # save the new state to the state machine (otherwise will be reset by HA
         # and set to the correct value only upon the next update)
         self.async_write_ha_state()
