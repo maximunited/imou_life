@@ -104,9 +104,8 @@ class ImouSwitch(ImouEntity, SwitchEntity):
         except ImouException as exception:
             raise HomeAssistantError(
                 translation_domain=DOMAIN,
-                translation_key="switch_action_failed",
+                translation_key="switch_turn_on_failed",
                 translation_placeholders={
-                    "action": "turn on",
                     "entity": self.sensor_instance.get_description(),
                     "error": exception_message(exception),
                 },
@@ -127,9 +126,8 @@ class ImouSwitch(ImouEntity, SwitchEntity):
         except ImouException as exception:
             raise HomeAssistantError(
                 translation_domain=DOMAIN,
-                translation_key="switch_action_failed",
+                translation_key="switch_turn_off_failed",
                 translation_placeholders={
-                    "action": "turn off",
                     "entity": self.sensor_instance.get_description(),
                     "error": exception_message(exception),
                 },
@@ -150,9 +148,8 @@ class ImouSwitch(ImouEntity, SwitchEntity):
         except ImouException as exception:
             raise HomeAssistantError(
                 translation_domain=DOMAIN,
-                translation_key="switch_action_failed",
+                translation_key="switch_toggle_failed",
                 translation_placeholders={
-                    "action": "toggle",
                     "entity": self.sensor_instance.get_description(),
                     "error": exception_message(exception),
                 },

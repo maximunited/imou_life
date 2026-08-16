@@ -43,9 +43,8 @@ class ImouSiren(ImouEntity, SirenEntity):
         except ImouException as exception:
             raise HomeAssistantError(
                 translation_domain=DOMAIN,
-                translation_key="siren_action_failed",
+                translation_key="siren_turn_on_failed",
                 translation_placeholders={
-                    "action": "turn on",
                     "entity": self.sensor_instance.get_description(),
                     "error": exception_message(exception),
                 },
@@ -66,9 +65,8 @@ class ImouSiren(ImouEntity, SirenEntity):
         except ImouException as exception:
             raise HomeAssistantError(
                 translation_domain=DOMAIN,
-                translation_key="siren_action_failed",
+                translation_key="siren_turn_off_failed",
                 translation_placeholders={
-                    "action": "turn off",
                     "entity": self.sensor_instance.get_description(),
                     "error": exception_message(exception),
                 },
@@ -89,9 +87,8 @@ class ImouSiren(ImouEntity, SirenEntity):
         except ImouException as exception:
             raise HomeAssistantError(
                 translation_domain=DOMAIN,
-                translation_key="siren_action_failed",
+                translation_key="siren_toggle_failed",
                 translation_placeholders={
-                    "action": "toggle",
                     "entity": self.sensor_instance.get_description(),
                     "error": exception_message(exception),
                 },

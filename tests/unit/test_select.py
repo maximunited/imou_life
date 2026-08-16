@@ -80,6 +80,12 @@ class TestImouSelect:
         assert select.available is True
 
     @pytest.mark.asyncio
+    async def test_select_select_option(self, select):
+        """Test select option selection."""
+        await select.async_select_option("on")
+        select.sensor_instance.async_select_option.assert_called_once_with("on")
+
+    @pytest.mark.asyncio
     async def test_select_select_option_imou_exception(
         self, select, mock_sensor_instance
     ):

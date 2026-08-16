@@ -132,11 +132,23 @@
     "select_config_failed": {
       "message": "Failed to update config for {setting}: {error}"
     },
-    "switch_action_failed": {
-      "message": "Failed to {action} {entity}: {error}"
+    "switch_turn_on_failed": {
+      "message": "Failed to turn on {entity}: {error}"
     },
-    "siren_action_failed": {
-      "message": "Failed to {action} {entity}: {error}"
+    "switch_turn_off_failed": {
+      "message": "Failed to turn off {entity}: {error}"
+    },
+    "switch_toggle_failed": {
+      "message": "Failed to toggle {entity}: {error}"
+    },
+    "siren_turn_on_failed": {
+      "message": "Failed to turn on {entity}: {error}"
+    },
+    "siren_turn_off_failed": {
+      "message": "Failed to turn off {entity}: {error}"
+    },
+    "siren_toggle_failed": {
+      "message": "Failed to toggle {entity}: {error}"
     },
     "invalid_motion_sensitivity": {
       "message": "Invalid motion sensitivity: {value}"

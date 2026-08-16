@@ -69,6 +69,12 @@ class TestImouButton:
         assert button.available is True
 
     @pytest.mark.asyncio
+    async def test_button_press(self, button):
+        """Test button press functionality."""
+        await button.async_press()
+        button.sensor_instance.async_press.assert_awaited_once()
+
+    @pytest.mark.asyncio
     async def test_button_press_imou_exception(self, button, mock_sensor_instance):
         """Test button press wraps ImouException in HomeAssistantError."""
         from homeassistant.exceptions import HomeAssistantError
