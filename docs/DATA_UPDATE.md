@@ -18,10 +18,10 @@ Battery-powered devices can use a separate battery coordinator with power-saving
 
 To reduce API usage, the coordinator alternates between:
 
-1. **Fast poll** — critical sensors only (online status, motion, battery)
+1. **Fast poll** — device online status and `motionAlarm` binary sensor only
 2. **Full poll** — all sensors on the device
 
-Full polls run every third cycle by default. Entity states still update on the configured scan interval; non-critical sensors may lag one cycle during fast polls.
+Full polls run every fourth cycle by default (`FULL_POLL_CYCLE_INTERVAL = 4`). Entity states still update on the configured scan interval; non-critical sensors may lag up to three fast polls between full updates.
 
 ## What triggers an immediate refresh
 

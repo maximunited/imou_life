@@ -155,6 +155,39 @@ class TestReconfigureFlow:
 
         assert result["type"] == FlowResultType.FORM
         assert result["errors"]["base"] == "not_authorized"
+        mock_hass.config_entries.async_update_entry.assert_not_called()
+        mock_hass.config_entries.async_reload.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_reconfigure_failure_does_not_persist(
+        self, mock_hass, mock_config_entry
+    ):
+        """Failed validation must not update credentials or reload."""
+        flow = ImouFlowHandler()
+        flow.hass = mock_hass
+        flow.entry = mock_config_entry
+
+        with (
+            patch("custom_components.imou_life.config_flow.ImouAPIClient") as mock_api,
+            patch("custom_components.imou_life.config_flow.ImouDevice") as mock_device,
+            patch("custom_components.imou_life.config_flow.async_get_clientsession"),
+        ):
+            mock_api.return_value.async_connect = AsyncMock()
+            mock_device.return_value.async_initialize = AsyncMock(
+                side_effect=ImouException("invalid credentials")
+            )
+
+            result = await flow.async_step_reconfigure_confirm(
+                {
+                    CONF_APP_ID: "bad_id",
+                    CONF_APP_SECRET: "bad_secret",
+                    CONF_API_SERVER: DEFAULT_API_SERVER,
+                }
+            )
+
+        assert result["type"] == FlowResultType.FORM
+        mock_hass.config_entries.async_update_entry.assert_not_called()
+        mock_hass.config_entries.async_reload.assert_not_called()
 
     @pytest.mark.asyncio
     async def test_reconfigure_rate_limit(self, mock_hass, mock_config_entry):
@@ -314,3 +347,30 @@ class TestRepairStaleDeviceFlow:
         assert coordinator.stale_device_failure_count == 0
         assert coordinator.stale_device_suspected is False
         assert coordinator.stale_device_last_error is None
+
+    @pytest.mark.asyncio
+    async def test_repair_retry_without_runtime_data(
+        self, repair_flow, mock_hass, mock_config_entry
+    ):
+        """Retry still reloads when coordinator is not initialized."""
+        mock_config_entry.runtime_data = None
+
+        result = await repair_flow.async_step_repair_stale_device({"action": "retry"})
+
+        assert result["type"] == FlowResultType.ABORT
+        assert result["reason"] == "retrying"
+        mock_hass.config_entries.async_reload.assert_awaited_once_with(
+            mock_config_entry.entry_id
+        )
+
+    @pytest.mark.asyncio
+    async def test_repair_ignore_without_runtime_data(
+        self, repair_flow, mock_config_entry
+    ):
+        """Ignore succeeds when coordinator is not initialized."""
+        mock_config_entry.runtime_data = None
+
+        result = await repair_flow.async_step_repair_stale_device({"action": "ignore"})
+
+        assert result["type"] == FlowResultType.ABORT
+        assert result["reason"] == "ignored"

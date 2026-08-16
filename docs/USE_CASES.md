@@ -46,7 +46,7 @@ See [Multi-Device Guide](MULTI_DEVICE_GUIDE.md).
 **Goal:** Reduce noise when nobody is home.
 
 1. Toggle **Push notifications** off when `zone.home` is empty.
-2. Optionally increase scan interval via an automation calling `homeassistant.update_entity` after changing options (reload required for interval changes — prefer manual option update).
+2. Optionally increase scan interval in **Settings → Devices & Services → Imou Life → Configure** (requires integration reload to apply).
 
 ## Troubleshooting-first setup
 
