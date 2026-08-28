@@ -1,38 +1,51 @@
 # Mergify Configuration for Auto-merge
 # Docs: https://docs.mergify.com/
+#
+# Merge queue is enabled on this repo. Direct `actions.merge` does not
+# auto-merge; PRs only merge after they enter the queue. Auto-queue is
+# `merge_protections_settings.auto_merge_conditions` (replaces deprecated
+# `queue_rules[].autoqueue`). Omitting it leaves only the manual checkbox.
 
-pull_request_rules:
-  # Auto-merge all Dependabot updates
-  - name: Auto-merge Dependabot updates
-    conditions:
-      - author=dependabot[bot]
+queue_rules:
+  - name: default
+    merge_method: squash
+    commit_message_format:
+      title: pr-title
+      body: pr-body
+    queue_conditions:
       - check-success=Pre-commit
       - check-success=HACS
       - check-success=Hassfest
+
+merge_protections_settings:
+  auto_merge_conditions:
+    - or:
+        - author=dependabot[bot]
+        - author=pre-commit-ci[bot]
+    - -draft
+    - -label=do-not-merge
+
+pull_request_rules:
+  # Label bot updates that will auto-queue once CI passes
+  - name: Label Dependabot updates
+    conditions:
+      - author=dependabot[bot]
       - -conflict
       - -draft
       - -label=do-not-merge
     actions:
-      merge:
-        method: squash
       label:
         add:
           - auto-merge
           - dependencies
 
-  # Auto-merge pre-commit.ci updates
-  - name: Auto-merge pre-commit.ci updates
+  - name: Label pre-commit.ci updates
     conditions:
       - author=pre-commit-ci[bot]
-      - check-success=Pre-commit
-      - check-success=HACS
-      - check-success=Hassfest
       - -conflict
       - -draft
       - -label=do-not-merge
     actions:
-      merge:
-        method: squash
       label:
         add:
           - auto-merge

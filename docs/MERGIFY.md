@@ -10,27 +10,17 @@ Mergify is a GitHub bot that automates pull request management, including auto-m
 
 ### Auto-merge (with conditions)
 
-Mergify will **automatically merge** PRs when ALL conditions are met:
+Mergify **auto-queues** Dependabot and pre-commit.ci PRs when CI passes. The
+merge queue then squash-merges them. Human PRs are never auto-queued.
 
-#### Dependabot Updates
+#### Dependabot and pre-commit.ci
 
-**Minor/Patch updates** (auto-merge without approval):
-- ✅ All CI checks pass (Pre-commit, HACS, Hassfest)
-- ✅ No merge conflicts
-- ✅ Not a draft PR
-- ✅ Title matches: `chore(deps): ... minor|patch`, `chore(deps-dev):`, or `ci(deps):`
+- ✅ Author is `dependabot[bot]` or `pre-commit-ci[bot]`
+- ✅ Pre-commit, HACS, and Hassfest succeed
+- ✅ Not a draft, no `do-not-merge` label
 
-**Major updates** (requires approval):
-- ✅ All CI checks pass (Pre-commit, HACS, Hassfest)
-- ✅ At least 1 approval from a maintainer
-- ✅ No merge conflicts
-- ✅ Not a draft PR
-
-#### Pre-commit.ci Updates
-
-- ✅ All CI checks pass (Pre-commit, HACS, Hassfest)
-- ✅ No merge conflicts
-- ✅ Not a draft PR
+A Mergify comment with an empty "Queue this pull request" checkbox means
+auto-queue did **not** fire. Do not treat that as auto-merge.
 
 ### Automatic Labeling
 
@@ -47,8 +37,8 @@ Mergify automatically adds labels based on:
 | Files modified: `.github/workflows/` | `github-actions` |
 | Files modified: `config/requirements*.txt` | `dependencies` |
 | Files modified: `docs/` | `documentation` |
-| Author: `dependabot[bot]` + CI passes | `auto-merge`, `dependencies` |
-| Author: `pre-commit-ci[bot]` + CI passes | `auto-merge`, `dependencies` |
+| Author: `dependabot[bot]` | `auto-merge`, `dependencies` |
+| Author: `pre-commit-ci[bot]` | `auto-merge`, `dependencies` |
 
 ### Automatic Comments
 
@@ -105,10 +95,15 @@ The Mergify configuration is in `.mergify.yml` at the repository root.
 
 ## Queue System
 
-Mergify uses a merge queue to:
-- Serialize merges (one at a time)
-- Re-test before final merge
-- Use squash merge with clean commit messages
+Merge queue is always on for this repo. Direct `actions.merge` does not
+bypass it. Auto-queue is `merge_protections_settings.auto_merge_conditions`
+in `.mergify.yml` (not `actions.merge`).
+
+The queue:
+- Serializes merges (one at a time)
+- Re-tests before the final squash merge
+- Only auto-admits Dependabot and pre-commit.ci; other PRs need the checkbox
+  or `@mergifyio queue`
 
 ## Security
 
@@ -124,17 +119,21 @@ Mergify has these safety features:
 
 ### PR not auto-merging
 
-Check the Mergify dashboard on the PR (bottom of conversation):
+If Mergify only posted "Queue this pull request" with an empty checkbox, the
+PR matched queue conditions but `auto_merge_conditions` did not. That is
+manual queue, not auto-merge.
+
+Otherwise check the Mergify dashboard on the PR:
 1. Click "Show all checks"
-2. Find "Mergify" check
+2. Find "Mergify Merge Queue"
 3. Click "Details" to see why conditions aren't met
 
 Common reasons:
+- ❌ Author is not Dependabot / pre-commit.ci (human PRs are manual)
 - ❌ CI check still running or failed
 - ❌ Merge conflicts present
 - ❌ PR is a draft
-- ❌ Title doesn't match expected pattern
-- ❌ Major version update needs approval
+- ❌ `do-not-merge` label is set
 
 ### Forcing a recheck
 

@@ -21,10 +21,9 @@
 
 | PR Type | Auto-merge? | Conditions |
 |---------|-------------|------------|
-| Dependabot patch/minor | ✅ Yes | CI passes |
-| Dependabot major | ⚠️ Needs approval | CI passes + 1 approval |
+| Dependabot (any) | ✅ Yes | CI passes |
 | Pre-commit.ci | ✅ Yes | CI passes |
-| Your PRs | ❌ No | Manual merge |
+| Your PRs | ❌ No | Manual merge / queue checkbox |
 
 ## 🎯 Most Useful Features
 
