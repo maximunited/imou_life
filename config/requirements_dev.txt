@@ -16,7 +16,7 @@ pre-commit>=4.6.2
 pydocstyle>=6.3.0
 
 # Release automation
-python-semantic-release>=10.6.1
+python-semantic-release>=10.6.2
 
 # Code modernization
 pyupgrade>=3.21.2
