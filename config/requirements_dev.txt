@@ -22,5 +22,5 @@ python-semantic-release>=10.6.2
 pyupgrade>=3.21.2
 
 # Type stubs
-types-PyYAML>=6.0.12.20260815
-types-requests>=2.33.0.20260712
+types-PyYAML>=6.0.12.20260906
+types-requests>=2.33.0.20260906
