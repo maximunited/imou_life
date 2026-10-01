@@ -33,10 +33,11 @@ async def test_rate_limit_during_initialization(hass):
         mock_api_instance = MagicMock()
         mock_api_client_class.return_value = mock_api_instance
 
-        mock_device = AsyncMock()
-        # Simulate rate limit error during initialization
-        mock_device.async_initialize.side_effect = APIError(
-            "OP1013: Call interface times exceed limit (total)"
+        # MagicMock so sync methods (e.g. set_name) stay sync; AsyncMock only
+        # for awaited APIs.
+        mock_device = MagicMock()
+        mock_device.async_initialize = AsyncMock(
+            side_effect=APIError("OP1013: Call interface times exceed limit (total)")
         )
         mock_device_class.return_value = mock_device
 
@@ -85,9 +86,10 @@ async def test_other_api_errors_still_raised(hass):
         mock_api_instance = MagicMock()
         mock_api_client_class.return_value = mock_api_instance
 
-        mock_device = AsyncMock()
-        # Simulate a different API error (not rate limit)
-        mock_device.async_initialize.side_effect = APIError("OP9999: Some other error")
+        mock_device = MagicMock()
+        mock_device.async_initialize = AsyncMock(
+            side_effect=APIError("OP9999: Some other error")
+        )
         mock_device_class.return_value = mock_device
 
         config_entry.add_to_hass(hass)
