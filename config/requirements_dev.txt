@@ -3,7 +3,7 @@
 bandit>=1.9.4
 
 # Code quality and formatting
-black>=26.5.1
+black>=26.10.0
 
 # Spell checking
 codespell>=2.4.3
@@ -19,8 +19,8 @@ pydocstyle>=6.3.0
 python-semantic-release>=10.7.0
 
 # Code modernization
-pyupgrade>=3.21.2
+pyupgrade>=3.22.0
 
 # Type stubs
 types-PyYAML>=6.0.12.20260906
-types-requests>=2.33.0.20260906
+types-requests>=2.33.0.20261006
