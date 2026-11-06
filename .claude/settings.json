@@ -9,7 +9,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/run-wolf-hook.js\" session-start.js",
+            "command": "node .claude/hooks/run-wolf-hook.js session-start.js",
             "timeout": 5
           }
         ]
@@ -21,7 +21,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/run-wolf-hook.js\" pre-read.js",
+            "command": "node .claude/hooks/run-wolf-hook.js pre-read.js",
             "timeout": 5
           }
         ]
@@ -31,7 +31,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/run-wolf-hook.js\" pre-write.js",
+            "command": "node .claude/hooks/run-wolf-hook.js pre-write.js",
             "timeout": 5
           }
         ]
@@ -43,7 +43,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/run-wolf-hook.js\" post-read.js",
+            "command": "node .claude/hooks/run-wolf-hook.js post-read.js",
             "timeout": 5
           }
         ]
@@ -53,7 +53,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/run-wolf-hook.js\" post-write.js",
+            "command": "node .claude/hooks/run-wolf-hook.js post-write.js",
             "timeout": 10
           }
         ]
@@ -65,7 +65,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/run-wolf-hook.js\" stop.js",
+            "command": "node .claude/hooks/run-wolf-hook.js stop.js",
             "timeout": 10
           }
         ]
@@ -77,7 +77,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/run-wolf-hook.js\" precompact.js",
+            "command": "node .claude/hooks/run-wolf-hook.js precompact.js",
             "timeout": 5
           }
         ]
